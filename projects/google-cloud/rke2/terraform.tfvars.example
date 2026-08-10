@@ -1,0 +1,86 @@
+## -- Specifies the prefix added to the names of all resources.
+prefix = "gcp-rke2"
+
+## -- Specifies the GCP Project ID that will contain all created resources.
+project_id = ""
+
+## -- Specifies the GCP region used for all resources.
+region = "europe-west1"
+
+## -- Specifies the number of Compute Engine instances (nodes) to create for the RKE2 cluster.
+instance_count = 1
+
+## -- Specifies whether the instances should be Spot (preemptible) VMs.
+spot_instance = true
+
+## -- Specifies the name of the Compute Engine instance type.
+instance_type = "n2-standard-8"
+
+## -- Specifies the size of the additional data disks for each VM instance, in GB.
+data_disk_size = 350
+
+## -- Specifies the shared token used by all nodes to join the RKE2 cluster.
+rke2_token = "SecretToken.123"
+
+## -- Specifies the RKE2 version to install.
+rke2_version = "v1.35.4+rke2r1"
+
+## -- Specifies the ingress controller to deploy.
+rke2_ingress = "traefik"
+
+## -- Specifies whether Longhorn should be installed on the Kubernetes cluster.
+longhorn_enabled = false
+
+## -- Specifies the Longhorn administrator password used for securing the Longhorn UI via basic authentication. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+longhorn_admin_password = null
+
+## -- Specifies the Longhorn Helm chart version to install.
+longhorn_hc_version = null
+
+## -- Specifies whether Rancher should be installed on the Kubernetes cluster.
+rancher_enabled = false
+
+## -- Specifies the Rancher Helm chart version to install.
+rancher_version = null
+
+## -- Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled.
+rancher_bootstrap_password = null
+
+## -- Specifies the TLS certificate source used by Rancher.
+rancher_tls_source = "letsEncrypt"
+
+## -- Specifies whether SUSE Observability should be installed on the Kubernetes cluster.
+suse_observability_enabled = false
+
+## -- Specifies the SUSE Observability Helm chart version to install.
+suse_observability_hc_version = null
+
+## -- Specifies the SUSE Observability deployment sizing profile. Supported values depend on the Helm chart configuration.
+suse_observability_profile = "trial"
+
+## -- Specifies the SUSE Observability license key required for installation.
+suse_observability_license = null
+
+## -- Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+suse_observability_admin_password = null
+
+## -- Specifies whether Rancher should be used as the OIDC provider for SUSE Observability.
+suse_observability_rancher_auth = false
+
+## -- Specifies whether NeuVector should be installed on the Kubernetes cluster.
+neuvector_enabled = false
+
+## -- Specifies the NeuVector Helm chart version to install.
+neuvector_hc_version = null
+
+## -- Specifies the NeuVector application version deployed by the Helm chart.
+neuvector_version = ""
+
+## -- Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+neuvector_admin_password = null
+
+## -- Specifies the number of NeuVector controller replicas to deploy.
+neuvector_controller_count = null
+
+## -- Specifies the number of NeuVector scanner replicas to deploy.
+neuvector_scanner_count = null

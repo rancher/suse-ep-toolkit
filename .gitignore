@@ -1,0 +1,26 @@
+# Terraform directories and files
+**/.terraform/*
+**/terraform-provider*/*
+*.tfstate
+*.tfstate.*
+*.terraform*
+crash.log
+
+# Files that may contain secrets
+terraform.tfvars
+*kube_config.yaml*
+*kube_config.yml*
+*kubeconfig.yaml*
+*kubeconfig.yml*
+*-ssh_private_key.pem*
+*-ssh_public_key.pem*
+
+# Ignore generated OS images to avoid committing large build artifacts
+**/*.iso
+**/*.vhd
+**/*.qcow2.bz2
+**/*.tar.gz
+
+# Temporary files
+**/*.swp
+.DS_Store

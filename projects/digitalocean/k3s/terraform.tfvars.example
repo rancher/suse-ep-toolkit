@@ -1,0 +1,101 @@
+## -- Specifies the prefix added to the names of all resources.
+prefix = "do-k3s"
+
+## -- DigitalOcean API token used to deploy the infrastructure.
+do_token = null
+
+## -- Specifies the DigitalOcean region used for all resources.
+region = "fra1"
+
+## -- Existing SSH key ID to use. If null, module will use or create one.
+do_ssh_key_id = null
+
+## -- Specifies the number of Droplets (nodes) to create for the K3s cluster.
+instance_count = 1
+
+## -- Specifies the name of the DigitalOcean Droplet type.
+instance_type = "g-16vcpu-64gb"
+
+## -- Specifies the size of the additional data disks attached to the Droplet, in GB.
+data_disk_size = 350
+
+## -- Specifies the ID of the custom OS image used to provision all K3s cluster droplets.
+image_id = ""
+
+## -- Specifies cloud-init user_data used to bootstrap the Droplet.
+user_data = null
+
+## -- Specifies the K3s node role for this instance.
+node_role = "agent"
+
+## -- Specifies the shared token used by all nodes to join the K3s cluster.
+k3s_token = "SecretToken.123"
+
+## -- Specifies the K3s version to install.
+k3s_version = "v1.33.5+k3s1"
+
+## -- Specifies the URL of the first K3s server node.
+server_url = null
+
+## -- Specifies additional custom K3s configuration in YAML format.
+k3s_config = ""
+
+## -- Specifies bundled K3s components to disable.
+disable_components = []
+
+## -- Specifies whether Longhorn should be installed on the Kubernetes cluster.
+longhorn_enabled = false
+
+## -- Specifies the Longhorn administrator password used for securing the Longhorn UI via basic authentication. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+longhorn_admin_password = null
+
+## -- Specifies the Longhorn Helm chart version to install.
+longhorn_hc_version = null
+
+## -- Specifies whether Rancher should be installed on the Kubernetes cluster.
+rancher_enabled = false
+
+## -- Specifies the Rancher Helm chart version to install.
+rancher_version = null
+
+## -- Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled.
+rancher_bootstrap_password = null
+
+## -- Specifies the TLS certificate source used by Rancher.
+rancher_tls_source = "letsEncrypt"
+
+## -- Specifies whether SUSE Observability should be installed on the Kubernetes cluster.
+suse_observability_enabled = false
+
+## -- Specifies the SUSE Observability Helm chart version to install.
+suse_observability_hc_version = null
+
+## -- Specifies the SUSE Observability deployment sizing profile. Supported values depend on the Helm chart configuration.
+suse_observability_profile = "trial"
+
+## -- Specifies the SUSE Observability license key required for installation.
+suse_observability_license = null
+
+## -- Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+suse_observability_admin_password = null
+
+## -- Specifies whether Rancher should be used as the OIDC provider for SUSE Observability.
+suse_observability_rancher_auth = false
+
+## -- Specifies whether NeuVector should be installed on the Kubernetes cluster.
+neuvector_enabled = false
+
+## -- Specifies the NeuVector Helm chart version to install.
+neuvector_hc_version = null
+
+## -- Specifies the NeuVector application version deployed by the Helm chart.
+neuvector_version = ""
+
+## -- Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+neuvector_admin_password = null
+
+## -- Specifies the number of NeuVector controller replicas to deploy.
+neuvector_controller_count = null
+
+## -- Specifies the number of NeuVector scanner replicas to deploy.
+neuvector_scanner_count = null
