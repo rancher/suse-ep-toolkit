@@ -1,0 +1,63 @@
+name: Bug report
+description: Report a bug to help us improve Harvester Cloud
+title: "[BUG] "
+type: "Bug"
+labels:
+  - bug
+assignees:
+  - glovecchi0
+  - JavierLagosChanclon
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report an issue.
+
+        Please provide as much detail as possible to help us reproduce, investigate, and resolve the problem.
+
+  - type: textarea
+    attributes:
+      label: Describe the Bug
+      description: Provide a clear and concise description of the issue.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: Describe the steps required to reproduce the issue.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: Describe what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        Provide the environment configuration used to reproduce the issue.
+        Include the contents of your terraform.tfvars file, removing any sensitive information.
+      value: |
+        cat ~/harvester-cloud/projects/<CLOUD_PROVIDER>/terraform.tfvars
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: Add any additional information that may help us understand or troubleshoot the issue.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Workaround or Mitigation
+      description: If you found a workaround or mitigation, please describe it here.
+    validations:
+      required: false

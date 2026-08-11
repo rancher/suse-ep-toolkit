@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Questions and Support
+    url: https://github.com/rancher/harvester-cloud/discussions
+    about: Please ask questions and seek support here.

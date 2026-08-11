@@ -1,0 +1,50 @@
+name: Documentation
+description: Request documentation improvements or report missing, incorrect, or unclear documentation
+title: "[DOC] "
+type: "Task"
+labels:
+  - documentation
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping us improve the Harvester Cloud documentation.
+
+        Please provide as much detail as possible about the documentation issue or enhancement request.
+
+  - type: textarea
+    attributes:
+      label: Documentation Issue
+      description: Describe the documentation problem or improvement request.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: Describe the current documentation and explain why it is incomplete, incorrect, or unclear.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Proposed Improvement
+      description: Describe the change you would like to see in the documentation.
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Documentation Location
+      description: Provide links or paths to the relevant documentation pages, if applicable.
+      placeholder: docs/HARVESTER_DEPLOYMENT_PROCESS.md
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: Add any additional context, examples, screenshots, or references that may be helpful.
+    validations:
+      required: false
