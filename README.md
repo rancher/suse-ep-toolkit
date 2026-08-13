@@ -41,6 +41,7 @@ The toolkit focuses on:
 - AWS
 - DigitalOcean
 - Azure
+- Google Cloud
 
 ## How the repository is structured
 
