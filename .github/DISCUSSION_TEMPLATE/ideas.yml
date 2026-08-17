@@ -1,0 +1,39 @@
+title: "[IDEA] "
+labels:
+  - idea
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing your idea!
+
+        Please note: this is for early-stage discussion, not ready-for-development tasks.
+
+  - type: textarea
+    attributes:
+      label: Problem / Motivation
+      description: What problem does this idea solve?
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Proposed Idea
+      description: Describe your idea at a high level.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Alternatives
+      description: Any alternatives you've considered?
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: Links, diagrams, references, etc.
+    validations:
+      required: false

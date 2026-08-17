@@ -1,0 +1,30 @@
+title: "[QUESTION] "
+labels:
+  - question
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ask anything related to setup, usage, or troubleshooting.
+
+  - type: textarea
+    attributes:
+      label: Question
+      description: What do you need help with?
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Context
+      description: Provide any relevant details (versions, configs, logs).
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: What you've tried
+      description: Steps already attempted.
+    validations:
+      required: false

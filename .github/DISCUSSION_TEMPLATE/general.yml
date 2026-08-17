@@ -1,0 +1,23 @@
+title: "[GENERAL] "
+labels:
+  - general
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this space for open-ended discussions, feedback, or anything not covered by other categories.
+
+  - type: textarea
+    attributes:
+      label: Topic
+      description: What would you like to talk about?
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Context (optional)
+      description: Add any background information if relevant.
+    validations:
+      required: false
