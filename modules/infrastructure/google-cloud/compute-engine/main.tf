@@ -77,12 +77,13 @@ resource "google_compute_disk" "data_disk" {
 }
 
 resource "google_compute_instance" "vm" {
-  count        = var.instance_count
-  name         = "${var.prefix}-vm-${count.index + 1}-${random_string.random.result}"
-  machine_type = var.instance_type
-  zone         = local.target_zone
-  tags         = [var.prefix]
-  labels       = local.common_labels
+  count                   = var.instance_count
+  name                    = "${var.prefix}-vm-${count.index + 1}-${random_string.random.result}"
+  machine_type            = var.instance_type
+  zone                    = local.target_zone
+  tags                    = [var.prefix]
+  labels                  = local.common_labels
+  metadata_startup_script = var.startup_script
   scheduling {
     preemptible        = var.spot_instance
     provisioning_model = var.spot_instance ? "SPOT" : "STANDARD"
