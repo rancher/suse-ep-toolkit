@@ -6,10 +6,25 @@ resource "random_string" "rke2_token" {
 locals {
   ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
-  ssh_username                      = "opensuse"
+  ssh_username                      = var.ami_id != "" ? "ec2-user" : "opensuse"
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
   volume_device                     = "/dev/nvme1n1"
   instance_type                     = var.instance_type
+  ami_id                            = var.ami_id != "" ? var.ami_id : module.os_image[0].image_id
+  aws_prep_script                   = <<-EOF
+    #!/bin/bash
+    set -e
+    zypper --non-interactive install -y curl tar which python3 cloud-init || true
+    systemctl enable --now cloud-init.service || true
+    cloud-init init --local || true
+    cloud-init init || true
+    cloud-init modules --mode config || true
+    cloud-init modules --mode final || true
+  EOF
+  startup_script                    = var.ami_id != "" ? local.aws_prep_script : null
+  first_server_user_data            = module.rke2_first.user_data
+  server_user_data                  = module.rke2_additional_servers.user_data
+  worker_user_data                  = module.rke2_additional_workers.user_data
   rke2_token                        = random_string.rke2_token.result
   first_server_url                  = "https://${module.rke2_first_server.instances_public_ip}:9345"
   server_count                      = var.instance_count < 3 ? var.instance_count : 3
@@ -30,6 +45,7 @@ module "identity" {
 }
 
 module "os_image" {
+  count  = var.ami_id == "" ? 1 : 0
   source = "../../../modules/custom-os-image/aws"
   prefix = var.prefix
 }
@@ -51,11 +67,12 @@ module "rke2_first_server" {
   ssh_key_content          = data.local_file.ssh_private_key.content
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
+  ami_id                   = local.ami_id
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = true
-  user_data                = module.rke2_first.user_data
+  startup_script           = local.startup_script
+  user_data                = local.first_server_user_data
 }
 
 module "rke2_additional_servers" {
@@ -77,13 +94,14 @@ module "rke2_servers" {
   ssh_key_content          = data.local_file.ssh_private_key.content
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
+  ami_id                   = local.ami_id
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = false
   security_group_id        = module.rke2_first_server.aws_security_group
   subnet_id                = module.rke2_first_server.aws_subnet
-  user_data                = module.rke2_additional_servers.user_data
+  startup_script           = local.startup_script
+  user_data                = local.server_user_data
 }
 
 module "rke2_additional_workers" {
@@ -105,13 +123,14 @@ module "rke2_workers" {
   ssh_key_content          = data.local_file.ssh_private_key.content
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
+  ami_id                   = local.ami_id
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = false
   security_group_id        = module.rke2_first_server.aws_security_group
   subnet_id                = module.rke2_first_server.aws_subnet
-  user_data                = module.rke2_additional_workers.user_data
+  startup_script           = local.startup_script
+  user_data                = local.worker_user_data
 }
 
 data "local_file" "ssh_private_key" {
@@ -156,6 +175,7 @@ module "longhorn" {
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version
   longhorn_host           = local.longhorn_host
+  ssh_username            = local.ssh_username
   ssh_private_key         = data.local_file.ssh_private_key.content
   node_ips = concat(
     [module.rke2_first_server.instances_public_ip],

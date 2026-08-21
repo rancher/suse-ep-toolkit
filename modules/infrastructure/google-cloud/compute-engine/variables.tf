@@ -124,6 +124,12 @@ variable "data_disk_size" {
   default     = 350
 }
 
+variable "startup_script" {
+  description = "Specifies a Bash script executed by Google Guest Agent during the VM boot phase (useful for pre-installing OS packages). Default is 'null'."
+  type        = string
+  default     = null
+}
+
 variable "user_data" {
   description = "Specifies cloud-init user_data used to bootstrap the GCP Compute Instance. Default is 'null'."
   type        = string

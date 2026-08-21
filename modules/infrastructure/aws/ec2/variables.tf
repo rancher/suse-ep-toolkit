@@ -77,6 +77,12 @@ variable "data_disk_size" {
   default     = 350
 }
 
+variable "startup_script" {
+  description = "Specifies a bash prep script to execute before passing cloud-init user_data. Default is null."
+  type        = string
+  default     = null
+}
+
 variable "ami_id" {
   description = "Specifies the ID of the custom OS image used to provision all RKE2 cluster EC2 instances. Default is empty."
   type        = string
