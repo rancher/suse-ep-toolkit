@@ -50,6 +50,7 @@ No modules.
 | <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'. | `bool` | `true` | no |
 | <a name="input_ssh_key_content"></a> [ssh\_key\_content](#input\_ssh\_key\_content) | Specifies the public SSH key content used to create the AWS EC2 Key Pair. Default is 'null'. | `string` | `null` | no |
 | <a name="input_ssh_key_name"></a> [ssh\_key\_name](#input\_ssh\_key\_name) | Specifies the name of the AWS EC2 Key Pair used to access the instances through SSH. Default is 'null'. | `string` | `null` | no |
+| <a name="input_startup_script"></a> [startup\_script](#input\_startup\_script) | Specifies a bash prep script to execute before passing cloud-init user\_data. Default is null. | `string` | `null` | no |
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | Specifies the ID of an existing AWS subnet where the EC2 instances will be deployed. Default is 'null'. | `string` | `null` | no |
 | <a name="input_user_data"></a> [user\_data](#input\_user\_data) | Specifies cloud-init user\_data used to bootstrap the EC2 instance. Default is 'null'. | `string` | `null` | no |
 

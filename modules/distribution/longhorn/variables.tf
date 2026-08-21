@@ -42,7 +42,7 @@ variable "ssh_private_key" {
   sensitive   = true
 }
 
-variable "ssh_user" {
+variable "ssh_username" {
   description = "Specifies the SSH username used to connect to cluster nodes. Default is 'opensuse'."
   type        = string
   default     = "opensuse"
