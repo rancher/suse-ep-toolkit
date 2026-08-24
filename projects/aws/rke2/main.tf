@@ -11,17 +11,6 @@ locals {
   volume_device                     = "/dev/nvme1n1"
   instance_type                     = var.instance_type
   ami_id                            = var.ami_id != "" ? var.ami_id : module.os_image[0].image_id
-  aws_prep_script                   = <<-EOF
-    #!/bin/bash
-    set -e
-    zypper --non-interactive install -y curl tar which python3 cloud-init || true
-    systemctl enable --now cloud-init.service || true
-    cloud-init init --local || true
-    cloud-init init || true
-    cloud-init modules --mode config || true
-    cloud-init modules --mode final || true
-  EOF
-  startup_script                    = var.ami_id != "" ? local.aws_prep_script : null
   first_server_user_data            = module.rke2_first.user_data
   server_user_data                  = module.rke2_additional_servers.user_data
   worker_user_data                  = module.rke2_additional_workers.user_data
@@ -71,7 +60,6 @@ module "rke2_first_server" {
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = true
-  startup_script           = local.startup_script
   user_data                = local.first_server_user_data
 }
 
@@ -100,7 +88,6 @@ module "rke2_servers" {
   create_network_resources = false
   security_group_id        = module.rke2_first_server.aws_security_group
   subnet_id                = module.rke2_first_server.aws_subnet
-  startup_script           = local.startup_script
   user_data                = local.server_user_data
 }
 
@@ -129,7 +116,6 @@ module "rke2_workers" {
   create_network_resources = false
   security_group_id        = module.rke2_first_server.aws_security_group
   subnet_id                = module.rke2_first_server.aws_subnet
-  startup_script           = local.startup_script
   user_data                = local.worker_user_data
 }
 
@@ -168,9 +154,36 @@ provider "helm" {
   }
 }
 
+resource "null_resource" "wait_for_prep_script" {
+  count      = var.instance_count
+  depends_on = [module.rke2_first_server, module.rke2_servers, module.rke2_workers]
+  connection {
+    type        = "ssh"
+    user        = local.ssh_username
+    private_key = data.local_file.ssh_private_key.content
+    host = element(
+      concat(
+        [module.rke2_first_server.instances_public_ip],
+        flatten([for m in module.rke2_servers : m.instances_public_ip]),
+        flatten([for m in module.rke2_workers : m.instances_public_ip])
+      ),
+      count.index
+    )
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 60",
+      "while sudo fuser /var/run/zypp.pid >/dev/null 2>&1; do echo 'Waiting for initial zypper lock...'; sleep 3; done",
+      "sudo rm -f /var/run/zypp.pid /var/lib/Zypper/lock",
+      "sudo zypper --non-interactive install -y curl tar which python3 open-iscsi nfs-client cryptsetup device-mapper util-linux || true",
+      "sudo systemctl enable --now iscsid || true"
+    ]
+  }
+}
+
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [module.rke2_first_server]
+  depends_on              = [module.rke2_first_server, null_resource.wait_for_prep_script]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version
