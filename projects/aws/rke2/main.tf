@@ -155,7 +155,7 @@ provider "helm" {
 }
 
 resource "null_resource" "wait_for_prep_script" {
-  count      = var.instance_count
+  count      = var.ami_id == "" ? var.instance_count : 0
   depends_on = [module.rke2_first_server, module.rke2_servers, module.rke2_workers]
   connection {
     type        = "ssh"

@@ -13,6 +13,9 @@ spot_instance = true
 ## -- Specifies the name of the EC2 instance type.
 instance_type = "m8i.4xlarge"
 
+## -- Specifies the AWS AMI ID used to provision the VMs. If left empty, our custom OS image will be used. If specified, must be 'ami-081e3132bf572c01f' (openSUSE-Leap-16-0 x86_64).
+ami_id = ""
+
 ## -- Specifies the size of the additional data disks attached to the EC2 instance, in GB.
 data_disk_size = 350
 
