@@ -113,6 +113,36 @@ variable "instance_type" {
   }
 }
 
+variable "ami_id" {
+  description = "Specifies the ID of the custom OS image used to provision all K3s cluster Azure Virtual Machines. Default is empty."
+  type        = string
+  default     = ""
+}
+
+variable "image_publisher" {
+  description = "Specifies the publisher of the Marketplace image used when ami_id is not provided. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "image_offer" {
+  description = "Specifies the offer of the Marketplace image used when ami_id is not provided. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "image_sku" {
+  description = "Specifies the SKU of the Marketplace image used when ami_id is not provided. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "image_version" {
+  description = "Specifies the version of the Marketplace image used when ami_id is not provided. Default is 'null'."
+  type        = string
+  default     = null
+}
+
 variable "data_disk_size" {
   description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'."
   type        = number
