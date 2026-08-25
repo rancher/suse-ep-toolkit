@@ -1,14 +1,12 @@
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.79.0 |
+No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.79.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | n/a |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
@@ -19,11 +17,11 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [azurerm_image.harvester](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/image) | resource |
-| [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/resource_group) | resource |
-| [azurerm_storage_account.vhd](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/storage_account) | resource |
-| [azurerm_storage_blob.ep_toolkit_vhd](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/storage_blob) | resource |
-| [azurerm_storage_container.vhds](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/storage_container) | resource |
+| [azurerm_image.harvester](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/image) | resource |
+| [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_storage_account.vhd](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
+| [azurerm_storage_blob.ep_toolkit_vhd](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_blob) | resource |
+| [azurerm_storage_container.vhds](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container) | resource |
 | [null_resource.download_image](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.removing_image](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.wait_blob_accessible](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
