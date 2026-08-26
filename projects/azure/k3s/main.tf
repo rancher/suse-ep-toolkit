@@ -30,6 +30,16 @@ locals {
   neuvector_host                    = "neuvector.${module.k3s_first_server.instances_public_ip}.sslip.io"
 }
 
+check "marketplace_image_variables" {
+  assert {
+    condition = (
+      (var.image_publisher == null && var.image_offer == null && var.image_sku == null && var.image_version == null) ||
+      (var.image_publisher != null && var.image_offer != null && var.image_sku != null && var.image_version != null)
+    )
+    error_message = "All marketplace image variables (image_publisher, image_offer, image_sku, image_version) must either be all specified or all left as null."
+  }
+}
+
 module "identity" {
   source = "../../../modules/identity/ssh/azure"
   prefix = var.prefix
@@ -172,7 +182,7 @@ provider "helm" {
 }
 
 resource "null_resource" "install_prerequisites" {
-  count      = var.instance_count
+  count      = local.use_marketplace_image ? var.instance_count : 0
   depends_on = [module.k3s_first_server, module.k3s_servers, module.k3s_workers]
   connection {
     type        = "ssh"

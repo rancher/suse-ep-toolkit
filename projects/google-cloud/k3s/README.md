@@ -109,13 +109,25 @@ neuvector_enabled        = true
 neuvector_admin_password = "************"
 ```
 
+# OS Image selection
+
+By default, if `ami_id` is left empty (`""`), the project automatically builds and uses a custom openSUSE OS image via the `custom-os-image` module.
+
+If you want to use an existing custom image or image family, specify `ami_id` in your `terraform.tfvars`:
+
+```hcl
+ami_id = "opensuse-leap-16-0-v20260629-x86-64"
+```
+
+Note: When `ami_id` is specified, it must start with `opensuse-leap-16` and end with `x86-64`.
+
 # Example deployment scenarios
 
 ## Minimal single-node K3s cluster
 
 ```hcl
 prefix          = "<PREFIX>"
-subscription_id = "<SUBSCRIPTION_ID>"
+project_id      = "<PROJECT_ID>"
 
 instance_count  = 1
 ```
@@ -124,7 +136,7 @@ instance_count  = 1
 
 ```hcl
 prefix                  = "<PREFIX>"
-subscription_id         = "<SUBSCRIPTION_ID>"
+project_id              = "<PROJECT_ID>"
 
 instance_count          = 3
 
@@ -136,7 +148,7 @@ longhorn_admin_password = "************"
 
 ```hcl
 prefix                     = "<PREFIX>"
-subscription_id            = "<SUBSCRIPTION_ID>"
+project_id                 = "<PROJECT_ID>"
 instance_count             = 3
 
 longhorn_enabled           = true
@@ -150,7 +162,7 @@ rancher_bootstrap_password = "************"
 
 ```hcl
 prefix                          = "<PREFIX>"
-subscription_id                 = "<SUBSCRIPTION_ID>"
+project_id                      = "<PROJECT_ID>"
 instance_count                  = 3
 
 longhorn_enabled                = true
@@ -218,7 +230,7 @@ Depending on enabled components, the following services become available:
 | Rancher | `https://rancher.<NODE_IP>.sslip.io` |
 | Longhorn | `https://longhorn.<NODE_IP>.sslip.io` |
 | NeuVector | `https://neuvector.<NODE_IP>.sslip.io` |
-| SUSE Observability | `https://suse-observability.<NODE_IP>.sslip.io` |
+| SUSE Observability | `https://observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/gRPC) | `https://otlp-observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/HTTP) | `https://otlp-http-observability.<NODE_IP>.sslip.io` |
 

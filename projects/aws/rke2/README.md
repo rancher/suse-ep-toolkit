@@ -108,6 +108,19 @@ neuvector_enabled        = true
 neuvector_admin_password = "************"
 ```
 
+# OS Image selection
+
+By default, if `ami_id` is left empty (`""`), the project automatically builds and uses a custom openSUSE OS image via the `custom-os-image` module with the default `instance_type` (`m8i.4xlarge`).
+
+If you want to use an existing custom/Marketplace AMI, specify `ami_id` in your `terraform.tfvars`:
+
+```hcl
+ami_id        = "ami-081e3132bf572c01f"
+instance_type = "m6a.4xlarge"
+```
+
+Note: When `ami_id` is specified (not empty), you must also set `instance_type = "m6a.4xlarge"` to comply with the variable validation requirements.
+
 # Example deployment scenarios
 
 ## Minimal single-node RKE2 cluster
@@ -213,7 +226,7 @@ Depending on enabled components, the following services become available:
 | Rancher | `https://rancher.<NODE_IP>.sslip.io` |
 | Longhorn | `https://longhorn.<NODE_IP>.sslip.io` |
 | NeuVector | `https://neuvector.<NODE_IP>.sslip.io` |
-| SUSE Observability | `https://suse-observability.<NODE_IP>.sslip.io` |
+| SUSE Observability | `https://observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/gRPC) | `https://otlp-observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/HTTP) | `https://otlp-http-observability.<NODE_IP>.sslip.io` |
 

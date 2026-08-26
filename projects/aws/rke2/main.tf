@@ -154,8 +154,8 @@ provider "helm" {
   }
 }
 
-resource "null_resource" "wait_for_prep_script" {
-  count      = var.ami_id == "" ? var.instance_count : 0
+resource "null_resource" "install_prerequisites" {
+  count      = var.ami_id != "" ? var.instance_count : 0
   depends_on = [module.rke2_first_server, module.rke2_servers, module.rke2_workers]
   connection {
     type        = "ssh"
@@ -172,7 +172,7 @@ resource "null_resource" "wait_for_prep_script" {
   }
   provisioner "remote-exec" {
     inline = [
-      "sleep 60",
+      "sleep 15",
       "while sudo fuser /var/run/zypp.pid >/dev/null 2>&1; do echo 'Waiting for initial zypper lock...'; sleep 3; done",
       "sudo rm -f /var/run/zypp.pid /var/lib/Zypper/lock",
       "sudo zypper --non-interactive install -y curl tar which python3 open-iscsi nfs-client cryptsetup device-mapper util-linux || true",
@@ -183,7 +183,7 @@ resource "null_resource" "wait_for_prep_script" {
 
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [module.rke2_first_server, null_resource.wait_for_prep_script]
+  depends_on              = [module.rke2_first_server, null_resource.install_prerequisites]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version
