@@ -82,6 +82,7 @@ resource "helm_release" "longhorn" {
   chart            = "longhorn"
   namespace        = "longhorn-system"
   create_namespace = true
+  timeout          = 1200
   version          = var.longhorn_hc_version
   values = [
     <<EOF

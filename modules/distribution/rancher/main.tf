@@ -5,8 +5,9 @@ resource "helm_release" "rancher" {
   namespace        = "cattle-system"
   repository       = "https://charts.rancher.com/server-charts/prime"
   chart            = "rancher"
-  version          = var.rancher_hc_version
   create_namespace = true
+  timeout          = 1200
+  version          = var.rancher_hc_version
   values = [
     <<EOF
 hostname: ${var.rancher_host}

@@ -16,6 +16,9 @@ instance_type = "m8i.4xlarge"
 ## -- Specifies the size of the additional data disks attached to the EC2 instance, in GB.
 data_disk_size = 350
 
+## -- Specifies a list of CIDR blocks allowed to access port 22 (SSH).
+public_ip_source_addresses = []
+
 ## -- Specifies the shared token used by all nodes to join the RKE2 cluster.
 rke2_token = "SecretToken.123"
 
