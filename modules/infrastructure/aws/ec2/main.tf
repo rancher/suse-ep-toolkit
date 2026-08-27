@@ -83,7 +83,7 @@ resource "aws_security_group" "sg" {
     from_port   = "6443"
     to_port     = "6443"
     protocol    = "tcp"
-    cidr_blocks = var.public_ip_source_addresses
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     description = "Allow inbound WebSocket/VNC (6080) access restricted to CIDR list"
@@ -93,11 +93,11 @@ resource "aws_security_group" "sg" {
     cidr_blocks = var.public_ip_source_addresses
   }
   ingress {
-    description = "Allow inbound RKE2 server registration (9345) access restricted to CIDR list"
+    description = "Allow inbound K3s/RKE2 server registration (9345) access restricted to CIDR list"
     from_port   = "9345"
     to_port     = "9345"
     protocol    = "tcp"
-    cidr_blocks = var.public_ip_source_addresses
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     description = "Allow inbound HTTP access"

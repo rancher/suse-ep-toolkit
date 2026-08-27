@@ -55,6 +55,36 @@ resource "azurerm_network_security_group" "nsg" {
   tags                = local.common_tags
 }
 
+resource "azurerm_network_security_rule" "allow_admin_access" {
+  count                       = var.create_network_resources ? 1 : 0
+  name                        = "${var.prefix}-allow-admin-access"
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_ranges     = ["22", "6080"]
+  source_address_prefixes     = var.public_ip_source_addresses
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group.name
+  network_security_group_name = azurerm_network_security_group.nsg[0].name
+}
+
+resource "azurerm_network_security_rule" "allow_cluster_join" {
+  count                       = var.create_network_resources ? 1 : 0
+  name                        = "${var.prefix}-allow-cluster-join"
+  priority                    = 110
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_ranges     = ["6443", "9345"]
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group.name
+  network_security_group_name = azurerm_network_security_group.nsg[0].name
+}
+
 resource "azurerm_network_security_rule" "allow_inbound" {
   for_each                    = var.create_network_resources ? toset(local.inbound_ports) : []
   name                        = "${var.prefix}-allow-inbound-${each.key}"
@@ -65,21 +95,6 @@ resource "azurerm_network_security_rule" "allow_inbound" {
   source_port_range           = "*"
   destination_port_range      = each.key
   source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = var.resource_group.name
-  network_security_group_name = azurerm_network_security_group.nsg[0].name
-}
-
-resource "azurerm_network_security_rule" "allow_admin_and_api_access" {
-  count                       = var.create_network_resources ? 1 : 0
-  name                        = "${var.prefix}-allow-admin-access"
-  priority                    = 100
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_ranges     = ["22", "6443", "6080"]
-  source_address_prefixes     = var.public_ip_source_addresses
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group.name
   network_security_group_name = azurerm_network_security_group.nsg[0].name

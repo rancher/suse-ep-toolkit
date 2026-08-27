@@ -67,9 +67,20 @@ resource "google_compute_firewall" "allow_admin_and_api_access" {
   network = google_compute_network.vpc[0].name
   allow {
     protocol = "tcp"
-    ports    = ["22", "6443", "6080"]
+    ports    = ["22", "6080"]
   }
   source_ranges = var.public_ip_source_addresses
+}
+
+resource "google_compute_firewall" "allow_cluster_join" {
+  count   = var.create_network_resources ? 1 : 0
+  name    = "${var.prefix}-allow-cluster-join"
+  network = google_compute_network.vpc[0].name
+  allow {
+    protocol = "tcp"
+    ports    = ["6443", "9345"]
+  }
+  source_ranges = ["0.0.0.0/0"]
 }
 
 resource "google_compute_address" "static_ip" {

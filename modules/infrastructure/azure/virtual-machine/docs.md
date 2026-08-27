@@ -24,7 +24,8 @@ No modules.
 | [azurerm_network_interface.nic](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_interface) | resource |
 | [azurerm_network_interface_security_group_association.nsg_assoc](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_interface_security_group_association) | resource |
 | [azurerm_network_security_group.nsg](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_group) | resource |
-| [azurerm_network_security_rule.allow_admin_and_api_access](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
+| [azurerm_network_security_rule.allow_admin_access](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
+| [azurerm_network_security_rule.allow_cluster_join](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
 | [azurerm_network_security_rule.allow_inbound](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
 | [azurerm_network_security_rule.allow_outbound](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
 | [azurerm_public_ip.vm_ip](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/public_ip) | resource |
