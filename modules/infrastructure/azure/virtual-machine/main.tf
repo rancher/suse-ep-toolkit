@@ -1,7 +1,7 @@
 locals {
   instance_os_type = "opensuse"
   ssh_username     = local.instance_os_type
-  inbound_ports    = ["22", "68", "443", "2379", "2380", "2381", "10010", "2112", "30000-32767", "3260", "5900", "6080", "6443", "6444", "8181", "8443", "8444", "8472", "9091", "9099", "9345", "9796", "10245", "10246-10249", "10250", "10251", "10252", "10256", "10257", "10258", "10259"]
+  inbound_ports    = ["68", "443", "2379", "2380", "2381", "10010", "2112", "30000-32767", "3260", "5900", "6444", "8181", "8443", "8444", "8472", "9091", "9099", "9345", "9796", "10245", "10246-10249", "10250", "10251", "10252", "10256", "10257", "10258", "10259"]
   common_tags = {
     Name       = "${var.prefix}"
     Workload   = "harvester"
@@ -58,13 +58,28 @@ resource "azurerm_network_security_group" "nsg" {
 resource "azurerm_network_security_rule" "allow_inbound" {
   for_each                    = var.create_network_resources ? toset(local.inbound_ports) : []
   name                        = "${var.prefix}-allow-inbound-${each.key}"
-  priority                    = 100 + index(local.inbound_ports, each.key)
+  priority                    = 200 + index(local.inbound_ports, each.key)
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "*"
   source_port_range           = "*"
   destination_port_range      = each.key
   source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group.name
+  network_security_group_name = azurerm_network_security_group.nsg[0].name
+}
+
+resource "azurerm_network_security_rule" "allow_admin_and_api_access" {
+  count                       = var.create_network_resources ? 1 : 0
+  name                        = "${var.prefix}-allow-admin-access"
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_ranges     = ["22", "6443", "6080"]
+  source_address_prefixes     = var.public_ip_source_addresses
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group.name
   network_security_group_name = azurerm_network_security_group.nsg[0].name

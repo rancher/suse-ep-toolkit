@@ -24,6 +24,7 @@ No modules.
 | [azurerm_network_interface.nic](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_interface) | resource |
 | [azurerm_network_interface_security_group_association.nsg_assoc](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_interface_security_group_association) | resource |
 | [azurerm_network_security_group.nsg](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_group) | resource |
+| [azurerm_network_security_rule.allow_admin_and_api_access](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
 | [azurerm_network_security_rule.allow_inbound](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
 | [azurerm_network_security_rule.allow_outbound](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
 | [azurerm_public_ip.vm_ip](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/public_ip) | resource |
@@ -49,6 +50,7 @@ No modules.
 | <a name="input_os_disk_size"></a> [os\_disk\_size](#input\_os\_disk\_size) | Specifies the size of the disk attached to each node, in GB. Default is '100'. | `string` | `"100"` | no |
 | <a name="input_os_disk_type"></a> [os\_disk\_type](#input\_os\_disk\_type) | Specifies the type of the disk attached to each node ('Standard\_LRS, 'StandardSSD\_LRS', 'Premium\_LRS' or 'UltraSSD\_LRS'). Default is 'StandardSSD\_LRS'. | `string` | `"StandardSSD_LRS"` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Specifies the prefix added to the names of all resources. Default is 'azure-tf'. | `string` | `"azure-tf"` | no |
+| <a name="input_public_ip_source_addresses"></a> [public\_ip\_source\_addresses](#input\_public\_ip\_source\_addresses) | Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level). | `list(string)` | `[]` | no |
 | <a name="input_region"></a> [region](#input\_region) | Specifies the Azure region used for all resources. Default is 'westeurope'. | `string` | `"westeurope"` | no |
 | <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | Specifies the resource group where resources will be allocated. Default is 'null'. | <pre>object({<br>    name     = string<br>    location = string<br>  })</pre> | `null` | no |
 | <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'. | `bool` | `true` | no |

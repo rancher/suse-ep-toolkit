@@ -1,12 +1,45 @@
+data "http" "my_public_ip_address" {
+  url = "https://ipv4.icanhazip.com/"
+}
+
 locals {
   certified_image_name = "opensuse-leap-16-0-harv-cloud-image.x86_64.vhd"
   certified_image_url  = "https://github.com/rancher/harvester-cloud/releases/download/latest/${local.certified_image_name}"
   certified_image_sum  = "b18a460739d97206032e4dc66ea0c24e3bab98463d41571b798aee84e97d7fb4f4cba9c2bf83af42ceab88dcadd42918bcfeea1bc330fb774544b246d4d1dc55"
+  current_public_ip    = chomp(data.http.my_public_ip_address.response_body)
   common_tags = {
     Name       = "${var.prefix}"
     Workload   = "harvester"
     Managed_by = "terraform"
   }
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.prefix}-rg"
+  location = var.region
+  tags     = local.common_tags
+}
+
+resource "azurerm_storage_account" "vhd" {
+  name                            = var.prefix
+  resource_group_name             = azurerm_resource_group.rg.name
+  location                        = azurerm_resource_group.rg.location
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  allow_nested_items_to_be_public = false
+  public_network_access_enabled   = true
+  network_rules {
+    default_action = "Deny"
+    ip_rules       = [local.current_public_ip]
+    bypass         = ["AzureServices"]
+  }
+  tags = local.common_tags
+}
+
+resource "azurerm_storage_container" "vhds" {
+  name                  = "vhds"
+  storage_account_id    = azurerm_storage_account.vhd.id
+  container_access_type = "private"
 }
 
 resource "null_resource" "download_image" {
@@ -39,28 +72,6 @@ resource "null_resource" "download_image" {
   }
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = "${var.prefix}-rg"
-  location = var.region
-  tags     = local.common_tags
-}
-
-resource "azurerm_storage_account" "vhd" {
-  name                            = var.prefix
-  resource_group_name             = azurerm_resource_group.rg.name
-  location                        = azurerm_resource_group.rg.location
-  account_tier                    = "Standard"
-  account_replication_type        = "LRS"
-  allow_nested_items_to_be_public = false
-  tags                            = local.common_tags
-}
-
-resource "azurerm_storage_container" "vhds" {
-  name                  = "vhds"
-  storage_account_id    = azurerm_storage_account.vhd.id
-  container_access_type = "private"
-}
-
 resource "azurerm_storage_blob" "ep_toolkit_vhd" {
   depends_on           = [null_resource.download_image]
   name                 = "harvestercloudcertified.vhd"
@@ -74,7 +85,6 @@ resource "null_resource" "wait_blob_accessible" {
   provisioner "local-exec" {
     command = <<EOT
       BLOB_URI=${azurerm_storage_blob.ep_toolkit_vhd.url}
-      ACCOUNT_KEY=$(az storage account keys list -g ${azurerm_resource_group.rg.name} -n ${azurerm_storage_account.vhd.name} --query '[0].value' -o tsv)
       for i in {1..20}; do
         az disk create --name temp-check-disk --resource-group ${azurerm_resource_group.rg.name} --source "$BLOB_URI" --location ${azurerm_resource_group.rg.location} --sku Standard_LRS > /dev/null 2>&1 && break || echo "Blob not ready, retry in 15s" && sleep 15
       done

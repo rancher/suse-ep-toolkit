@@ -3,6 +3,10 @@ resource "random_string" "k3s_token" {
   special = false
 }
 
+data "http" "my_public_ip_address" {
+  url = "https://ipv4.icanhazip.com/"
+}
+
 locals {
   ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
@@ -16,6 +20,8 @@ locals {
   server_nodes                      = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
   worker_count                      = var.instance_count > 3 ? var.instance_count - 3 : 0
   worker_nodes                      = [for i in range(1, local.worker_count + 1) : tostring(i)]
+  current_public_ip_cidr            = "${chomp(data.http.my_public_ip_address.response_body)}/32"
+  public_ip_source_addresses        = length(var.public_ip_source_addresses) > 0 ? var.public_ip_source_addresses : [local.current_public_ip_cidr]
   longhorn_host                     = "longhorn.${module.k3s_first_server.instances_public_ip}.sslip.io"
   rancher_host                      = "rancher.${module.k3s_first_server.instances_public_ip}.sslip.io"
   suse_observability_host           = "observability.${module.k3s_first_server.instances_public_ip}.sslip.io"
@@ -43,18 +49,19 @@ module "k3s_first" {
 }
 
 module "k3s_first_server" {
-  source                   = "../../../modules/infrastructure/azure/virtual-machine"
-  prefix                   = "${var.prefix}-server-1"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
-  resource_group           = module.os_image.resource_group
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = true
-  user_data                = module.k3s_first.user_data
+  source                     = "../../../modules/infrastructure/azure/virtual-machine"
+  prefix                     = "${var.prefix}-server-1"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = module.os_image.image_id
+  resource_group             = module.os_image.resource_group
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = true
+  user_data                  = module.k3s_first.user_data
 }
 
 module "k3s_additional_servers" {
@@ -67,21 +74,22 @@ module "k3s_additional_servers" {
 }
 
 module "k3s_servers" {
-  for_each                 = toset(local.server_nodes)
-  source                   = "../../../modules/infrastructure/azure/virtual-machine"
-  prefix                   = "${var.prefix}-server-${each.value}"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
-  resource_group           = module.os_image.resource_group
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  subnet_id                = module.k3s_first_server.azure_subnet
-  nsg_id                   = module.k3s_first_server.azure_nsg
-  user_data                = module.k3s_additional_servers.user_data
+  for_each                   = toset(local.server_nodes)
+  source                     = "../../../modules/infrastructure/azure/virtual-machine"
+  prefix                     = "${var.prefix}-server-${each.value}"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = module.os_image.image_id
+  resource_group             = module.os_image.resource_group
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  subnet_id                  = module.k3s_first_server.azure_subnet
+  nsg_id                     = module.k3s_first_server.azure_nsg
+  user_data                  = module.k3s_additional_servers.user_data
 }
 
 module "k3s_additional_workers" {
@@ -94,21 +102,22 @@ module "k3s_additional_workers" {
 }
 
 module "k3s_workers" {
-  for_each                 = toset(local.worker_nodes)
-  source                   = "../../../modules/infrastructure/azure/virtual-machine"
-  prefix                   = "${var.prefix}-worker-${each.value}"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
-  resource_group           = module.os_image.resource_group
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  subnet_id                = module.k3s_first_server.azure_subnet
-  nsg_id                   = module.k3s_first_server.azure_nsg
-  user_data                = module.k3s_additional_workers.user_data
+  for_each                   = toset(local.worker_nodes)
+  source                     = "../../../modules/infrastructure/azure/virtual-machine"
+  prefix                     = "${var.prefix}-worker-${each.value}"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = module.os_image.image_id
+  resource_group             = module.os_image.resource_group
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  subnet_id                  = module.k3s_first_server.azure_subnet
+  nsg_id                     = module.k3s_first_server.azure_nsg
+  user_data                  = module.k3s_additional_workers.user_data
 }
 
 data "local_file" "ssh_private_key" {
@@ -148,7 +157,7 @@ provider "helm" {
 
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [module.k3s_first_server]
+  depends_on              = [module.k3s_first_server, module.k3s_additional_servers, module.k3s_additional_workers]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version

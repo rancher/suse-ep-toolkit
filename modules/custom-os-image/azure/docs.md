@@ -9,6 +9,7 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.79.0 |
+| <a name="provider_http"></a> [http](#provider\_http) | n/a |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
@@ -27,6 +28,7 @@ No modules.
 | [null_resource.download_image](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.removing_image](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.wait_blob_accessible](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [http_http.my_public_ip_address](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
 
 ## Inputs
 
