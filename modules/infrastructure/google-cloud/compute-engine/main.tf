@@ -1,7 +1,7 @@
 locals {
   instance_os_type = "opensuse"
   ssh_username     = local.instance_os_type
-  tcp_ports        = ["22", "68", "443", "2379", "2380", "2381", "10010", "2112", "30000-32767", "3260", "5900", "6080", "6443", "6444", "8181", "8443", "8444", "9091", "9099", "9345", "9796", "10245", "10246-10249", "10250", "10251", "10252", "10256", "10257", "10258", "10259"]
+  tcp_ports        = ["68", "443", "2379", "2380", "2381", "10010", "2112", "30000-32767", "3260", "5900", "6444", "8181", "8443", "8444", "9091", "9099", "9345", "9796", "10245", "10246-10249", "10250", "10251", "10252", "10256", "10257", "10258", "10259"]
   udp_ports        = ["8472", "68"]
   target_zone      = var.zone != null ? var.zone : random_shuffle.random_zone[0].result[0]
   common_labels = {
@@ -59,6 +59,17 @@ resource "google_compute_firewall" "allow_inbound" {
     ports    = local.udp_ports
   }
   source_ranges = ["0.0.0.0/0"]
+}
+
+resource "google_compute_firewall" "allow_admin_and_api_access" {
+  count   = var.create_network_resources ? 1 : 0
+  name    = "${var.prefix}-allow-admin-access"
+  network = google_compute_network.vpc[0].name
+  allow {
+    protocol = "tcp"
+    ports    = ["22", "6443", "6080"]
+  }
+  source_ranges = var.public_ip_source_addresses
 }
 
 resource "google_compute_address" "static_ip" {
