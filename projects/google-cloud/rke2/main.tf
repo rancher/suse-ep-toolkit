@@ -3,6 +3,12 @@ resource "random_string" "rke2_token" {
   special = false
 }
 
+data "google_compute_image" "custom_image" {
+  count   = var.ami_id != "" ? 1 : 0
+  name    = var.ami_id
+  project = "opensuse-cloud" # gcloud compute images list --project=opensuse-cloud --no-standard-images
+}
+
 locals {
   ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
@@ -10,7 +16,7 @@ locals {
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
   volume_device                     = "/dev/sdb"
   instance_type                     = var.instance_type
-  ami_id                            = var.ami_id != "" ? var.ami_id : module.os_image[0].image_id
+  ami_id                            = var.ami_id != "" ? data.google_compute_image.custom_image[0].self_link : module.os_image[0].image_id
   gcp_prep_script                   = <<-EOF
     #!/bin/bash
     set -e
