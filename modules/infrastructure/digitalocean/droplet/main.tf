@@ -48,15 +48,13 @@ resource "digitalocean_firewall" "main_firewall" {
     source_addresses = var.public_ip_source_addresses
   }
   inbound_rule {
-    protocol   = "tcp"
-    port_range = "6443"
-    #    source_addresses = ["0.0.0.0/0", "::/0"]
+    protocol         = "tcp"
+    port_range       = "6443"
     source_addresses = concat(var.public_ip_source_addresses, digitalocean_droplet.nodes[*].ipv4_address)
   }
   inbound_rule {
-    protocol   = "tcp"
-    port_range = "9345"
-    #    source_addresses = ["0.0.0.0/0", "::/0"]
+    protocol         = "tcp"
+    port_range       = "9345"
     source_addresses = concat(var.public_ip_source_addresses, digitalocean_droplet.nodes[*].ipv4_address)
   }
   dynamic "inbound_rule" {
