@@ -117,7 +117,7 @@ If you want to use an Azure Marketplace image instead of building a custom one, 
 
 ```hcl
 image_publisher = "SUSE"
-image_offer     = "opensuse-leap-15-5"
+image_offer     = "opensuse-leap-15-6"
 image_sku       = "gen2"
 image_version   = "latest"
 ```

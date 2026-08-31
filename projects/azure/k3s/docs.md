@@ -14,9 +14,9 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.79.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | n/a |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.3.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.9.0 |
 | <a name="provider_ssh"></a> [ssh](#provider\_ssh) | 2.7.0 |
 
 ## Modules
@@ -51,7 +51,6 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | Specifies the ID of the custom OS image used to provision all K3s cluster Azure Virtual Machines. Default is empty. | `string` | `""` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'. | `number` | `350` | no |
 | <a name="input_image_offer"></a> [image\_offer](#input\_image\_offer) | Specifies the offer of the Marketplace image. If null, the custom OS image will be used. Default is 'null'. | `string` | `null` | no |
 | <a name="input_image_publisher"></a> [image\_publisher](#input\_image\_publisher) | Specifies the publisher of the Marketplace image. If null, the custom OS image will be used. Default is 'null'. | `string` | `null` | no |

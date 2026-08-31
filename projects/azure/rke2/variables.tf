@@ -113,12 +113,6 @@ variable "instance_type" {
   }
 }
 
-variable "ami_id" {
-  description = "Specifies the ID of the custom OS image used to provision all RKE2 cluster Azure Virtual Machines. Default is empty."
-  type        = string
-  default     = ""
-}
-
 variable "image_publisher" {
   description = "Specifies the publisher of the Marketplace image used when ami_id is not provided. Default is 'null'."
   type        = string

@@ -65,16 +65,9 @@ variable "instance_type" {
 }
 
 variable "ami_id" {
-  description = "Specifies the AWS AMI ID used to provision the VMs. If left empty, our custom OS image will be used. If specified, must be 'ami-081e3132bf572c01f' (openSUSE-Leap-16-0 x86_64). Default is empty."
+  description = "Specifies the AWS AMI ID used to provision the VMs. If left empty, our custom OS image will be used. If specified, must be an OpenSUSE leap 15-6 or 16-0 AMI. Default is empty."
   type        = string
   default     = ""
-  validation {
-    condition = (
-      var.ami_id == "" ||
-      var.ami_id == "ami-081e3132bf572c01f"
-    )
-    error_message = "When specified, ami_id must be 'ami-081e3132bf572c01f' (openSUSE-Leap-16-0-v20260629-hvm-ssd-x86_64)."
-  }
 }
 
 variable "data_disk_size" {

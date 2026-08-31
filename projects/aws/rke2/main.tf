@@ -3,6 +3,19 @@ resource "random_string" "rke2_token" {
   special = false
 }
 
+data "aws_ami" "ami_validation" {
+  count  = var.ami_id != "" ? 1 : 0
+  owners = ["679593333241", "aws-marketplace", "amazon", "self"]
+  filter {
+    name   = "image-id"
+    values = [var.ami_id]
+  }
+  filter {
+    name   = "name"
+    values = ["*openSUSE*15*6*", "*openSUSE*16*0*"]
+  }
+}
+
 locals {
   ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"

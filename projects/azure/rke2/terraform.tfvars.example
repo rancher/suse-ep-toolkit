@@ -16,9 +16,6 @@ spot_instance = true
 ## -- Specifies the name of the Virtual Machines instance type.
 instance_type = "Standard_D8s_v5"
 
-## -- Specifies the ID of the custom OS image used to provision all RKE2 cluster Azure Virtual Machines.
-ami_id = ""
-
 ## -- Specifies the publisher of the Marketplace image used when ami_id is not provided.
 image_publisher = "SUSE"
 
