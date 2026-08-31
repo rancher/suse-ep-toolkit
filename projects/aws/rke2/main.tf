@@ -53,6 +53,7 @@ module "identity" {
 }
 
 module "os_image" {
+  count  = var.ami_id == "" ? 1 : 0
   source = "../../../modules/custom-os-image/aws"
   prefix = var.prefix
 }

@@ -178,36 +178,9 @@ provider "helm" {
   }
 }
 
-resource "null_resource" "install_prerequisites" {
-  count      = var.ami_id != "" ? var.instance_count : 0
-  depends_on = [module.k3s_first_server, module.k3s_servers, module.k3s_workers, ssh_resource.retrieve_kubeconfig]
-  connection {
-    type        = "ssh"
-    user        = local.ssh_username
-    private_key = data.local_file.ssh_private_key.content
-    host = element(
-      concat(
-        module.k3s_first_server.instances_public_ip,
-        flatten([for m in module.k3s_servers : m.instances_public_ip]),
-        flatten([for m in module.k3s_workers : m.instances_public_ip])
-      ),
-      count.index
-    )
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "sleep 15",
-      "while sudo fuser /var/run/zypp.pid >/dev/null 2>&1; do echo 'Waiting for initial zypper lock...'; sleep 3; done",
-      "sudo rm -f /var/run/zypp.pid /var/lib/Zypper/lock",
-      "sudo zypper --non-interactive install -y curl tar which python3 open-iscsi nfs-client cryptsetup device-mapper util-linux || true",
-      "sudo systemctl enable --now iscsid || true"
-    ]
-  }
-}
-
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [local_file.kubeconfig_yaml, module.k3s_first_server, null_resource.install_prerequisites]
+  depends_on              = [local_file.kubeconfig_yaml, module.k3s_first_server]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version
