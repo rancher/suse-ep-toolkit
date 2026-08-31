@@ -152,7 +152,8 @@ module "k3s_workers" {
   create_network_resources = false
   subnet_id                = module.k3s_first_server.azure_subnet
   nsg_id                   = module.k3s_first_server.azure_nsg
-  user_data                = local.worker_user_data}
+  user_data                = local.worker_user_data
+}
 
 data "local_file" "ssh_private_key" {
   depends_on = [module.identity]
