@@ -73,23 +73,23 @@ module "rke2_first" {
 }
 
 module "rke2_first_server" {
-  source                   = "../../../modules/infrastructure/azure/virtual-machine"
-  prefix                   = "${var.prefix}-server-1"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
+  source                     = "../../../modules/infrastructure/azure/virtual-machine"
+  prefix                     = "${var.prefix}-server-1"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
-  ami_id                   = local.ami_id
-  image_publisher          = var.image_publisher
-  image_offer              = var.image_offer
-  image_sku                = var.image_sku
-  image_version            = var.image_version
-  resource_group           = local.resource_group
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = true
-  user_data                = local.first_server_user_data
+  ami_id                     = local.ami_id
+  image_publisher            = var.image_publisher
+  image_offer                = var.image_offer
+  image_sku                  = var.image_sku
+  image_version              = var.image_version
+  resource_group             = local.resource_group
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = true
+  user_data                  = local.first_server_user_data
 }
 
 module "rke2_additional_servers" {
@@ -103,26 +103,26 @@ module "rke2_additional_servers" {
 }
 
 module "rke2_servers" {
-  for_each                 = toset(local.server_nodes)
-  source                   = "../../../modules/infrastructure/azure/virtual-machine"
-  prefix                   = "${var.prefix}-server-${each.value}"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
+  for_each                   = toset(local.server_nodes)
+  source                     = "../../../modules/infrastructure/azure/virtual-machine"
+  prefix                     = "${var.prefix}-server-${each.value}"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
-  ami_id                   = local.ami_id
-  image_publisher          = var.image_publisher
-  image_offer              = var.image_offer
-  image_sku                = var.image_sku
-  image_version            = var.image_version
-  resource_group           = local.resource_group
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  subnet_id                = module.rke2_first_server.azure_subnet
-  nsg_id                   = module.rke2_first_server.azure_nsg
-  user_data                = local.server_user_data
+  ami_id                     = local.ami_id
+  image_publisher            = var.image_publisher
+  image_offer                = var.image_offer
+  image_sku                  = var.image_sku
+  image_version              = var.image_version
+  resource_group             = local.resource_group
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  subnet_id                  = module.rke2_first_server.azure_subnet
+  nsg_id                     = module.rke2_first_server.azure_nsg
+  user_data                  = local.server_user_data
 }
 
 module "rke2_additional_workers" {
@@ -136,26 +136,26 @@ module "rke2_additional_workers" {
 }
 
 module "rke2_workers" {
-  for_each                 = toset(local.worker_nodes)
-  source                   = "../../../modules/infrastructure/azure/virtual-machine"
-  prefix                   = "${var.prefix}-worker-${each.value}"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
+  for_each                   = toset(local.worker_nodes)
+  source                     = "../../../modules/infrastructure/azure/virtual-machine"
+  prefix                     = "${var.prefix}-worker-${each.value}"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
-  ami_id                   = local.ami_id
-  image_publisher          = var.image_publisher
-  image_offer              = var.image_offer
-  image_sku                = var.image_sku
-  image_version            = var.image_version
-  resource_group           = local.resource_group
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  subnet_id                = module.rke2_first_server.azure_subnet
-  nsg_id                   = module.rke2_first_server.azure_nsg
-  user_data                = local.worker_user_data
+  ami_id                     = local.ami_id
+  image_publisher            = var.image_publisher
+  image_offer                = var.image_offer
+  image_sku                  = var.image_sku
+  image_version              = var.image_version
+  resource_group             = local.resource_group
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  subnet_id                  = module.rke2_first_server.azure_subnet
+  nsg_id                     = module.rke2_first_server.azure_nsg
+  user_data                  = local.worker_user_data
 }
 
 data "local_file" "ssh_private_key" {
