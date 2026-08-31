@@ -52,9 +52,22 @@ variable "spot_instance" {
 }
 
 variable "instance_type" {
-  description = "Specifies the name of the AWS EC2 instance type. Default is 'm8i.4xlarge'."
+  description = "Specifies the name of the AWS EC2 instance type. Default is 'm8i.4xlarge', but must be 'm6a.4xlarge' when a marketplace ami_id is provided."
   type        = string
   default     = "m8i.4xlarge"
+  validation {
+    condition = (
+      var.ami_id == "" ||
+      var.instance_type == "m6a.4xlarge"
+    )
+    error_message = "When ami_id is specified (using a Marketplace AMI), instance_type must be set to 'm6a.4xlarge'."
+  }
+}
+
+variable "ami_id" {
+  description = "Specifies the AWS AMI ID used to provision the VMs. If left empty, our custom OS image will be used. If specified, must be an OpenSUSE leap 15-6 or 16-0 AMI. Default is empty."
+  type        = string
+  default     = ""
 }
 
 variable "data_disk_size" {

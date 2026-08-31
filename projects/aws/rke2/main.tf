@@ -3,13 +3,30 @@ resource "random_string" "rke2_token" {
   special = false
 }
 
+data "aws_ami" "ami_validation" {
+  count  = var.ami_id != "" ? 1 : 0
+  owners = ["679593333241", "aws-marketplace", "amazon", "self"]
+  filter {
+    name   = "image-id"
+    values = [var.ami_id]
+  }
+  filter {
+    name   = "name"
+    values = ["*openSUSE*15*6*", "*openSUSE*16*0*"]
+  }
+}
+
 locals {
   ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
-  ssh_username                      = "opensuse"
+  ssh_username                      = var.ami_id != "" ? "ec2-user" : "opensuse"
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
   volume_device                     = "/dev/nvme1n1"
   instance_type                     = var.instance_type
+  ami_id                            = var.ami_id != "" ? var.ami_id : module.os_image[0].image_id
+  first_server_user_data            = module.rke2_first.user_data
+  server_user_data                  = module.rke2_additional_servers.user_data
+  worker_user_data                  = module.rke2_additional_workers.user_data
   rke2_token                        = random_string.rke2_token.result
   first_server_url                  = "https://${module.rke2_first_server.instances_public_ip}:9345"
   server_count                      = var.instance_count < 3 ? var.instance_count : 3
@@ -30,6 +47,7 @@ module "identity" {
 }
 
 module "os_image" {
+  count  = var.ami_id == "" ? 1 : 0
   source = "../../../modules/custom-os-image/aws"
   prefix = var.prefix
 }
@@ -51,11 +69,11 @@ module "rke2_first_server" {
   ssh_key_content          = data.local_file.ssh_private_key.content
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
+  ami_id                   = local.ami_id
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = true
-  user_data                = module.rke2_first.user_data
+  user_data                = local.first_server_user_data
 }
 
 module "rke2_additional_servers" {
@@ -77,13 +95,13 @@ module "rke2_servers" {
   ssh_key_content          = data.local_file.ssh_private_key.content
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
+  ami_id                   = local.ami_id
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = false
   security_group_id        = module.rke2_first_server.aws_security_group
   subnet_id                = module.rke2_first_server.aws_subnet
-  user_data                = module.rke2_additional_servers.user_data
+  user_data                = local.server_user_data
 }
 
 module "rke2_additional_workers" {
@@ -105,13 +123,13 @@ module "rke2_workers" {
   ssh_key_content          = data.local_file.ssh_private_key.content
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
+  ami_id                   = local.ami_id
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = false
   security_group_id        = module.rke2_first_server.aws_security_group
   subnet_id                = module.rke2_first_server.aws_subnet
-  user_data                = module.rke2_additional_workers.user_data
+  user_data                = local.worker_user_data
 }
 
 data "local_file" "ssh_private_key" {
@@ -149,13 +167,41 @@ provider "helm" {
   }
 }
 
+resource "null_resource" "install_prerequisites" {
+  count      = var.ami_id != "" ? var.instance_count : 0
+  depends_on = [module.rke2_first_server, module.rke2_servers, module.rke2_workers]
+  connection {
+    type        = "ssh"
+    user        = local.ssh_username
+    private_key = data.local_file.ssh_private_key.content
+    host = element(
+      concat(
+        [module.rke2_first_server.instances_public_ip],
+        flatten([for m in module.rke2_servers : m.instances_public_ip]),
+        flatten([for m in module.rke2_workers : m.instances_public_ip])
+      ),
+      count.index
+    )
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 15",
+      "while sudo fuser /var/run/zypp.pid >/dev/null 2>&1; do echo 'Waiting for initial zypper lock...'; sleep 3; done",
+      "sudo rm -f /var/run/zypp.pid /var/lib/Zypper/lock",
+      "sudo zypper --non-interactive install -y curl tar which python3 open-iscsi nfs-client cryptsetup device-mapper util-linux || true",
+      "sudo systemctl enable --now iscsid || true"
+    ]
+  }
+}
+
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [module.rke2_first_server]
+  depends_on              = [module.rke2_first_server, null_resource.install_prerequisites]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version
   longhorn_host           = local.longhorn_host
+  ssh_username            = local.ssh_username
   ssh_private_key         = data.local_file.ssh_private_key.content
   node_ips = concat(
     [module.rke2_first_server.instances_public_ip],

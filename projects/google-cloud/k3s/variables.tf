@@ -82,6 +82,19 @@ variable "instance_type" {
   default     = "n2-standard-8"
 }
 
+variable "ami_id" {
+  description = "Specifies the image family, self_link, or name of the custom OS image. Must start with 'opensuse-leap-16' and end with 'x86-64'. Default is empty."
+  type        = string
+  default     = ""
+  validation {
+    condition = (
+      var.ami_id == "" ||
+      can(regex("^opensuse-leap-16.*x86-64$", var.ami_id))
+    )
+    error_message = "When specified, ami_id must start with 'opensuse-leap-16' and end with 'x86-64' (e.g. opensuse-leap-16-0-v20260629-x86-64)."
+  }
+}
+
 variable "data_disk_size" {
   description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'."
   type        = number

@@ -3,6 +3,12 @@ resource "random_string" "rke2_token" {
   special = false
 }
 
+data "google_compute_image" "custom_image" {
+  count   = var.ami_id != "" ? 1 : 0
+  name    = var.ami_id
+  project = "opensuse-cloud" # gcloud compute images list --project=opensuse-cloud --no-standard-images
+}
+
 locals {
   ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
@@ -10,6 +16,21 @@ locals {
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
   volume_device                     = "/dev/sdb"
   instance_type                     = var.instance_type
+  ami_id                            = var.ami_id != "" ? data.google_compute_image.custom_image[0].self_link : module.os_image[0].image_id
+  gcp_prep_script                   = <<-EOF
+    #!/bin/bash
+    set -e
+    zypper --non-interactive install -y curl tar which python3 cloud-init || true
+    systemctl enable --now cloud-init.service || true
+    cloud-init init --local || true
+    cloud-init init || true
+    cloud-init modules --mode config || true
+    cloud-init modules --mode final || true
+  EOF
+  startup_script                    = var.ami_id != "" ? local.gcp_prep_script : null
+  first_server_user_data            = module.rke2_first.user_data
+  server_user_data                  = module.rke2_additional_servers.user_data
+  worker_user_data                  = module.rke2_additional_workers.user_data
   rke2_token                        = random_string.rke2_token.result
   first_server_url                  = "https://${module.rke2_first_server.instances_public_ip[0]}:9345"
   server_count                      = var.instance_count < 3 ? var.instance_count : 3
@@ -30,6 +51,7 @@ module "identity" {
 }
 
 module "os_image" {
+  count      = var.ami_id == "" ? 1 : 0
   source     = "../../../modules/custom-os-image/google-cloud"
   prefix     = var.prefix
   region     = var.region
@@ -52,11 +74,12 @@ module "rke2_first_server" {
   ssh_public_key_content   = module.identity.ssh_public_key
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
+  ami_id                   = local.ami_id
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = true
-  user_data                = module.rke2_first.user_data
+  startup_script           = local.startup_script
+  user_data                = local.first_server_user_data
 }
 
 module "rke2_additional_servers" {
@@ -77,13 +100,14 @@ module "rke2_servers" {
   ssh_public_key_content   = module.identity.ssh_public_key
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
+  ami_id                   = local.ami_id
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = false
   vpc_id                   = module.rke2_first_server.gcp_vpc
   subnet_id                = module.rke2_first_server.gcp_subnet
-  user_data                = module.rke2_additional_servers.user_data
+  startup_script           = local.startup_script
+  user_data                = local.server_user_data
 }
 
 module "rke2_additional_workers" {
@@ -104,13 +128,14 @@ module "rke2_workers" {
   ssh_public_key_content   = module.identity.ssh_public_key
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
+  ami_id                   = local.ami_id
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = false
   vpc_id                   = module.rke2_first_server.gcp_vpc
   subnet_id                = module.rke2_first_server.gcp_subnet
-  user_data                = module.rke2_additional_workers.user_data
+  startup_script           = local.startup_script
+  user_data                = local.worker_user_data
 }
 
 data "local_file" "ssh_private_key" {
@@ -125,8 +150,15 @@ resource "ssh_resource" "retrieve_kubeconfig" {
   ]
   host = module.rke2_first_server.instances_public_ip[0]
   commands = [
-    "timeout=600; while [ ! -f /etc/rancher/rke2/rke2.yaml ]; do sleep 5; done",
-    "sudo cat /etc/rancher/rke2/rke2.yaml | sed -e 's/127.0.0.1/${module.rke2_first_server.instances_public_ip[0]}/g' -e '/certificate-authority-data:/c\\    insecure-skip-tls-verify: true'"
+    <<-EOF
+      while [ ! -s /etc/rancher/rke2/rke2.yaml ]; do
+        sleep 5
+      done
+      while ! sudo /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes >/dev/null 2>&1; do
+        sleep 5
+      done
+      sudo cat /etc/rancher/rke2/rke2.yaml | sed -e 's/127.0.0.1/${module.rke2_first_server.instances_public_ip[0]}/g' -e 's/certificate-authority-data:.*/insecure-skip-tls-verify: true/'
+    EOF
   ]
   user        = local.ssh_username
   private_key = data.local_file.ssh_private_key.content
@@ -150,7 +182,7 @@ provider "helm" {
 
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [module.rke2_first_server, module.rke2_servers, module.rke2_workers]
+  depends_on              = [local_file.kubeconfig_yaml, module.rke2_first_server, module.rke2_servers, module.rke2_workers]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version

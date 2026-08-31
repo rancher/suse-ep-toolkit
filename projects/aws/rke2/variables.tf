@@ -55,6 +55,19 @@ variable "instance_type" {
   description = "Specifies the name of the AWS EC2 instance type. Default is 'm8i.4xlarge'."
   type        = string
   default     = "m8i.4xlarge"
+  validation {
+    condition = (
+      var.ami_id == "" ||
+      var.instance_type != "m8i.4xlarge"
+    )
+    error_message = "When a custom ami_id is specified, instance_type must be changed to an AMI-compatible size such as 'm6a.4xlarge'."
+  }
+}
+
+variable "ami_id" {
+  description = "Specifies the AWS AMI ID used to provision the VMs. If left empty, our custom OS image will be used. If specified, must be an OpenSUSE leap 15-6 or 16-0 AMI. Default is empty."
+  type        = string
+  default     = ""
 }
 
 variable "data_disk_size" {

@@ -10,6 +10,12 @@ locals {
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
   volume_device                     = "/dev/sdb"
   instance_type                     = var.instance_type
+  use_marketplace_image             = var.image_publisher != null && var.image_offer != null && var.image_sku != null && var.image_version != null
+  ami_id                            = local.use_marketplace_image ? null : module.os_image[0].image_id
+  resource_group                    = local.use_marketplace_image ? azurerm_resource_group.rg[0] : module.os_image[0].resource_group
+  first_server_user_data            = module.rke2_first.user_data
+  server_user_data                  = module.rke2_additional_servers.user_data
+  worker_user_data                  = module.rke2_additional_workers.user_data
   rke2_token                        = random_string.rke2_token.result
   first_server_url                  = "https://${module.rke2_first_server.instances_public_ip}:9345"
   server_count                      = var.instance_count < 3 ? var.instance_count : 3
@@ -24,14 +30,31 @@ locals {
   neuvector_host                    = "neuvector.${module.rke2_first_server.instances_public_ip}.sslip.io"
 }
 
+check "marketplace_image_variables" {
+  assert {
+    condition = (
+      (var.image_publisher == null && var.image_offer == null && var.image_sku == null && var.image_version == null) ||
+      (var.image_publisher != null && var.image_offer != null && var.image_sku != null && var.image_version != null)
+    )
+    error_message = "All marketplace image variables (image_publisher, image_offer, image_sku, image_version) must either be all specified or all left as null."
+  }
+}
+
 module "identity" {
   source = "../../../modules/identity/ssh/azure"
   prefix = var.prefix
 }
 
 module "os_image" {
+  count  = local.use_marketplace_image ? 0 : 1
   source = "../../../modules/custom-os-image/azure"
   prefix = var.prefix
+}
+
+resource "azurerm_resource_group" "rg" {
+  count    = local.use_marketplace_image ? 1 : 0
+  name     = "${var.prefix}-rg"
+  location = var.region
 }
 
 module "rke2_first" {
@@ -50,12 +73,16 @@ module "rke2_first_server" {
   ssh_public_key_content   = module.identity.ssh_public_key
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
-  resource_group           = module.os_image.resource_group
+  ami_id                   = local.ami_id
+  image_publisher          = var.image_publisher
+  image_offer              = var.image_offer
+  image_sku                = var.image_sku
+  image_version            = var.image_version
+  resource_group           = local.resource_group
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = true
-  user_data                = module.rke2_first.user_data
+  user_data                = local.first_server_user_data
 }
 
 module "rke2_additional_servers" {
@@ -76,14 +103,18 @@ module "rke2_servers" {
   ssh_public_key_content   = module.identity.ssh_public_key
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
-  resource_group           = module.os_image.resource_group
+  ami_id                   = local.ami_id
+  image_publisher          = var.image_publisher
+  image_offer              = var.image_offer
+  image_sku                = var.image_sku
+  image_version            = var.image_version
+  resource_group           = local.resource_group
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = false
   subnet_id                = module.rke2_first_server.azure_subnet
   nsg_id                   = module.rke2_first_server.azure_nsg
-  user_data                = module.rke2_additional_servers.user_data
+  user_data                = local.server_user_data
 }
 
 module "rke2_additional_workers" {
@@ -104,14 +135,18 @@ module "rke2_workers" {
   ssh_public_key_content   = module.identity.ssh_public_key
   instance_type            = local.instance_type
   data_disk_size           = var.data_disk_size
-  ami_id                   = module.os_image.image_id
-  resource_group           = module.os_image.resource_group
+  ami_id                   = local.ami_id
+  image_publisher          = var.image_publisher
+  image_offer              = var.image_offer
+  image_sku                = var.image_sku
+  image_version            = var.image_version
+  resource_group           = local.resource_group
   instance_count           = 1
   spot_instance            = var.spot_instance
   create_network_resources = false
   subnet_id                = module.rke2_first_server.azure_subnet
   nsg_id                   = module.rke2_first_server.azure_nsg
-  user_data                = module.rke2_additional_workers.user_data
+  user_data                = local.worker_user_data
 }
 
 data "local_file" "ssh_private_key" {
@@ -149,13 +184,41 @@ provider "helm" {
   }
 }
 
+resource "null_resource" "install_prerequisites" {
+  count      = local.use_marketplace_image ? var.instance_count : 0
+  depends_on = [module.rke2_first_server, module.rke2_servers, module.rke2_workers]
+  connection {
+    type        = "ssh"
+    user        = local.ssh_username
+    private_key = data.local_file.ssh_private_key.content
+    host = element(
+      concat(
+        [module.rke2_first_server.instances_public_ip],
+        flatten([for m in module.rke2_servers : m.instances_public_ip]),
+        flatten([for m in module.rke2_workers : m.instances_public_ip])
+      ),
+      count.index
+    )
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 15",
+      "while sudo fuser /var/run/zypp.pid >/dev/null 2>&1; do echo 'Waiting for initial zypper lock...'; sleep 3; done",
+      "sudo rm -f /var/run/zypp.pid /var/lib/Zypper/lock",
+      "sudo zypper --non-interactive install -y curl tar which python3 open-iscsi nfs-client cryptsetup device-mapper util-linux || true",
+      "sudo systemctl enable --now iscsid || true"
+    ]
+  }
+}
+
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [module.rke2_first_server, module.rke2_additional_servers, module.rke2_additional_workers]
+  depends_on              = [module.rke2_first_server, null_resource.install_prerequisites]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version
   longhorn_host           = local.longhorn_host
+  ssh_username            = local.ssh_username
   ssh_private_key         = data.local_file.ssh_private_key.content
   node_ips = concat(
     [module.rke2_first_server.instances_public_ip],

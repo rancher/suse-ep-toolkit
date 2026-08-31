@@ -45,6 +45,7 @@ No modules.
 | <a name="input_region"></a> [region](#input\_region) | Specifies the GCP region used for all resources. Default is 'europe-west1'. | `string` | `"europe-west1"` | no |
 | <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'. | `bool` | `true` | no |
 | <a name="input_ssh_public_key_content"></a> [ssh\_public\_key\_content](#input\_ssh\_public\_key\_content) | Specifies the public SSH key content. Default is 'null'. | `string` | `null` | no |
+| <a name="input_startup_script"></a> [startup\_script](#input\_startup\_script) | Specifies a Bash script executed by Google Guest Agent during the VM boot phase (useful for pre-installing OS packages). Default is 'null'. | `string` | `null` | no |
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | Specifies the name or self\_link of an existing GCP Subnet where the instances will be deployed. Default is 'null'. | `string` | `null` | no |
 | <a name="input_user_data"></a> [user\_data](#input\_user\_data) | Specifies cloud-init user\_data used to bootstrap the GCP Compute Instance. Default is 'null'. | `string` | `null` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | Specifies the name or self\_link of an existing VPC network. Default is 'null'. | `string` | `null` | no |

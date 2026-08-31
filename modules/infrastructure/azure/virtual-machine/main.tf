@@ -124,9 +124,18 @@ resource "azurerm_linux_virtual_machine" "vm" {
     storage_account_type = var.os_disk_type
     disk_size_gb         = var.os_disk_size
   }
-  source_image_id = var.ami_id
-  custom_data     = base64encode(var.user_data)
-  tags            = local.common_tags
+  source_image_id = (var.ami_id != null && var.ami_id != "") ? var.ami_id : null
+  dynamic "source_image_reference" {
+    for_each = (var.ami_id == null || var.ami_id == "") && (var.image_publisher != null && var.image_offer != null && var.image_sku != null && var.image_version != null) ? [1] : []
+    content {
+      publisher = var.image_publisher
+      offer     = var.image_offer
+      sku       = var.image_sku
+      version   = var.image_version
+    }
+  }
+  custom_data = base64encode(var.user_data)
+  tags        = local.common_tags
 }
 
 resource "azurerm_managed_disk" "data_disk" {

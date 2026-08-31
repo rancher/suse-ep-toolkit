@@ -117,12 +117,14 @@ resource "aws_security_group" "sg" {
 }
 
 resource "aws_eip" "static_ip" {
+  count  = var.create_network_resources ? 1 : 0
   domain = "vpc"
 }
 
 resource "aws_eip_association" "eip_assoc" {
+  count         = var.create_network_resources ? 1 : 0
   instance_id   = aws_instance.vm[0].id
-  allocation_id = aws_eip.static_ip.id
+  allocation_id = aws_eip.static_ip[0].id
 }
 
 resource "aws_instance" "vm" {
@@ -131,15 +133,15 @@ resource "aws_instance" "vm" {
   instance_type               = var.instance_type
   subnet_id                   = var.create_network_resources ? aws_subnet.public[0].id : var.subnet_id
   vpc_security_group_ids      = var.create_network_resources ? [aws_security_group.sg[0].id] : [var.security_group_id]
-  associate_public_ip_address = false
+  associate_public_ip_address = var.create_network_resources ? false : true
   key_name                    = var.ssh_key_name
-  user_data                   = var.user_data
+  user_data                   = var.startup_script != null ? "${var.startup_script}\n${var.user_data}" : var.user_data
   tags                        = local.common_tags
   root_block_device {
     volume_size = 100
     volume_type = "gp3"
-    iops        = "3000"
-    throughput  = "125"
+    iops        = 3000
+    throughput  = 125
   }
   instance_market_options {
     market_type = var.spot_instance ? "spot" : null
@@ -148,7 +150,7 @@ resource "aws_instance" "vm" {
 
 resource "aws_ebs_volume" "data" {
   count             = var.data_disk_count * var.instance_count
-  availability_zone = aws_instance.vm[0].availability_zone
+  availability_zone = aws_instance.vm[floor(count.index / var.data_disk_count)].availability_zone
   size              = var.data_disk_size
   type              = "gp3"
   iops              = "3000"

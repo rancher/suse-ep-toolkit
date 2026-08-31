@@ -1,14 +1,12 @@
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.42.0 |
+No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.42.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
@@ -19,12 +17,12 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_ami.opensuse_ami](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/ami) | resource |
-| [aws_ebs_snapshot_import.opensuse_snapshot](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/ebs_snapshot_import) | resource |
-| [aws_iam_role.vmimport](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy.vmimport](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/iam_role_policy) | resource |
-| [aws_s3_bucket.images](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/s3_bucket) | resource |
-| [aws_s3_object.vhd](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/s3_object) | resource |
+| [aws_ami.opensuse_ami](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ami) | resource |
+| [aws_ebs_snapshot_import.opensuse_snapshot](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ebs_snapshot_import) | resource |
+| [aws_iam_role.vmimport](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy.vmimport](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_s3_bucket.images](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_object.vhd](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
 | [null_resource.download_image](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.removing_image](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 
