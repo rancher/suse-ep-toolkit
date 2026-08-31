@@ -16,6 +16,9 @@ spot_instance = true
 ## -- Specifies the name of the Compute Engine instance type.
 instance_type = "n2-standard-8"
 
+## -- Specifies the image family, self_link or name of the OS image.
+ami_id = ""
+
 ## -- Specifies the size of the additional data disks for each VM instance, in GB.
 data_disk_size = 350
 

@@ -128,6 +128,30 @@ variable "ami_id" {
   default     = ""
 }
 
+variable "image_publisher" {
+  description = "Specifies the publisher of the Marketplace image used when ami_id is not provided. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "image_offer" {
+  description = "Specifies the offer of the Marketplace image used when ami_id is not provided. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "image_sku" {
+  description = "Specifies the SKU of the Marketplace image used when ami_id is not provided. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "image_version" {
+  description = "Specifies the version of the Marketplace image used when ami_id is not provided. Default is 'null'."
+  type        = string
+  default     = null
+}
+
 variable "os_disk_type" {
   description = "Specifies the type of the disk attached to each node ('Standard_LRS, 'StandardSSD_LRS', 'Premium_LRS' or 'UltraSSD_LRS'). Default is 'StandardSSD_LRS'."
   type        = string

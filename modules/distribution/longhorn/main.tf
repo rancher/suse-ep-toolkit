@@ -2,7 +2,7 @@ resource "null_resource" "longhorn_dependencies" {
   count = var.longhorn_enabled ? length(var.node_ips) : 0
   connection {
     type        = "ssh"
-    user        = "opensuse"
+    user        = var.ssh_username
     host        = var.node_ips[count.index]
     private_key = var.ssh_private_key
   }

@@ -109,6 +109,21 @@ neuvector_enabled        = true
 neuvector_admin_password = "************"
 ```
 
+# OS Image selection
+
+By default, if `image_publisher`, `image_offer`, `image_sku`, and `image_version` are left as `null`, the project automatically builds and uses a custom openSUSE OS image via the `custom-os-image` module.
+
+If you want to use an Azure Marketplace image instead of building a custom one, specify all 4 variables in your `terraform.tfvars`:
+
+```hcl
+image_publisher = "SUSE"
+image_offer     = "opensuse-leap-15-6"
+image_sku       = "gen2"
+image_version   = "latest"
+```
+
+Note: All four Marketplace variables (`image_publisher`, `image_offer`, `image_sku`, `image_version`) must either be all specified or all left as `null`. Setting only some of them will fail validation.
+
 # Example deployment scenarios
 
 ## Minimal single-node RKE2 cluster
@@ -218,7 +233,7 @@ Depending on enabled components, the following services become available:
 | Rancher | `https://rancher.<NODE_IP>.sslip.io` |
 | Longhorn | `https://longhorn.<NODE_IP>.sslip.io` |
 | NeuVector | `https://neuvector.<NODE_IP>.sslip.io` |
-| SUSE Observability | `https://suse-observability.<NODE_IP>.sslip.io` |
+| SUSE Observability | `https://observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/gRPC) | `https://otlp-observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/HTTP) | `https://otlp-http-observability.<NODE_IP>.sslip.io` |
 

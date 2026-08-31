@@ -77,6 +77,12 @@ variable "data_disk_size" {
   default     = 350
 }
 
+variable "startup_script" {
+  description = "Specifies a bash prep script to execute before passing cloud-init user_data. Default is null."
+  type        = string
+  default     = null
+}
+
 variable "public_ip_source_addresses" {
   description = "Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level)."
   type        = list(string)

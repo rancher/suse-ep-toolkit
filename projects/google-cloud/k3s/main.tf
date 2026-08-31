@@ -7,6 +7,12 @@ data "http" "my_public_ip_address" {
   url = "https://api4.ipify.org"
 }
 
+data "google_compute_image" "custom_image" {
+  count   = var.ami_id != "" ? 1 : 0
+  name    = var.ami_id
+  project = "opensuse-cloud" # gcloud compute images list --project=opensuse-cloud --no-standard-images
+}
+
 locals {
   ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
@@ -14,6 +20,21 @@ locals {
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
   volume_device                     = "/dev/sdb"
   instance_type                     = var.instance_type
+  ami_id                            = var.ami_id != "" ? data.google_compute_image.custom_image[0].self_link : module.os_image[0].image_id
+  gcp_prep_script                   = <<-EOF
+    #!/bin/bash
+    set -e
+    zypper --non-interactive install -y curl tar which python3 cloud-init || true
+    systemctl enable --now cloud-init.service || true
+    cloud-init init --local || true
+    cloud-init init || true
+    cloud-init modules --mode config || true
+    cloud-init modules --mode final || true
+  EOF
+  startup_script                    = var.ami_id != "" ? local.gcp_prep_script : null
+  first_server_user_data            = module.k3s_first.user_data
+  server_user_data                  = module.k3s_additional_servers.user_data
+  worker_user_data                  = module.k3s_additional_workers.user_data
   k3s_token                         = random_string.k3s_token.result
   first_server_url                  = "https://${module.k3s_first_server.instances_public_ip[0]}:6443"
   server_count                      = var.instance_count < 3 ? var.instance_count : 3
@@ -36,6 +57,7 @@ module "identity" {
 }
 
 module "os_image" {
+  count      = var.ami_id == "" ? 1 : 0
   source     = "../../../modules/custom-os-image/google-cloud"
   prefix     = var.prefix
   region     = var.region
@@ -51,18 +73,19 @@ module "k3s_first" {
 }
 
 module "k3s_first_server" {
-  source                     = "../../../modules/infrastructure/google-cloud/compute-engine"
-  prefix                     = "${var.prefix}-server-1"
-  region                     = var.region
-  ssh_public_key_content     = module.identity.ssh_public_key
-  instance_type              = local.instance_type
-  data_disk_size             = var.data_disk_size
+  source                   = "../../../modules/infrastructure/google-cloud/compute-engine"
+  prefix                   = "${var.prefix}-server-1"
+  region                   = var.region
+  ssh_public_key_content   = module.identity.ssh_public_key
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
-  ami_id                     = module.os_image.image_id
-  instance_count             = 1
-  spot_instance              = var.spot_instance
-  create_network_resources   = true
-  user_data                  = module.k3s_first.user_data
+  ami_id                   = local.ami_id
+  instance_count           = 1
+  spot_instance            = var.spot_instance
+  create_network_resources = true
+  startup_script           = local.startup_script
+  user_data                = local.first_server_user_data
 }
 
 module "k3s_additional_servers" {
@@ -75,21 +98,22 @@ module "k3s_additional_servers" {
 }
 
 module "k3s_servers" {
-  for_each                   = toset(local.server_nodes)
-  source                     = "../../../modules/infrastructure/google-cloud/compute-engine"
-  prefix                     = "${var.prefix}-server-${each.value}"
-  region                     = var.region
-  ssh_public_key_content     = module.identity.ssh_public_key
-  instance_type              = local.instance_type
-  data_disk_size             = var.data_disk_size
+  for_each                 = toset(local.server_nodes)
+  source                   = "../../../modules/infrastructure/google-cloud/compute-engine"
+  prefix                   = "${var.prefix}-server-${each.value}"
+  region                   = var.region
+  ssh_public_key_content   = module.identity.ssh_public_key
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
-  ami_id                     = module.os_image.image_id
-  instance_count             = 1
-  spot_instance              = var.spot_instance
-  create_network_resources   = false
-  vpc_id                     = module.k3s_first_server.gcp_vpc
-  subnet_id                  = module.k3s_first_server.gcp_subnet
-  user_data                  = module.k3s_additional_servers.user_data
+  ami_id                   = local.ami_id
+  instance_count           = 1
+  spot_instance            = var.spot_instance
+  create_network_resources = false
+  vpc_id                   = module.k3s_first_server.gcp_vpc
+  subnet_id                = module.k3s_first_server.gcp_subnet
+  startup_script           = local.startup_script
+  user_data                = local.server_user_data
 }
 
 module "k3s_additional_workers" {
@@ -102,21 +126,22 @@ module "k3s_additional_workers" {
 }
 
 module "k3s_workers" {
-  for_each                   = toset(local.worker_nodes)
-  source                     = "../../../modules/infrastructure/google-cloud/compute-engine"
-  prefix                     = "${var.prefix}-worker-${each.value}"
-  region                     = var.region
-  ssh_public_key_content     = module.identity.ssh_public_key
-  instance_type              = local.instance_type
-  data_disk_size             = var.data_disk_size
+  for_each                 = toset(local.worker_nodes)
+  source                   = "../../../modules/infrastructure/google-cloud/compute-engine"
+  prefix                   = "${var.prefix}-worker-${each.value}"
+  region                   = var.region
+  ssh_public_key_content   = module.identity.ssh_public_key
+  instance_type            = local.instance_type
+  data_disk_size           = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
-  ami_id                     = module.os_image.image_id
-  instance_count             = 1
-  spot_instance              = var.spot_instance
-  create_network_resources   = false
-  vpc_id                     = module.k3s_first_server.gcp_vpc
-  subnet_id                  = module.k3s_first_server.gcp_subnet
-  user_data                  = module.k3s_additional_workers.user_data
+  ami_id                   = local.ami_id
+  instance_count           = 1
+  spot_instance            = var.spot_instance
+  create_network_resources = false
+  vpc_id                   = module.k3s_first_server.gcp_vpc
+  subnet_id                = module.k3s_first_server.gcp_subnet
+  startup_script           = local.startup_script
+  user_data                = local.server_user_data
 }
 
 data "local_file" "ssh_private_key" {
@@ -153,9 +178,36 @@ provider "helm" {
   }
 }
 
+resource "null_resource" "install_prerequisites" {
+  count      = var.ami_id != "" ? var.instance_count : 0
+  depends_on = [module.k3s_first_server, module.k3s_servers, module.k3s_workers, ssh_resource.retrieve_kubeconfig]
+  connection {
+    type        = "ssh"
+    user        = local.ssh_username
+    private_key = data.local_file.ssh_private_key.content
+    host = element(
+      concat(
+        module.k3s_first_server.instances_public_ip,
+        flatten([for m in module.k3s_servers : m.instances_public_ip]),
+        flatten([for m in module.k3s_workers : m.instances_public_ip])
+      ),
+      count.index
+    )
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 15",
+      "while sudo fuser /var/run/zypp.pid >/dev/null 2>&1; do echo 'Waiting for initial zypper lock...'; sleep 3; done",
+      "sudo rm -f /var/run/zypp.pid /var/lib/Zypper/lock",
+      "sudo zypper --non-interactive install -y curl tar which python3 open-iscsi nfs-client cryptsetup device-mapper util-linux || true",
+      "sudo systemctl enable --now iscsid || true"
+    ]
+  }
+}
+
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [module.k3s_first_server]
+  depends_on              = [local_file.kubeconfig_yaml, module.k3s_first_server, null_resource.install_prerequisites]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version

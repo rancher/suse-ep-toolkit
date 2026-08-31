@@ -113,6 +113,30 @@ variable "instance_type" {
   }
 }
 
+variable "image_publisher" {
+  description = "Specifies the publisher of the Marketplace image. If null, the custom OS image will be used. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "image_offer" {
+  description = "Specifies the offer of the Marketplace image. If null, the custom OS image will be used. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "image_sku" {
+  description = "Specifies the SKU of the Marketplace image. If null, the custom OS image will be used. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "image_version" {
+  description = "Specifies the version of the Marketplace image. If null, the custom OS image will be used. Default is 'null'."
+  type        = string
+  default     = null
+}
+
 variable "data_disk_size" {
   description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'."
   type        = number
