@@ -1,6 +1,8 @@
 locals {
   instance_os_type = "opensuse"
   ssh_username     = local.instance_os_type
+  public_tcp_ports = ["68", "443", "2112-32767"]
+  public_udp_ports = ["68", "443", "2112-32767"]
 }
 
 resource "random_id" "volume_suffix" {
@@ -32,11 +34,31 @@ resource "digitalocean_droplet" "nodes" {
   user_data = var.user_data
 }
 
-resource "digitalocean_firewall" "example_firewall" {
-  name        = "${var.prefix}-harvester-firewall"
+resource "digitalocean_firewall" "main_firewall" {
+  name        = "${var.prefix}-firewall"
   droplet_ids = digitalocean_droplet.nodes[*].id
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "22"
+    source_addresses = var.public_ip_source_addresses
+  }
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "6080"
+    source_addresses = var.public_ip_source_addresses
+  }
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "6443"
+    source_addresses = concat(var.public_ip_source_addresses, digitalocean_droplet.nodes[*].ipv4_address)
+  }
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "9345"
+    source_addresses = concat(var.public_ip_source_addresses, digitalocean_droplet.nodes[*].ipv4_address)
+  }
   dynamic "inbound_rule" {
-    for_each = toset(["22", "68", "443", "2112-32767"])
+    for_each = toset(local.public_tcp_ports)
     content {
       protocol         = "tcp"
       port_range       = inbound_rule.value
@@ -44,12 +66,16 @@ resource "digitalocean_firewall" "example_firewall" {
     }
   }
   dynamic "inbound_rule" {
-    for_each = toset(["22", "68", "443", "2112-32767"])
+    for_each = toset(local.public_udp_ports)
     content {
       protocol         = "udp"
       port_range       = inbound_rule.value
       source_addresses = ["0.0.0.0/0", "::/0"]
     }
+  }
+  inbound_rule {
+    protocol         = "icmp"
+    source_addresses = ["0.0.0.0/0", "::/0"]
   }
   outbound_rule {
     protocol              = "tcp"
@@ -59,6 +85,10 @@ resource "digitalocean_firewall" "example_firewall" {
   outbound_rule {
     protocol              = "udp"
     port_range            = "all"
+    destination_addresses = ["0.0.0.0/0", "::/0"]
+  }
+  outbound_rule {
+    protocol              = "icmp"
     destination_addresses = ["0.0.0.0/0", "::/0"]
   }
 }

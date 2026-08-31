@@ -45,6 +45,7 @@ No modules.
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Specifies the name of an AWS EC2 instance. Default is 'm8i.large'. | `string` | `"m8i.large"` | no |
 | <a name="input_ip_cidr_range"></a> [ip\_cidr\_range](#input\_ip\_cidr\_range) | Specifies the range of private IPs available for the AWS Subnet and VPC. Default is '10.10.0.0'. | `string` | `"10.0.0.0"` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Specifies the prefix added to the names of all resources. Default is 'aws-tf'. | `string` | `"aws-tf"` | no |
+| <a name="input_public_ip_source_addresses"></a> [public\_ip\_source\_addresses](#input\_public\_ip\_source\_addresses) | Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level). | `list(string)` | `[]` | no |
 | <a name="input_region"></a> [region](#input\_region) | Specifies the AWS region used for all resources. Default is 'us-east-1'. | `string` | `"us-east-1"` | no |
 | <a name="input_security_group_id"></a> [security\_group\_id](#input\_security\_group\_id) | Specifies the ID of an existing AWS security group to associate with the EC2 instances. Default is 'null'. | `string` | `null` | no |
 | <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'. | `bool` | `true` | no |

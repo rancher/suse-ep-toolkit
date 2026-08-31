@@ -76,7 +76,7 @@ resource "aws_security_group" "sg" {
     from_port   = "22"
     to_port     = "22"
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.public_ip_source_addresses
   }
   ingress {
     description = "Allow inbound Kubernetes API server (6443) access restricted to CIDR list"
@@ -86,28 +86,35 @@ resource "aws_security_group" "sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "Allow inbound HTTP access restricted to CIDR list"
+    description = "Allow inbound WebSocket/VNC (6080) access restricted to CIDR list"
+    from_port   = "6080"
+    to_port     = "6080"
+    protocol    = "tcp"
+    cidr_blocks = var.public_ip_source_addresses
+  }
+  ingress {
+    description = "Allow inbound K3s/RKE2 server registration (9345) access restricted to CIDR list"
+    from_port   = "9345"
+    to_port     = "9345"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "Allow inbound HTTP access"
     from_port   = "80"
     to_port     = "80"
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "Allow public HTTPS inbound access to nodes"
+    description = "Allow inbound HTTPS access"
     from_port   = "443"
     to_port     = "443"
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  ingress {
-    description = "Allow inbound HTTP access restricted to CIDR list"
-    from_port   = "9345"
-    to_port     = "9345"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
   egress {
-    description = "Allow public HTTPS inbound access to nodes"
+    description = "Allow all outbound traffic"
     from_port   = "0"
     to_port     = "0"
     protocol    = "-1"

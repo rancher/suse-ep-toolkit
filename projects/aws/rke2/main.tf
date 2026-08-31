@@ -3,6 +3,10 @@ resource "random_string" "rke2_token" {
   special = false
 }
 
+data "http" "my_public_ip_address" {
+  url = "https://ipv4.icanhazip.com/"
+}
+
 data "aws_ami" "ami_validation" {
   count  = var.ami_id != "" ? 1 : 0
   owners = ["679593333241", "aws-marketplace", "amazon", "self"]
@@ -33,6 +37,8 @@ locals {
   server_nodes                      = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
   worker_count                      = var.instance_count > 3 ? var.instance_count - 3 : 0
   worker_nodes                      = [for i in range(1, local.worker_count + 1) : tostring(i)]
+  current_public_ip_cidr            = "${chomp(data.http.my_public_ip_address.response_body)}/32"
+  public_ip_source_addresses        = length(var.public_ip_source_addresses) > 0 ? var.public_ip_source_addresses : [local.current_public_ip_cidr]
   longhorn_host                     = "longhorn.${module.rke2_first_server.instances_public_ip}.sslip.io"
   rancher_host                      = "rancher.${module.rke2_first_server.instances_public_ip}.sslip.io"
   suse_observability_host           = "observability.${module.rke2_first_server.instances_public_ip}.sslip.io"
@@ -47,7 +53,6 @@ module "identity" {
 }
 
 module "os_image" {
-  count  = var.ami_id == "" ? 1 : 0
   source = "../../../modules/custom-os-image/aws"
   prefix = var.prefix
 }
@@ -62,18 +67,19 @@ module "rke2_first" {
 }
 
 module "rke2_first_server" {
-  source                   = "../../../modules/infrastructure/aws/ec2"
-  prefix                   = "${var.prefix}-server-1"
-  region                   = var.region
-  ssh_key_name             = module.identity.ssh_key_name
-  ssh_key_content          = data.local_file.ssh_private_key.content
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = local.ami_id
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = true
-  user_data                = local.first_server_user_data
+  source                     = "../../../modules/infrastructure/aws/ec2"
+  prefix                     = "${var.prefix}-server-1"
+  region                     = var.region
+  ssh_key_name               = module.identity.ssh_key_name
+  ssh_key_content            = data.local_file.ssh_private_key.content
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = local.ami_id
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = true
+  user_data                  = local.first_server_user_data
 }
 
 module "rke2_additional_servers" {
@@ -87,21 +93,22 @@ module "rke2_additional_servers" {
 }
 
 module "rke2_servers" {
-  for_each                 = toset(local.server_nodes)
-  source                   = "../../../modules/infrastructure/aws/ec2"
-  prefix                   = "${var.prefix}-server-${each.value}"
-  region                   = var.region
-  ssh_key_name             = module.identity.ssh_key_name
-  ssh_key_content          = data.local_file.ssh_private_key.content
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = local.ami_id
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  security_group_id        = module.rke2_first_server.aws_security_group
-  subnet_id                = module.rke2_first_server.aws_subnet
-  user_data                = local.server_user_data
+  for_each                   = toset(local.server_nodes)
+  source                     = "../../../modules/infrastructure/aws/ec2"
+  prefix                     = "${var.prefix}-server-${each.value}"
+  region                     = var.region
+  ssh_key_name               = module.identity.ssh_key_name
+  ssh_key_content            = data.local_file.ssh_private_key.content
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = local.ami_id
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  security_group_id          = module.rke2_first_server.aws_security_group
+  subnet_id                  = module.rke2_first_server.aws_subnet
+  user_data                  = local.server_user_data
 }
 
 module "rke2_additional_workers" {
@@ -115,21 +122,22 @@ module "rke2_additional_workers" {
 }
 
 module "rke2_workers" {
-  for_each                 = toset(local.worker_nodes)
-  source                   = "../../../modules/infrastructure/aws/ec2"
-  prefix                   = "${var.prefix}-worker-${each.value}"
-  region                   = var.region
-  ssh_key_name             = module.identity.ssh_key_name
-  ssh_key_content          = data.local_file.ssh_private_key.content
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = local.ami_id
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  security_group_id        = module.rke2_first_server.aws_security_group
-  subnet_id                = module.rke2_first_server.aws_subnet
-  user_data                = local.worker_user_data
+  for_each                   = toset(local.worker_nodes)
+  source                     = "../../../modules/infrastructure/aws/ec2"
+  prefix                     = "${var.prefix}-worker-${each.value}"
+  region                     = var.region
+  ssh_key_name               = module.identity.ssh_key_name
+  ssh_key_content            = data.local_file.ssh_private_key.content
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = local.ami_id
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  security_group_id          = module.rke2_first_server.aws_security_group
+  subnet_id                  = module.rke2_first_server.aws_subnet
+  user_data                  = local.worker_user_data
 }
 
 data "local_file" "ssh_private_key" {

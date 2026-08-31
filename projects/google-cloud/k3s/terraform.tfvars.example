@@ -22,6 +22,9 @@ ami_id = ""
 ## -- Specifies the size of the additional data disks for each VM instance, in GB.
 data_disk_size = 350
 
+## -- Specifies a list of CIDR blocks allowed to access port 22 (SSH).
+public_ip_source_addresses = []
+
 ## -- Specifies the shared token used by all nodes to join the k3s cluster.
 k3s_token = "SecretToken.123"
 

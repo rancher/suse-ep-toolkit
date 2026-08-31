@@ -19,6 +19,9 @@ instance_type = "g-16vcpu-64gb"
 ## -- Specifies the size of the additional data disks attached to the Droplet, in GB.
 data_disk_size = 350
 
+## -- Specifies a list of CIDR blocks allowed to access port 22 (SSH).
+public_ip_source_addresses = []
+
 ## -- Specifies the ID of the custom OS image used to provision all RKE2 cluster droplets.
 image_id = ""
 

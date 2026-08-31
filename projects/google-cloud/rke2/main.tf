@@ -9,6 +9,10 @@ data "google_compute_image" "custom_image" {
   project = "opensuse-cloud" # gcloud compute images list --project=opensuse-cloud --no-standard-images
 }
 
+data "http" "my_public_ip_address" {
+  url = "https://api4.ipify.org"
+}
+
 locals {
   ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
@@ -37,6 +41,8 @@ locals {
   server_nodes                      = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
   worker_count                      = var.instance_count > 3 ? var.instance_count - 3 : 0
   worker_nodes                      = [for i in range(1, local.worker_count + 1) : tostring(i)]
+  current_public_ip_cidr            = "${chomp(data.http.my_public_ip_address.response_body)}/32"
+  public_ip_source_addresses        = length(var.public_ip_source_addresses) > 0 ? var.public_ip_source_addresses : [local.current_public_ip_cidr]
   longhorn_host                     = "longhorn.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
   rancher_host                      = "rancher.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
   suse_observability_host           = "observability.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
@@ -68,18 +74,19 @@ module "rke2_first" {
 }
 
 module "rke2_first_server" {
-  source                   = "../../../modules/infrastructure/google-cloud/compute-engine"
-  prefix                   = "${var.prefix}-server-1"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = local.ami_id
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = true
-  startup_script           = local.startup_script
-  user_data                = local.first_server_user_data
+  source                     = "../../../modules/infrastructure/google-cloud/compute-engine"
+  prefix                     = "${var.prefix}-server-1"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = local.ami_id
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = true
+  startup_script             = local.startup_script
+  user_data                  = local.first_server_user_data
 }
 
 module "rke2_additional_servers" {
@@ -93,21 +100,22 @@ module "rke2_additional_servers" {
 }
 
 module "rke2_servers" {
-  for_each                 = toset(local.server_nodes)
-  source                   = "../../../modules/infrastructure/google-cloud/compute-engine"
-  prefix                   = "${var.prefix}-server-${each.value}"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = local.ami_id
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  vpc_id                   = module.rke2_first_server.gcp_vpc
-  subnet_id                = module.rke2_first_server.gcp_subnet
-  startup_script           = local.startup_script
-  user_data                = local.server_user_data
+  for_each                   = toset(local.server_nodes)
+  source                     = "../../../modules/infrastructure/google-cloud/compute-engine"
+  prefix                     = "${var.prefix}-server-${each.value}"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = local.ami_id
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  vpc_id                     = module.rke2_first_server.gcp_vpc
+  subnet_id                  = module.rke2_first_server.gcp_subnet
+  startup_script             = local.startup_script
+  user_data                  = local.server_user_data
 }
 
 module "rke2_additional_workers" {
@@ -121,21 +129,22 @@ module "rke2_additional_workers" {
 }
 
 module "rke2_workers" {
-  for_each                 = toset(local.worker_nodes)
-  source                   = "../../../modules/infrastructure/google-cloud/compute-engine"
-  prefix                   = "${var.prefix}-worker-${each.value}"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = local.ami_id
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  vpc_id                   = module.rke2_first_server.gcp_vpc
-  subnet_id                = module.rke2_first_server.gcp_subnet
-  startup_script           = local.startup_script
-  user_data                = local.worker_user_data
+  for_each                   = toset(local.worker_nodes)
+  source                     = "../../../modules/infrastructure/google-cloud/compute-engine"
+  prefix                     = "${var.prefix}-worker-${each.value}"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = local.ami_id
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  vpc_id                     = module.rke2_first_server.gcp_vpc
+  subnet_id                  = module.rke2_first_server.gcp_subnet
+  startup_script             = local.startup_script
+  user_data                  = local.worker_user_data
 }
 
 data "local_file" "ssh_private_key" {

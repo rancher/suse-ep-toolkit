@@ -3,6 +3,10 @@ resource "random_string" "k3s_token" {
   special = false
 }
 
+data "http" "my_public_ip_address" {
+  url = "https://api4.ipify.org"
+}
+
 data "google_compute_image" "custom_image" {
   count   = var.ami_id != "" ? 1 : 0
   name    = var.ami_id
@@ -37,6 +41,8 @@ locals {
   server_nodes                      = var.instance_count == 1 ? [] : [for i in range(2, local.server_count + 1) : tostring(i)]
   worker_count                      = var.instance_count > 3 ? var.instance_count - 3 : 0
   worker_nodes                      = [for i in range(1, local.worker_count + 1) : tostring(i)]
+  current_public_ip_cidr            = "${chomp(data.http.my_public_ip_address.response_body)}/32"
+  public_ip_source_addresses        = length(var.public_ip_source_addresses) > 0 ? var.public_ip_source_addresses : [local.current_public_ip_cidr]
   longhorn_host                     = "longhorn.${module.k3s_first_server.instances_public_ip[0]}.sslip.io"
   rancher_host                      = "rancher.${module.k3s_first_server.instances_public_ip[0]}.sslip.io"
   suse_observability_host           = "observability.${module.k3s_first_server.instances_public_ip[0]}.sslip.io"
@@ -67,18 +73,19 @@ module "k3s_first" {
 }
 
 module "k3s_first_server" {
-  source                   = "../../../modules/infrastructure/google-cloud/compute-engine"
-  prefix                   = "${var.prefix}-server-1"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = local.ami_id
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = true
-  startup_script           = local.startup_script
-  user_data                = local.first_server_user_data
+  source                     = "../../../modules/infrastructure/google-cloud/compute-engine"
+  prefix                     = "${var.prefix}-server-1"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = local.ami_id
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = true
+  startup_script             = local.startup_script
+  user_data                  = local.first_server_user_data
 }
 
 module "k3s_additional_servers" {
@@ -91,21 +98,22 @@ module "k3s_additional_servers" {
 }
 
 module "k3s_servers" {
-  for_each                 = toset(local.server_nodes)
-  source                   = "../../../modules/infrastructure/google-cloud/compute-engine"
-  prefix                   = "${var.prefix}-server-${each.value}"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = local.ami_id
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  vpc_id                   = module.k3s_first_server.gcp_vpc
-  subnet_id                = module.k3s_first_server.gcp_subnet
-  startup_script           = local.startup_script
-  user_data                = local.server_user_data
+  for_each                   = toset(local.server_nodes)
+  source                     = "../../../modules/infrastructure/google-cloud/compute-engine"
+  prefix                     = "${var.prefix}-server-${each.value}"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = local.ami_id
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  vpc_id                     = module.k3s_first_server.gcp_vpc
+  subnet_id                  = module.k3s_first_server.gcp_subnet
+  startup_script             = local.startup_script
+  user_data                  = local.server_user_data
 }
 
 module "k3s_additional_workers" {
@@ -118,21 +126,22 @@ module "k3s_additional_workers" {
 }
 
 module "k3s_workers" {
-  for_each                 = toset(local.worker_nodes)
-  source                   = "../../../modules/infrastructure/google-cloud/compute-engine"
-  prefix                   = "${var.prefix}-worker-${each.value}"
-  region                   = var.region
-  ssh_public_key_content   = module.identity.ssh_public_key
-  instance_type            = local.instance_type
-  data_disk_size           = var.data_disk_size
-  ami_id                   = local.ami_id
-  instance_count           = 1
-  spot_instance            = var.spot_instance
-  create_network_resources = false
-  vpc_id                   = module.k3s_first_server.gcp_vpc
-  subnet_id                = module.k3s_first_server.gcp_subnet
-  startup_script           = local.startup_script
-  user_data                = local.worker_user_data
+  for_each                   = toset(local.worker_nodes)
+  source                     = "../../../modules/infrastructure/google-cloud/compute-engine"
+  prefix                     = "${var.prefix}-worker-${each.value}"
+  region                     = var.region
+  ssh_public_key_content     = module.identity.ssh_public_key
+  instance_type              = local.instance_type
+  data_disk_size             = var.data_disk_size
+  public_ip_source_addresses = local.public_ip_source_addresses
+  ami_id                     = local.ami_id
+  instance_count             = 1
+  spot_instance              = var.spot_instance
+  create_network_resources   = false
+  vpc_id                     = module.k3s_first_server.gcp_vpc
+  subnet_id                  = module.k3s_first_server.gcp_subnet
+  startup_script             = local.startup_script
+  user_data                  = local.server_user_data
 }
 
 data "local_file" "ssh_private_key" {
