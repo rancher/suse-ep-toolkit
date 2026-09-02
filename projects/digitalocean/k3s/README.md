@@ -108,6 +108,25 @@ neuvector_enabled        = true
 neuvector_admin_password = "************"
 ```
 
+## AI Factory
+
+AI Factory requires:
+
+```hcl
+longhorn_enabled           = true
+longhorn_admin_password = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+ai_factory_enabled         = true
+app_collection_password    = "************"
+app_collection_username    = "************"
+nvidia_password            = "************"
+suse_registry_password     = "************"
+
+```
+
 # Example deployment scenarios
 
 ## Minimal single-node K3s cluster
@@ -129,7 +148,7 @@ longhorn_enabled        = true
 longhorn_admin_password = "************"
 ```
 
-## HA K3s cluster with Rancher
+## HA K3s cluster with Rancher and AI factory
 
 ```hcl
 prefix                     = "<PREFIX>"
@@ -141,6 +160,12 @@ longhorn_admin_password    = "************"
 
 rancher_enabled            = true
 rancher_bootstrap_password = "************"
+
+ai_factory_enabled         = true
+app_collection_password    = "************"
+app_collection_username    = "************"
+nvidia_password            = "************"
+suse_registry_password     = "************"
 ```
 
 ## Full stack deployment
@@ -162,6 +187,12 @@ neuvector_admin_password        = "************"
 suse_observability_enabled      = true
 suse_observability_license      = "<LICENSE>"
 suse_observability_rancher_auth = true
+
+ai_factory_enabled         = true
+app_collection_password    = "************"
+app_collection_username    = "************"
+nvidia_password            = "************"
+suse_registry_password     = "************"
 ```
 
 # Terraform Apply

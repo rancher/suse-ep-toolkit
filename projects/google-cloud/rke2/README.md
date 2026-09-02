@@ -109,6 +109,25 @@ neuvector_enabled        = true
 neuvector_admin_password = "************"
 ```
 
+## AI Factory
+
+AI Factory requires:
+
+```hcl
+longhorn_enabled           = true
+longhorn_admin_password = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+ai_factory_enabled         = true
+app_collection_password    = "************"
+app_collection_username    = "************"
+nvidia_password            = "************"
+suse_registry_password     = "************"
+
+```
+
 # OS Image selection
 
 By default, if `ami_id` is left empty (`""`), the project automatically builds and uses a custom openSUSE OS image via the `custom-os-image` module.
@@ -158,6 +177,26 @@ rancher_enabled            = true
 rancher_bootstrap_password = "************"
 ```
 
+## HA RKE2 cluster with Rancher and AI Factory
+
+```hcl
+prefix                     = "<PREFIX>"
+project_id                 = "<PROJECT_ID>"
+instance_count             = 3
+
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+ai_factory_enabled         = true
+app_collection_password    = "************"
+app_collection_username    = "************"
+nvidia_password            = "************"
+suse_registry_password     = "************"
+```
+
 ## Full stack deployment
 
 ```hcl
@@ -177,6 +216,12 @@ neuvector_admin_password        = "************"
 suse_observability_enabled      = true
 suse_observability_license      = "<LICENSE>"
 suse_observability_rancher_auth = true
+
+ai_factory_enabled = true
+app_collection_password = "************"
+app_collection_username = "************"
+nvidia_password = "************"
+suse_registry_password = "************"
 ```
 
 # Terraform Apply
