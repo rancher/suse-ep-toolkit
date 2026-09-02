@@ -96,3 +96,21 @@ neuvector_controller_count = null
 
 ## -- Specifies the number of NeuVector scanner replicas to deploy.
 neuvector_scanner_count = null
+
+## -- Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'.
+ai_factory_enabled = false
+
+## -- Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'.
+ai_factory_hc_version = null
+
+## -- Specifies the SUSE AppCo username. Default is 'null'.
+app_collection_username = null
+
+## -- Specifies the SUSE AppCo password. Default is 'null'.
+app_collection_password = null
+
+## -- Specifies the NVIDIA password. Default is 'null'.
+nvidia_password = null
+
+## -- Specifies the SUSE registry password. Default is 'null'.
+suse_registry_password = null

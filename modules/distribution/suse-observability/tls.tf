@@ -1,18 +1,20 @@
 locals {
-  hosts = {
+  hosts = var.suse_observability_enabled ? {
     "suse_main" = { host = var.suse_observability_host, secret = "suse-observability-tls" }
     "otlp_grpc" = { host = var.suse_observability_otlp_host, secret = "otlp-suse-observability-tls" }
     "otlp_http" = { host = var.suse_observability_otlp_http_host, secret = "otlp-http-suse-observability-tls" }
-  }
+  } : {}
 }
 
 resource "tls_private_key" "ca" {
+  count     = var.suse_observability_enabled ? 1 : 0
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
 resource "tls_self_signed_cert" "ca" {
-  private_key_pem   = tls_private_key.ca.private_key_pem
+  count             = var.suse_observability_enabled ? 1 : 0
+  private_key_pem   = tls_private_key.ca[0].private_key_pem
   is_ca_certificate = true
   subject {
     common_name = "${var.suse_observability_host}-ca"
@@ -43,13 +45,14 @@ resource "tls_cert_request" "certs" {
 resource "tls_locally_signed_cert" "certs" {
   for_each              = local.hosts
   cert_request_pem      = tls_cert_request.certs[each.key].cert_request_pem
-  ca_private_key_pem    = tls_private_key.ca.private_key_pem
-  ca_cert_pem           = tls_self_signed_cert.ca.cert_pem
+  ca_private_key_pem    = tls_private_key.ca[0].private_key_pem
+  ca_cert_pem           = tls_self_signed_cert.ca[0].cert_pem
   validity_period_hours = 8760
   allowed_uses          = ["key_encipherment", "digital_signature", "server_auth"]
 }
 
 resource "null_resource" "suse_obs_ca_secret" {
+  count      = var.suse_observability_enabled ? 1 : 0
   depends_on = [tls_locally_signed_cert.certs]
   provisioner "local-exec" {
     command = <<EOF
@@ -73,7 +76,7 @@ metadata:
   namespace: suse-observability
 type: Opaque
 data:
-  cacerts.pem: $(echo '${base64encode(tls_self_signed_cert.ca.cert_pem)}')
+  cacerts.pem: $(echo '${base64encode(tls_self_signed_cert.ca[0].cert_pem)}')
 CA
 EOF
   }
@@ -98,7 +101,7 @@ metadata:
   namespace: suse-observability
 type: kubernetes.io/tls
 data:
-  tls.crt: $(echo '${base64encode("${tls_locally_signed_cert.certs[each.key].cert_pem}${tls_self_signed_cert.ca.cert_pem}")}')
+  tls.crt: $(echo '${base64encode("${tls_locally_signed_cert.certs[each.key].cert_pem}${tls_self_signed_cert.ca[0].cert_pem}")}')
   tls.key: $(echo '${base64encode(tls_private_key.certs[each.key].private_key_pem)}')
 CRT
 EOF
