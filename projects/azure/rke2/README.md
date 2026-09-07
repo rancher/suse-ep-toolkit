@@ -115,17 +115,16 @@ AI Factory requires:
 
 ```hcl
 longhorn_enabled           = true
-longhorn_admin_password = "************"
+longhorn_admin_password    = "************"
 
 rancher_enabled            = true
 rancher_bootstrap_password = "************"
 
 ai_factory_enabled         = true
-app_collection_password    = "************"
 app_collection_username    = "************"
+app_collection_password    = "************"
 nvidia_password            = "************"
 suse_registry_password     = "************"
-
 ```
 
 # OS Image selection
@@ -148,10 +147,10 @@ Note: All four Marketplace variables (`image_publisher`, `image_offer`, `image_s
 ## Minimal single-node RKE2 cluster
 
 ```hcl
-prefix         = "<PREFIX>"
-subscription_id         = "<SUBSCRIPTION_ID>"
+prefix          = "<PREFIX>"
+subscription_id = "<SUBSCRIPTION_ID>"
 
-instance_count = 1
+instance_count  = 1
 ```
 
 ## HA RKE2 cluster with Longhorn
@@ -180,8 +179,8 @@ rancher_enabled            = true
 rancher_bootstrap_password = "************"
 
 ai_factory_enabled         = true
-app_collection_password    = "************"
 app_collection_username    = "************"
+app_collection_password    = "************"
 nvidia_password            = "************"
 suse_registry_password     = "************"
 ```
@@ -190,7 +189,7 @@ suse_registry_password     = "************"
 
 ```hcl
 prefix                          = "<PREFIX>"
-subscription_id            = "<SUBSCRIPTION_ID>"
+subscription_id                 = "<SUBSCRIPTION_ID>"
 instance_count                  = 3
 
 longhorn_enabled                = true
@@ -206,11 +205,11 @@ suse_observability_enabled      = true
 suse_observability_license      = "<LICENSE>"
 suse_observability_rancher_auth = true
 
-ai_factory_enabled         = true
-app_collection_password    = "************"
-app_collection_username    = "************"
-nvidia_password            = "************"
-suse_registry_password     = "************"
+ai_factory_enabled              = true
+app_collection_username         = "************"
+app_collection_password         = "************"
+nvidia_password                 = "************"
+suse_registry_password          = "************"
 ```
 
 # Terraform Apply

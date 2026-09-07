@@ -114,17 +114,16 @@ AI Factory requires:
 
 ```hcl
 longhorn_enabled           = true
-longhorn_admin_password = "************"
+longhorn_admin_password    = "************"
 
 rancher_enabled            = true
 rancher_bootstrap_password = "************"
 
 ai_factory_enabled         = true
-app_collection_password    = "************"
 app_collection_username    = "************"
+app_collection_password    = "************"
 nvidia_password            = "************"
 suse_registry_password     = "************"
-
 ```
 
 # Example deployment scenarios
@@ -162,8 +161,8 @@ rancher_enabled            = true
 rancher_bootstrap_password = "************"
 
 ai_factory_enabled         = true
-app_collection_password    = "************"
 app_collection_username    = "************"
+app_collection_password    = "************"
 nvidia_password            = "************"
 suse_registry_password     = "************"
 ```
@@ -188,11 +187,11 @@ suse_observability_enabled      = true
 suse_observability_license      = "<LICENSE>"
 suse_observability_rancher_auth = true
 
-ai_factory_enabled         = true
-app_collection_password    = "************"
-app_collection_username    = "************"
-nvidia_password            = "************"
-suse_registry_password     = "************"
+ai_factory_enabled              = true
+app_collection_username         = "************"
+app_collection_password         = "************"
+nvidia_password                 = "************"
+suse_registry_password          = "************"
 ```
 
 # Terraform Apply

@@ -15,9 +15,9 @@
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 6.42.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.5.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.9.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.3.1 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.9.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | n/a |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
 | <a name="provider_ssh"></a> [ssh](#provider\_ssh) | 2.7.0 |
 
 ## Modules
