@@ -262,3 +262,14 @@ module "neuvector" {
   longhorn_enabled           = var.longhorn_enabled
   kubeconfig_path            = local_file.kubeconfig_yaml.filename
 }
+
+module "ai_factory" {
+  source                  = "../../../modules/distribution/ai-factory"
+  depends_on              = [module.rke2_first_server, module.rancher]
+  ai_factory_enabled      = var.ai_factory_enabled
+  ai_factory_hc_version   = var.ai_factory_hc_version
+  app_collection_username = var.app_collection_username
+  app_collection_password = var.app_collection_password
+  nvidia_password         = var.nvidia_password
+  suse_registry_password  = var.suse_registry_password
+}

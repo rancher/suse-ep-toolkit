@@ -109,6 +109,24 @@ neuvector_enabled        = true
 neuvector_admin_password = "************"
 ```
 
+## AI Factory
+
+AI Factory requires:
+
+```hcl
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+ai_factory_enabled         = true
+app_collection_username    = "************"
+app_collection_password    = "************"
+nvidia_password            = "************"
+suse_registry_password     = "************"
+```
+
 # OS Image selection
 
 By default, if `image_publisher`, `image_offer`, `image_sku`, and `image_version` are left as `null`, the project automatically builds and uses a custom openSUSE OS image via the `custom-os-image` module.
@@ -129,10 +147,10 @@ Note: All four Marketplace variables (`image_publisher`, `image_offer`, `image_s
 ## Minimal single-node K3s cluster
 
 ```hcl
-prefix         = "<PREFIX>"
-subscription_id         = "<SUBSCRIPTION_ID>"
+prefix          = "<PREFIX>"
+subscription_id = "<SUBSCRIPTION_ID>"
 
-instance_count = 1
+instance_count  = 1
 ```
 
 ## HA K3s cluster with Longhorn
@@ -147,7 +165,7 @@ longhorn_enabled        = true
 longhorn_admin_password = "************"
 ```
 
-## HA K3s cluster with Rancher
+## HA K3s cluster with Rancher and AI factory
 
 ```hcl
 prefix                     = "<PREFIX>"
@@ -159,13 +177,19 @@ longhorn_admin_password    = "************"
 
 rancher_enabled            = true
 rancher_bootstrap_password = "************"
+
+ai_factory_enabled         = true
+app_collection_username    = "************"
+app_collection_password    = "************"
+nvidia_password            = "************"
+suse_registry_password     = "************"
 ```
 
 ## Full stack deployment
 
 ```hcl
 prefix                          = "<PREFIX>"
-subscription_id            = "<SUBSCRIPTION_ID>"
+subscription_id                 = "<SUBSCRIPTION_ID>"
 instance_count                  = 3
 
 longhorn_enabled                = true
@@ -180,6 +204,12 @@ neuvector_admin_password        = "************"
 suse_observability_enabled      = true
 suse_observability_license      = "<LICENSE>"
 suse_observability_rancher_auth = true
+
+ai_factory_enabled              = true
+app_collection_username         = "************"
+app_collection_password         = "************"
+nvidia_password                 = "************"
+suse_registry_password          = "************"
 ```
 
 # Terraform Apply

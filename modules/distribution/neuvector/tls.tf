@@ -1,10 +1,12 @@
 resource "tls_private_key" "ca" {
+  count     = var.neuvector_enabled ? 1 : 0
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
 resource "tls_self_signed_cert" "ca" {
-  private_key_pem   = tls_private_key.ca.private_key_pem
+  count             = var.neuvector_enabled ? 1 : 0
+  private_key_pem   = tls_private_key.ca[0].private_key_pem
   is_ca_certificate = true
   subject {
     common_name = "${var.neuvector_host}-ca"
@@ -18,12 +20,14 @@ resource "tls_self_signed_cert" "ca" {
 }
 
 resource "tls_private_key" "neuvector" {
+  count     = var.neuvector_enabled ? 1 : 0
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
 resource "tls_cert_request" "neuvector" {
-  private_key_pem = tls_private_key.neuvector.private_key_pem
+  count           = var.neuvector_enabled ? 1 : 0
+  private_key_pem = tls_private_key.neuvector[0].private_key_pem
   subject {
     common_name = var.neuvector_host
   }
@@ -33,9 +37,10 @@ resource "tls_cert_request" "neuvector" {
 }
 
 resource "tls_locally_signed_cert" "neuvector" {
-  cert_request_pem      = tls_cert_request.neuvector.cert_request_pem
-  ca_private_key_pem    = tls_private_key.ca.private_key_pem
-  ca_cert_pem           = tls_self_signed_cert.ca.cert_pem
+  count                 = var.neuvector_enabled ? 1 : 0
+  cert_request_pem      = tls_cert_request.neuvector[0].cert_request_pem
+  ca_private_key_pem    = tls_private_key.ca[0].private_key_pem
+  ca_cert_pem           = tls_self_signed_cert.ca[0].cert_pem
   validity_period_hours = 8760
   allowed_uses = [
     "key_encipherment",
@@ -60,8 +65,8 @@ metadata:
   namespace: cattle-neuvector-system
 type: kubernetes.io/tls
 data:
-  tls.crt: $(echo '${base64encode("${tls_locally_signed_cert.neuvector.cert_pem}${tls_self_signed_cert.ca.cert_pem}")}')
-  tls.key: $(echo '${base64encode(tls_private_key.neuvector.private_key_pem)}')
+  tls.crt: $(echo '${base64encode("${tls_locally_signed_cert.neuvector[0].cert_pem}${tls_self_signed_cert.ca[0].cert_pem}")}')
+  tls.key: $(echo '${base64encode(tls_private_key.neuvector[0].private_key_pem)}')
 CRT
 EOF
   }

@@ -24,6 +24,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_ai_factory"></a> [ai\_factory](#module\_ai\_factory) | ../../../modules/distribution/ai-factory | n/a |
 | <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh/azure | n/a |
 | <a name="module_longhorn"></a> [longhorn](#module\_longhorn) | ../../../modules/distribution/longhorn | n/a |
 | <a name="module_neuvector"></a> [neuvector](#module\_neuvector) | ../../../modules/distribution/neuvector | n/a |
@@ -53,6 +54,10 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_ai_factory_enabled"></a> [ai\_factory\_enabled](#input\_ai\_factory\_enabled) | Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
+| <a name="input_ai_factory_hc_version"></a> [ai\_factory\_hc\_version](#input\_ai\_factory\_hc\_version) | Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'. | `string` | `null` | no |
+| <a name="input_app_collection_password"></a> [app\_collection\_password](#input\_app\_collection\_password) | Specifies the SUSE AppCo password. Default is 'null'. | `string` | `null` | no |
+| <a name="input_app_collection_username"></a> [app\_collection\_username](#input\_app\_collection\_username) | Specifies the SUSE AppCo username. Default is 'null'. | `string` | `null` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'. | `number` | `350` | no |
 | <a name="input_image_offer"></a> [image\_offer](#input\_image\_offer) | Specifies the offer of the Marketplace image used when ami\_id is not provided. Default is 'null'. | `string` | `null` | no |
 | <a name="input_image_publisher"></a> [image\_publisher](#input\_image\_publisher) | Specifies the publisher of the Marketplace image used when ami\_id is not provided. Default is 'null'. | `string` | `null` | no |
@@ -70,6 +75,7 @@
 | <a name="input_neuvector_scanner_count"></a> [neuvector\_scanner\_count](#input\_neuvector\_scanner\_count) | Specifies the number of NeuVector scanner replicas to deploy. Default is 'null'. | `number` | `null` | no |
 | <a name="input_neuvector_version"></a> [neuvector\_version](#input\_neuvector\_version) | Specifies the NeuVector application version deployed by the Helm chart. Default is empty (chart default version). | `string` | `""` | no |
 | <a name="input_node_role"></a> [node\_role](#input\_node\_role) | Specifies the RKE2 node role for this instance. Valid values are 'server' or 'agent'. The role determines whether the node participates in the control plane/etcd cluster ('server') or joins as a worker node ('agent'). Default is 'agent'. | `string` | `"agent"` | no |
+| <a name="input_nvidia_password"></a> [nvidia\_password](#input\_nvidia\_password) | Specifies the NVIDIA password. Default is 'null'. | `string` | `null` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Specifies the prefix added to the names of all resources. Default is 'azure-tf'. | `string` | `"azure-tf"` | no |
 | <a name="input_public_ip_source_addresses"></a> [public\_ip\_source\_addresses](#input\_public\_ip\_source\_addresses) | Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level). | `list(string)` | `[]` | no |
 | <a name="input_rancher_bootstrap_password"></a> [rancher\_bootstrap\_password](#input\_rancher\_bootstrap\_password) | Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled. Default is empty. | `string` | `""` | no |
@@ -86,6 +92,7 @@
 | <a name="input_suse_observability_license"></a> [suse\_observability\_license](#input\_suse\_observability\_license) | Specifies the SUSE Observability license key required for installation. Default is 'null'. | `string` | `""` | no |
 | <a name="input_suse_observability_profile"></a> [suse\_observability\_profile](#input\_suse\_observability\_profile) | Specifies the SUSE Observability deployment sizing profile. Supported values depend on the Helm chart configuration. Default is 'trial'. | `string` | `"trial"` | no |
 | <a name="input_suse_observability_rancher_auth"></a> [suse\_observability\_rancher\_auth](#input\_suse\_observability\_rancher\_auth) | Specifies whether Rancher should be used as the OIDC provider for SUSE Observability. Default is 'false'. | `bool` | `false` | no |
+| <a name="input_suse_registry_password"></a> [suse\_registry\_password](#input\_suse\_registry\_password) | Specifies the SUSE registry password. Default is 'null'. | `string` | `null` | no |
 
 ## Outputs
 
