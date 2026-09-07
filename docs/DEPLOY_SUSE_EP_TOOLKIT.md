@@ -72,4 +72,4 @@ If you need to view or inspect the deployment outputs (such as URLs, credentials
 terraform output
 ```
 
-![](./images/DEPLOY_SUSE_EP_TOOLKIT_1.png)
+![](../images/DEPLOY_SUSE_EP_TOOLKIT_1.png)

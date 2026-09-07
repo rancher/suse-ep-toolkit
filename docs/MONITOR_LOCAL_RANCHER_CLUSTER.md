@@ -17,7 +17,7 @@ Before starting the instrumentation process, ensure you have a running environme
 
 For detailed instructions on setting up the infrastructure on GCP using K3s (with Rancher, Longhorn, and SUSE Observability enabled), follow the deployment guide:
 
-* **[DEPLOY_SUSE_EP_TOOLKIT.md](./DEPLOY_SUSE_EP_TOOLKIT.md)**
+* **[DEPLOY_SUSE_EP_TOOLKIT.md](../DEPLOY_SUSE_EP_TOOLKIT.md)**
 
 ### Step 2: Verify SUSE Observability Access
 
@@ -29,9 +29,9 @@ terraform output observability_url
 
 Open the URL in your browser and verify that the SUSE Observability UI dashboard is accessible.
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_1.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_1.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_2.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_2.png)
 
 ## Local Cluster Instrumentation
 
@@ -43,9 +43,9 @@ To monitor the local Rancher cluster, you must first register a new instance wit
 
 2. Add a new instance and name it `demo`.
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_3.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_3.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_4.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_4.png)
 
 ### Step 2: Select the Rancher UI Instrumentation Procedure
 
@@ -55,7 +55,7 @@ Because we are instrumenting the Rancher server cluster itself, SUSE Observabili
 
 2. Keep this tab open to copy the required connection parameters (**Cluster Name**, **StackState Ingest URL**, and **API Key**).
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_5.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_5.png)
 
 ### Step 3: Access the Local Rancher Cluster
 
@@ -67,9 +67,9 @@ Log in to your Rancher Management Server UI:
 
 3. Select the `local` cluster from the top-left cluster selector.
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_6.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_6.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_7.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_7.png)
 
 ### Step 4: Add the SUSE Observability Helm Repository
 
@@ -81,9 +81,9 @@ To install the agent on the `local` cluster, add the official chart repository t
 
 3. Enter the repository details for `suse-observability` and save.
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_8.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_8.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_9.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_9.png)
 
 ### Step 5: Install the SUSE Observability Agent
 
@@ -97,11 +97,11 @@ Deploy the agent Helm chart onto the local management cluster:
 
 4. When prompted for the target namespace, create and select a new namespace named `suse-observability-agent`.
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_10.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_10.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_11.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_11.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_12.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_12.png)
 
 ### Step 6: Configure Agent Connection Parameters
 
@@ -115,13 +115,13 @@ During the chart configuration step in Rancher, populate the required values ret
 
 Once configured, complete the chart installation. The agent will deploy to the `suse-observability-agent` namespace and automatically begin streaming metrics, logs, and topology data back to the SUSE Observability instance.
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_13.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_13.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_14.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_14.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_15.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_15.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_16.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_16.png)
 
 ### Step 7: Verify Deployment and Metrics Ingestion
 
@@ -133,6 +133,6 @@ After the Helm chart deployment completes, verify that the local cluster is succ
 
 3. Open the **Pods** view to confirm real-time metrics, topology, and log telemetry are being ingested from the `local` cluster workloads.
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_17.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_17.png)
 
-![](./images/MONITOR_LOCAL_RANCHER_CLUSTER_18.png)
+![](../images/MONITOR_LOCAL_RANCHER_CLUSTER_18.png)
