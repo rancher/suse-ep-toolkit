@@ -2,7 +2,7 @@ terraform {
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
-      version = "2.85.1"
+      version = "2.102.0"
     }
     ssh = {
       source  = "loafoe/ssh"
