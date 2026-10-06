@@ -12,7 +12,7 @@ locals {
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
   ssh_username                      = "opensuse"
   kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
-  volume_device                     = "/dev/sdb"
+  volume_device                     = local.is_gpu_instance ? "/dev/sdc" : "/dev/sdb"
   instance_type                     = var.instance_type
   use_marketplace_image             = var.image_publisher != null && var.image_offer != null && var.image_sku != null && var.image_version != null
   ami_id                            = local.use_marketplace_image ? null : module.os_image[0].image_id
@@ -34,6 +34,9 @@ locals {
   suse_observability_otlp_host      = "otlp-${local.suse_observability_host}"
   suse_observability_otlp_http_host = "otlp-http-${local.suse_observability_host}"
   neuvector_host                    = "neuvector.${module.k3s_first_server.instances_public_ip}.sslip.io"
+  openwebui_host                    = "openwebui.${module.k3s_first_server.instances_public_ip}.sslip.io"
+  is_gpu_instance                   = can(regex("^Standard_NC", var.instance_type))
+  suse_ai_gpu                       = var.suse_ai_enabled && local.is_gpu_instance
 }
 
 check "marketplace_image_variables" {
@@ -64,95 +67,113 @@ resource "azurerm_resource_group" "rg" {
 }
 
 module "k3s_first" {
-  source        = "../../../modules/distribution/k3s"
-  node_role     = "server"
-  k3s_token     = local.k3s_token
-  k3s_version   = var.k3s_version
-  volume_device = local.volume_device
+  source                = "../../../modules/distribution/k3s"
+  node_role             = "server"
+  k3s_token             = local.k3s_token
+  k3s_version           = var.k3s_version
+  volume_device         = local.volume_device
+  is_gpu_instance       = local.is_gpu_instance
+  install_prerequisites = local.use_marketplace_image
 }
 
 module "k3s_first_server" {
-  source                     = "../../../modules/infrastructure/azure/virtual-machine"
-  prefix                     = "${var.prefix}-server-1"
-  region                     = var.region
-  ssh_public_key_content     = module.identity.ssh_public_key
-  instance_type              = local.instance_type
-  data_disk_size             = var.data_disk_size
-  public_ip_source_addresses = local.public_ip_source_addresses
-  ami_id                     = local.ami_id
-  image_publisher            = var.image_publisher
-  image_offer                = var.image_offer
-  image_sku                  = var.image_sku
-  image_version              = var.image_version
-  resource_group             = local.resource_group
-  instance_count             = 1
-  spot_instance              = var.spot_instance
-  create_network_resources   = true
-  user_data                  = local.first_server_user_data
+  source                          = "../../../modules/infrastructure/azure/virtual-machine"
+  prefix                          = "${var.prefix}-server-1"
+  region                          = var.region
+  zone                            = var.zone
+  ssh_public_key_content          = module.identity.ssh_public_key
+  ssh_private_key_content         = module.identity.ssh_private_key
+  instance_type                   = local.instance_type
+  data_disk_size                  = var.data_disk_size
+  disk_iops_read_write            = var.disk_iops_read_write
+  disk_throughput_mbps_read_write = var.disk_throughput_mbps_read_write
+  public_ip_source_addresses      = local.public_ip_source_addresses
+  ami_id                          = local.ami_id
+  image_publisher                 = var.image_publisher
+  image_offer                     = var.image_offer
+  image_sku                       = var.image_sku
+  image_version                   = var.image_version
+  resource_group                  = local.resource_group
+  instance_count                  = 1
+  spot_instance                   = var.spot_instance
+  create_network_resources        = true
+  user_data                       = local.first_server_user_data
 }
 
 module "k3s_additional_servers" {
-  source        = "../../../modules/distribution/k3s"
-  node_role     = "server"
-  k3s_token     = local.k3s_token
-  k3s_version   = var.k3s_version
-  volume_device = local.volume_device
-  server_url    = local.first_server_url
+  source                = "../../../modules/distribution/k3s"
+  node_role             = "server"
+  k3s_token             = local.k3s_token
+  k3s_version           = var.k3s_version
+  volume_device         = local.volume_device
+  server_url            = local.first_server_url
+  is_gpu_instance       = local.is_gpu_instance
+  install_prerequisites = local.use_marketplace_image
 }
 
 module "k3s_servers" {
-  for_each                   = toset(local.server_nodes)
-  source                     = "../../../modules/infrastructure/azure/virtual-machine"
-  prefix                     = "${var.prefix}-server-${each.value}"
-  region                     = var.region
-  ssh_public_key_content     = module.identity.ssh_public_key
-  instance_type              = local.instance_type
-  data_disk_size             = var.data_disk_size
-  public_ip_source_addresses = local.public_ip_source_addresses
-  ami_id                     = local.ami_id
-  image_publisher            = var.image_publisher
-  image_offer                = var.image_offer
-  image_sku                  = var.image_sku
-  image_version              = var.image_version
-  resource_group             = local.resource_group
-  instance_count             = 1
-  spot_instance              = var.spot_instance
-  create_network_resources   = false
-  subnet_id                  = module.k3s_first_server.azure_subnet
-  nsg_id                     = module.k3s_first_server.azure_nsg
-  user_data                  = local.server_user_data
+  for_each                        = toset(local.server_nodes)
+  source                          = "../../../modules/infrastructure/azure/virtual-machine"
+  prefix                          = "${var.prefix}-server-${each.value}"
+  region                          = var.region
+  zone                            = var.zone
+  ssh_public_key_content          = module.identity.ssh_public_key
+  ssh_private_key_content         = module.identity.ssh_private_key
+  instance_type                   = local.instance_type
+  data_disk_size                  = var.data_disk_size
+  disk_iops_read_write            = var.disk_iops_read_write
+  disk_throughput_mbps_read_write = var.disk_throughput_mbps_read_write
+  public_ip_source_addresses      = local.public_ip_source_addresses
+  ami_id                          = local.ami_id
+  image_publisher                 = var.image_publisher
+  image_offer                     = var.image_offer
+  image_sku                       = var.image_sku
+  image_version                   = var.image_version
+  resource_group                  = local.resource_group
+  instance_count                  = 1
+  spot_instance                   = var.spot_instance
+  create_network_resources        = false
+  subnet_id                       = module.k3s_first_server.azure_subnet
+  nsg_id                          = module.k3s_first_server.azure_nsg
+  user_data                       = local.server_user_data
 }
 
 module "k3s_additional_workers" {
-  source        = "../../../modules/distribution/k3s"
-  node_role     = "agent"
-  k3s_token     = local.k3s_token
-  k3s_version   = var.k3s_version
-  volume_device = local.volume_device
-  server_url    = local.first_server_url
+  source                = "../../../modules/distribution/k3s"
+  node_role             = "agent"
+  k3s_token             = local.k3s_token
+  k3s_version           = var.k3s_version
+  volume_device         = local.volume_device
+  server_url            = local.first_server_url
+  is_gpu_instance       = local.is_gpu_instance
+  install_prerequisites = local.use_marketplace_image
 }
 
 module "k3s_workers" {
-  for_each                   = toset(local.worker_nodes)
-  source                     = "../../../modules/infrastructure/azure/virtual-machine"
-  prefix                     = "${var.prefix}-worker-${each.value}"
-  region                     = var.region
-  ssh_public_key_content     = module.identity.ssh_public_key
-  instance_type              = local.instance_type
-  data_disk_size             = var.data_disk_size
-  public_ip_source_addresses = local.public_ip_source_addresses
-  ami_id                     = local.ami_id
-  image_publisher            = var.image_publisher
-  image_offer                = var.image_offer
-  image_sku                  = var.image_sku
-  image_version              = var.image_version
-  resource_group             = local.resource_group
-  instance_count             = 1
-  spot_instance              = var.spot_instance
-  create_network_resources   = false
-  subnet_id                  = module.k3s_first_server.azure_subnet
-  nsg_id                     = module.k3s_first_server.azure_nsg
-  user_data                  = local.worker_user_data
+  for_each                        = toset(local.worker_nodes)
+  source                          = "../../../modules/infrastructure/azure/virtual-machine"
+  prefix                          = "${var.prefix}-worker-${each.value}"
+  region                          = var.region
+  zone                            = var.zone
+  ssh_public_key_content          = module.identity.ssh_public_key
+  ssh_private_key_content         = module.identity.ssh_private_key
+  instance_type                   = local.instance_type
+  data_disk_size                  = var.data_disk_size
+  disk_iops_read_write            = var.disk_iops_read_write
+  disk_throughput_mbps_read_write = var.disk_throughput_mbps_read_write
+  public_ip_source_addresses      = local.public_ip_source_addresses
+  ami_id                          = local.ami_id
+  image_publisher                 = var.image_publisher
+  image_offer                     = var.image_offer
+  image_sku                       = var.image_sku
+  image_version                   = var.image_version
+  resource_group                  = local.resource_group
+  instance_count                  = 1
+  spot_instance                   = var.spot_instance
+  create_network_resources        = false
+  subnet_id                       = module.k3s_first_server.azure_subnet
+  nsg_id                          = module.k3s_first_server.azure_nsg
+  user_data                       = local.worker_user_data
 }
 
 data "local_file" "ssh_private_key" {
@@ -162,6 +183,7 @@ data "local_file" "ssh_private_key" {
 
 resource "ssh_resource" "retrieve_kubeconfig" {
   depends_on = [
+    module.k3s_first_server,
     module.k3s_servers,
     module.k3s_workers
   ]
@@ -190,36 +212,9 @@ provider "helm" {
   }
 }
 
-resource "null_resource" "install_prerequisites" {
-  count      = local.use_marketplace_image ? var.instance_count : 0
-  depends_on = [module.k3s_first_server, module.k3s_additional_servers, module.k3s_servers, module.k3s_workers]
-  connection {
-    type        = "ssh"
-    user        = local.ssh_username
-    private_key = data.local_file.ssh_private_key.content
-    host = element(
-      concat(
-        [module.k3s_first_server.instances_public_ip],
-        flatten([for m in module.k3s_servers : m.instances_public_ip]),
-        flatten([for m in module.k3s_workers : m.instances_public_ip])
-      ),
-      count.index
-    )
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "sleep 15",
-      "while sudo fuser /var/run/zypp.pid >/dev/null 2>&1; do echo 'Waiting for initial zypper lock...'; sleep 3; done",
-      "sudo rm -f /var/run/zypp.pid /var/lib/Zypper/lock",
-      "sudo zypper --non-interactive install -y curl tar which python3 open-iscsi nfs-client cryptsetup device-mapper util-linux || true",
-      "sudo systemctl enable --now iscsid || true"
-    ]
-  }
-}
-
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [module.k3s_first_server, null_resource.install_prerequisites]
+  depends_on              = [module.k3s_first_server, local_file.kubeconfig_yaml]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version
@@ -285,4 +280,24 @@ module "ai_factory" {
   app_collection_password = var.app_collection_password
   nvidia_password         = var.nvidia_password
   suse_registry_password  = var.suse_registry_password
+}
+
+module "suse_ai" {
+  source                  = "../../../modules/distribution/suse-ai"
+  depends_on              = [module.k3s_first_server, module.rancher]
+  suse_ai_enabled         = var.suse_ai_enabled
+  suse_ai_gpu             = local.suse_ai_gpu
+  milvus_hc_version       = var.milvus_hc_version
+  ollama_hc_version       = var.ollama_hc_version
+  openwebui_hc_version    = var.openwebui_hc_version
+  app_collection_username = var.app_collection_username
+  app_collection_password = var.app_collection_password
+  openwebui_host          = local.openwebui_host
+  ssh_private_key         = data.local_file.ssh_private_key.content
+  node_ips = concat(
+    [module.k3s_first_server.instances_public_ip],
+    flatten([for m in module.k3s_servers : m.instances_public_ip]),
+    flatten([for m in module.k3s_workers : m.instances_public_ip])
+  )
+  kubeconfig_path = local_file.kubeconfig_yaml.filename
 }

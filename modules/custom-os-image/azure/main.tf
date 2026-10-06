@@ -99,6 +99,7 @@ resource "azurerm_image" "harvester" {
   name                = "HarvesterCloudCertifiedImage"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  hyper_v_generation  = "V2"
   os_disk {
     os_type      = "Linux"
     os_state     = "Generalized"

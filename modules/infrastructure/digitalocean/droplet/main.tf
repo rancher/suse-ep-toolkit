@@ -32,6 +32,21 @@ resource "digitalocean_droplet" "nodes" {
   image     = var.image_id
   ssh_keys  = [var.ssh_key_id]
   user_data = var.user_data
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Waiting for startup script to complete...'",
+      "while [ ! -f /var/run/startup_script_done ]; do echo 'Startup script is still running, sleeping 3 seconds' && sleep 3; done",
+      "echo 'Completed startup script!'"
+    ]
+
+    connection {
+      type        = "ssh"
+      host        = self.ipv4_address
+      user        = local.ssh_username
+      private_key = var.ssh_private_key_content
+    }
+  }
 }
 
 resource "digitalocean_firewall" "main_firewall" {

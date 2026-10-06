@@ -9,6 +9,7 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 6.42.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
@@ -30,6 +31,7 @@ No modules.
 | [aws_subnet.public](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/subnet) | resource |
 | [aws_volume_attachment.data_attach](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/volume_attachment) | resource |
 | [aws_vpc.vpc](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/vpc) | resource |
+| [null_resource.checking_cloud_init_script](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_id.volume_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [aws_ec2_instance_type_offerings.available](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/data-sources/ec2_instance_type_offerings) | data source |
 
@@ -51,6 +53,7 @@ No modules.
 | <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'. | `bool` | `true` | no |
 | <a name="input_ssh_key_content"></a> [ssh\_key\_content](#input\_ssh\_key\_content) | Specifies the public SSH key content used to create the AWS EC2 Key Pair. Default is 'null'. | `string` | `null` | no |
 | <a name="input_ssh_key_name"></a> [ssh\_key\_name](#input\_ssh\_key\_name) | Specifies the name of the AWS EC2 Key Pair used to access the instances through SSH. Default is 'null'. | `string` | `null` | no |
+| <a name="input_ssh_username"></a> [ssh\_username](#input\_ssh\_username) | Specifies username used for ssh connection | `string` | `null` | no |
 | <a name="input_startup_script"></a> [startup\_script](#input\_startup\_script) | Specifies a bash prep script to execute before passing cloud-init user\_data. Default is null. | `string` | `null` | no |
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | Specifies the ID of an existing AWS subnet where the EC2 instances will be deployed. Default is 'null'. | `string` | `null` | no |
 | <a name="input_user_data"></a> [user\_data](#input\_user\_data) | Specifies cloud-init user\_data used to bootstrap the EC2 instance. Default is 'null'. | `string` | `null` | no |

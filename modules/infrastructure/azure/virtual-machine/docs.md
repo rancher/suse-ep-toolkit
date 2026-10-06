@@ -9,6 +9,7 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.79.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
@@ -32,6 +33,7 @@ No modules.
 | [azurerm_subnet.subnet](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/subnet) | resource |
 | [azurerm_virtual_machine_data_disk_attachment.data_disk_attachment](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/virtual_machine_data_disk_attachment) | resource |
 | [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/virtual_network) | resource |
+| [null_resource.checking_cloud_init_script](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_id.volume_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [random_string.random](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 
@@ -43,7 +45,9 @@ No modules.
 | <a name="input_create_network_resources"></a> [create\_network\_resources](#input\_create\_network\_resources) | Specifies whether to create the VNet networking resources (security group and related resources). Default is 'false'. | `bool` | `false` | no |
 | <a name="input_data_disk_count"></a> [data\_disk\_count](#input\_data\_disk\_count) | Specifies the number of additional data disks to attach to each VM instance. Default is '1'. | `number` | `1` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'. | `number` | `350` | no |
-| <a name="input_data_disk_type"></a> [data\_disk\_type](#input\_data\_disk\_type) | Specifies the type of the disks attached to each node ('Standard\_LRS, 'StandardSSD\_LRS', 'Premium\_LRS' or 'UltraSSD\_LRS'). Default is 'Premium\_LRS'. | `string` | `"Premium_LRS"` | no |
+| <a name="input_data_disk_type"></a> [data\_disk\_type](#input\_data\_disk\_type) | Specifies the type of the disks attached to each node ('Standard\_LRS, 'StandardSSD\_LRS', 'Premium\_LRS' or 'UltraSSD\_LRS'). Default is 'PremiumV2\_LRS'. | `string` | `"PremiumV2_LRS"` | no |
+| <a name="input_disk_iops_read_write"></a> [disk\_iops\_read\_write](#input\_disk\_iops\_read\_write) | Specifies the amount of disk IOPS on the data disk | `number` | `3000` | no |
+| <a name="input_disk_throughput_mbps_read_write"></a> [disk\_throughput\_mbps\_read\_write](#input\_disk\_throughput\_mbps\_read\_write) | Specifies the amount of disk throughput on the data disk | `number` | `750` | no |
 | <a name="input_image_offer"></a> [image\_offer](#input\_image\_offer) | Specifies the offer of the Marketplace image used when ami\_id is not provided. Default is 'null'. | `string` | `null` | no |
 | <a name="input_image_publisher"></a> [image\_publisher](#input\_image\_publisher) | Specifies the publisher of the Marketplace image used when ami\_id is not provided. Default is 'null'. | `string` | `null` | no |
 | <a name="input_image_sku"></a> [image\_sku](#input\_image\_sku) | Specifies the SKU of the Marketplace image used when ami\_id is not provided. Default is 'null'. | `string` | `null` | no |
@@ -53,15 +57,17 @@ No modules.
 | <a name="input_ip_cidr_range"></a> [ip\_cidr\_range](#input\_ip\_cidr\_range) | Specifies the range of private IPs available for the Azure Subnet and VNet. Default is '10.10.0.0'. | `string` | `"10.10.0.0/24"` | no |
 | <a name="input_nsg_id"></a> [nsg\_id](#input\_nsg\_id) | Specifies the ID of an existing Azure Network Security Group where the Virtual Machines instances will be deployed. Default is 'null'. | `string` | `null` | no |
 | <a name="input_os_disk_size"></a> [os\_disk\_size](#input\_os\_disk\_size) | Specifies the size of the disk attached to each node, in GB. Default is '100'. | `string` | `"100"` | no |
-| <a name="input_os_disk_type"></a> [os\_disk\_type](#input\_os\_disk\_type) | Specifies the type of the disk attached to each node ('Standard\_LRS, 'StandardSSD\_LRS', 'Premium\_LRS' or 'UltraSSD\_LRS'). Default is 'StandardSSD\_LRS'. | `string` | `"StandardSSD_LRS"` | no |
+| <a name="input_os_disk_type"></a> [os\_disk\_type](#input\_os\_disk\_type) | Specifies the type of the disk attached to each node ('Standard\_LRS, 'StandardSSD\_LRS', 'Premium\_LRS' or 'UltraSSD\_LRS'). Default is 'StandardSSD\_LRS'. | `string` | `"Premium_LRS"` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Specifies the prefix added to the names of all resources. Default is 'azure-tf'. | `string` | `"azure-tf"` | no |
 | <a name="input_public_ip_source_addresses"></a> [public\_ip\_source\_addresses](#input\_public\_ip\_source\_addresses) | Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level). | `list(string)` | `[]` | no |
 | <a name="input_region"></a> [region](#input\_region) | Specifies the Azure region used for all resources. Default is 'westeurope'. | `string` | `"westeurope"` | no |
-| <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | Specifies the resource group where resources will be allocated. Default is 'null'. | <pre>object({<br>    name     = string<br>    location = string<br>  })</pre> | `null` | no |
+| <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | Specifies the resource group where resources will be allocated. Default is 'null'. | <pre>object({<br/>    name     = string<br/>    location = string<br/>  })</pre> | `null` | no |
 | <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'. | `bool` | `true` | no |
+| <a name="input_ssh_private_key_content"></a> [ssh\_private\_key\_content](#input\_ssh\_private\_key\_content) | Specifies the private SSH key content. Default is 'null'. | `string` | `null` | no |
 | <a name="input_ssh_public_key_content"></a> [ssh\_public\_key\_content](#input\_ssh\_public\_key\_content) | Specifies the public SSH key content. Default is 'null'. | `string` | `null` | no |
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | Specifies the ID of an existing Azure subnet where the Virtual Machines instances will be deployed. Default is 'null'. | `string` | `null` | no |
 | <a name="input_user_data"></a> [user\_data](#input\_user\_data) | Specifies cloud-init user\_data used to bootstrap the Azure Virtual Machine. Default is 'null'. | `string` | `null` | no |
+| <a name="input_zone"></a> [zone](#input\_zone) | Specifies the zone where resources will be created | `number` | `null` | no |
 
 ## Outputs
 

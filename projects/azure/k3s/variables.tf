@@ -78,6 +78,12 @@ variable "region" {
   }
 }
 
+variable "zone" {
+  description = "Specifies the zone where resources will be created"
+  type        = number
+  default     = 1
+}
+
 variable "instance_count" {
   description = "Specifies the number of Azure virtual machines instances (nodes) to create for the k3s cluster. This value defines the total cluster size, including the first server node, additional server nodes (if count <= 3), and worker nodes (if count > 3). Default is '1'."
   type        = number
@@ -107,7 +113,9 @@ variable "instance_type" {
       "Standard_D32s_v5",
       "Standard_D48s_v5",
       "Standard_D64s_v5",
-      "Standard_D96s_v5"
+      "Standard_D96s_v5",
+      "Standard_NC40ads_H100_v5",
+      "Standard_NC16as_T4_v3"
     ], var.instance_type)
     error_message = "Instance type not allowed. Must be from dsv5 series https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/dsv5-series"
   }
@@ -138,9 +146,21 @@ variable "image_version" {
 }
 
 variable "data_disk_size" {
-  description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'."
+  description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '500'."
   type        = number
-  default     = 350
+  default     = 500
+}
+
+variable "disk_throughput_mbps_read_write" {
+  description = "Specifies the amount of disk throughput on the data disk"
+  type        = number
+  default     = 1000
+}
+
+variable "disk_iops_read_write" {
+  description = "Specifies the amount of disk IOPS on the data disk"
+  type        = number
+  default     = 6000
 }
 
 variable "public_ip_source_addresses" {
@@ -190,13 +210,6 @@ variable "longhorn_enabled" {
   description = "Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
-  validation {
-    condition = (
-      var.longhorn_enabled == false ||
-      var.instance_count >= 3
-    )
-    error_message = "When longhorn_enabled is true, instance_count must be at least 3."
-  }
 }
 
 variable "longhorn_admin_password" {
@@ -439,6 +452,39 @@ variable "nvidia_password" {
 
 variable "suse_registry_password" {
   description = "Specifies the SUSE registry password. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "suse_ai_enabled" {
+  description = "Specifies whether suse ai stack will be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      var.rancher_enabled == true &&
+      var.longhorn_enabled == true
+    )
+    error_message = "When suse_ai_enabled is true, enabled_enabled and Longhorn_enabled must also be true."
+  }
+}
+
+
+variable "milvus_hc_version" {
+  description = "Specifies the milvus Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = "4.2.2"
+}
+
+variable "ollama_hc_version" {
+  description = "Specifies the ollama Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "openwebui_hc_version" {
+  description = "Specifies the ollama Helm chart version to install. Default is null (latest version)."
   type        = string
   default     = null
 }

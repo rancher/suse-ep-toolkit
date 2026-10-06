@@ -7,6 +7,9 @@ project_id = ""
 ## -- Specifies the GCP region used for all resources.
 region = "europe-west1"
 
+## -- Specifies the GCP zone letter (e.g., 'a', 'b', 'c') where the instances will be deployed. If null, a zone in the region will be randomly chosen.
+# zone = "b"
+
 ## -- Specifies the number of Compute Engine instances (nodes) to create for the K3s cluster.
 instance_count = 1
 
@@ -15,6 +18,12 @@ spot_instance = true
 
 ## -- Specifies the name of the Compute Engine instance type.
 instance_type = "n2-standard-8"
+
+## -- Specifies the type of GPU to be used (e.g., nvidia-tesla-t4).
+# gpu_type = "nvidia-tesla-t4"
+
+## -- Specifies the count of GPU to be attached to the VM.
+# gpu_count = 0
 
 ## -- Specifies the image family, self_link or name of the OS image.
 ami_id = ""
@@ -44,7 +53,7 @@ longhorn_hc_version = null
 rancher_enabled = false
 
 ## -- Specifies the Rancher Helm chart version to install.
-rancher_version = null
+rancher_hc_version = null
 
 ## -- Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled.
 rancher_bootstrap_password = null
@@ -88,11 +97,23 @@ neuvector_controller_count = null
 ## -- Specifies the number of NeuVector scanner replicas to deploy.
 neuvector_scanner_count = null
 
-## -- Specifies whether Rancher should be installed on the Kubernetes cluster.
+## -- Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster.
 ai_factory_enabled = false
 
-## -- Specifies the Rancher Helm chart version to install.
+## -- Specifies the SUSE AI Factory Helm chart version to install.
 ai_factory_hc_version = null
+
+## -- Specifies whether SUSE AI stack should be installed on the Kubernetes cluster.
+suse_ai_enabled = false
+
+## -- Specifies the Milvus Helm chart version to install.
+milvus_hc_version = null
+
+## -- Specifies the Ollama Helm chart version to install.
+ollama_hc_version = null
+
+## -- Specifies the Open WebUI Helm chart version to install.
+openwebui_hc_version = null
 
 ## -- Specifies the SUSE AppCo username.
 app_collection_username = null

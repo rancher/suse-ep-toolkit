@@ -1,7 +1,7 @@
 locals {
   letters          = ["b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t"]
   instance_os_type = "opensuse"
-  ssh_username     = local.instance_os_type
+  ssh_username     = var.ssh_username
   common_tags = {
     Name       = "${var.prefix}"
     Workload   = "harvester"
@@ -170,4 +170,22 @@ resource "aws_volume_attachment" "data_attach" {
   device_name = "/dev/sd${local.letters[count.index]}"
   volume_id   = aws_ebs_volume.data[count.index].id
   instance_id = aws_instance.vm[floor(count.index / var.data_disk_count)].id
+}
+
+resource "null_resource" "checking_cloud_init_script" {
+  depends_on = [aws_instance.vm, aws_eip_association.eip_assoc]
+  connection {
+    type        = "ssh"
+    host        = var.create_network_resources ? aws_eip.static_ip[0].public_ip : aws_instance.vm[0].public_ip
+    user        = local.ssh_username
+    private_key = var.ssh_key_content
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Waiting for startup script to complete...'",
+      "while [ ! -f /var/run/startup_script_done ]; do echo 'Startup script is still running, sleeping 3 seconds' && sleep 3; done",
+      "echo 'Completed startup script!'"
+    ]
+  }
 }

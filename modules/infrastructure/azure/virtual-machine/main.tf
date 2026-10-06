@@ -139,6 +139,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   resource_group_name = var.resource_group.name
   location            = var.resource_group.location
   size                = var.instance_type
+  zone                = var.zone
   admin_username      = local.ssh_username
   network_interface_ids = [
     azurerm_network_interface.nic.id
@@ -150,7 +151,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
     public_key = var.ssh_public_key_content
   }
   os_disk {
-    caching              = "ReadWrite"
+    caching              = "None"
     storage_account_type = var.os_disk_type
     disk_size_gb         = var.os_disk_size
   }
@@ -177,6 +178,9 @@ resource "azurerm_managed_disk" "data_disk" {
   create_option        = "Empty"
   disk_size_gb         = var.data_disk_size
   tags                 = local.common_tags
+  zone                 = var.zone
+  disk_iops_read_write = var.disk_iops_read_write
+  disk_mbps_read_write = var.disk_throughput_mbps_read_write
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "data_disk_attachment" {
@@ -184,5 +188,23 @@ resource "azurerm_virtual_machine_data_disk_attachment" "data_disk_attachment" {
   managed_disk_id    = azurerm_managed_disk.data_disk[count.index].id
   virtual_machine_id = azurerm_linux_virtual_machine.vm[floor(count.index / var.data_disk_count)].id
   lun                = count.index
-  caching            = "ReadWrite"
+  caching            = "None"
+}
+
+resource "null_resource" "checking_cloud_init_script" {
+  depends_on = [azurerm_linux_virtual_machine.vm, azurerm_virtual_machine_data_disk_attachment.data_disk_attachment]
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Waiting for startup script to complete...'",
+      "while [ ! -f /var/run/startup_script_done ]; do echo 'Startup script is still running, sleeping 3 seconds' && sleep 3; done",
+      "echo 'Completed startup script!'"
+    ]
+
+    connection {
+      type        = "ssh"
+      host        = azurerm_linux_virtual_machine.vm[0].public_ip_address
+      user        = local.ssh_username
+      private_key = var.ssh_private_key_content
+    }
+  }
 }

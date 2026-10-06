@@ -25,3 +25,7 @@ output "observability_url" {
 output "neuvector_url" {
   value = var.neuvector_enabled ? "https://neuvector.${module.k3s_first_server.instances_public_ip[0]}.sslip.io" : null
 }
+
+output "open_webui_url" {
+  value = var.suse_ai_enabled ? "https://openwebui.${module.k3s_first_server.instances_public_ip[0]}.sslip.io" : null
+}

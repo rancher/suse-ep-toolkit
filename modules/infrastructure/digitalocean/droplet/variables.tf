@@ -32,6 +32,12 @@ variable "ssh_key_id" {
   default = null
 }
 
+variable "ssh_private_key_content" {
+  description = "Specifies the private SSH key content. Default is 'null'."
+  type        = string
+  default     = null
+}
+
 variable "instance_count" {
   description = "Specifies the number of Droplets to create. Default is 1."
   type        = number

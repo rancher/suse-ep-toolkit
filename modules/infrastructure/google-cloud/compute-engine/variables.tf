@@ -59,13 +59,23 @@ variable "region" {
 }
 
 variable "zone" {
-  description = "Specifies the GCP zone where the instances will be deployed. If null, a zone in the region will be randomly chosen."
+  description = "Specifies the GCP zone letter (e.g., 'a', 'b', 'c') where the instances will be deployed. If null, a zone in the region will be randomly chosen."
   type        = string
   default     = null
+  validation {
+    condition     = var.zone == null ? true : can(regex("^[a-z]$", var.zone))
+    error_message = "The zone must be a single lowercase letter (e.g., 'a', 'b', 'c')."
+  }
 }
 
 variable "ssh_public_key_content" {
   description = "Specifies the public SSH key content. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "ssh_private_key_content" {
+  description = "Specifies the private SSH key content. Default is 'null'."
   type        = string
   default     = null
 }
@@ -173,4 +183,16 @@ variable "subnet_id" {
   description = "Specifies the name or self_link of an existing GCP Subnet where the instances will be deployed. Default is 'null'."
   type        = string
   default     = null
+}
+
+variable "gpu_type" {
+  description = "Specifies the type of GPU to be used."
+  type        = string
+  default     = null
+}
+
+variable "gpu_count" {
+  description = "Specifies the count of GPU to be attached to the VM."
+  type        = number
+  default     = 0
 }

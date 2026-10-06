@@ -113,13 +113,6 @@ variable "longhorn_enabled" {
   description = "Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
-  validation {
-    condition = (
-      var.longhorn_enabled == false ||
-      var.instance_count >= 3
-    )
-    error_message = "When longhorn_enabled is true, instance_count must be at least 3."
-  }
 }
 
 variable "longhorn_admin_password" {
@@ -346,12 +339,26 @@ variable "app_collection_username" {
   description = "Specifies the SUSE AppCo username. Default is 'null'."
   type        = string
   default     = null
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      (var.app_collection_username != null && length(var.app_collection_username) > 0)
+    )
+    error_message = "When suse_ai_enabled is true, app_collection_username must be provided to pull the images from SUSE Registry."
+  }
 }
 
 variable "app_collection_password" {
   description = "Specifies the SUSE AppCo password. Default is 'null'."
   type        = string
   default     = null
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      (var.app_collection_password != null && length(var.app_collection_password) > 0)
+    )
+    error_message = "When suse_ai_enabled is true, app_collection_password must be provided to pull the images from SUSE Registry."
+  }
 }
 
 variable "nvidia_password" {
@@ -362,6 +369,39 @@ variable "nvidia_password" {
 
 variable "suse_registry_password" {
   description = "Specifies the SUSE registry password. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "suse_ai_enabled" {
+  description = "Specifies whether suse ai stack will be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      var.rancher_enabled == true &&
+      var.longhorn_enabled == true
+    )
+    error_message = "When suse_ai_enabled is true, enabled_enabled and Longhorn_enabled must also be true."
+  }
+}
+
+
+variable "milvus_hc_version" {
+  description = "Specifies the milvus Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = "4.2.2"
+}
+
+variable "ollama_hc_version" {
+  description = "Specifies the ollama Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "openwebui_hc_version" {
+  description = "Specifies the ollama Helm chart version to install. Default is null (latest version)."
   type        = string
   default     = null
 }

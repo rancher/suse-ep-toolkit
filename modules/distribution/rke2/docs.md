@@ -18,6 +18,8 @@ No resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_install_prerequisites"></a> [install\_prerequisites](#input\_install\_prerequisites) | Specifies whether the instance requires packages to be installed | `bool` | `false` | no |
+| <a name="input_is_gpu_instance"></a> [is\_gpu\_instance](#input\_is\_gpu\_instance) | Specifies whether the instance contains a GPU to install GPU drivers | `bool` | `false` | no |
 | <a name="input_node_role"></a> [node\_role](#input\_node\_role) | Specifies the RKE2 node role for this instance. Valid values are 'server' or 'agent'. The role determines whether the node participates in the control plane/etcd cluster ('server') or joins as a worker node ('agent'). Default is 'agent'. | `string` | `"agent"` | no |
 | <a name="input_rke2_config"></a> [rke2\_config](#input\_rke2\_config) | Specifies additional custom RKE2 configuration in YAML format. Default is empty. | `string` | `""` | no |
 | <a name="input_rke2_ingress"></a> [rke2\_ingress](#input\_rke2\_ingress) | Specifies the ingress controller to deploy. Allowed values are 'traefik', 'nginx', or 'none'. Default is 'traefik'. | `string` | `"traefik"` | no |

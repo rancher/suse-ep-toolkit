@@ -19,6 +19,8 @@ No resources.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_disable_components"></a> [disable\_components](#input\_disable\_components) | Specifies bundled K3s components to disable. Default is empty. | `list(string)` | `[]` | no |
+| <a name="input_install_prerequisites"></a> [install\_prerequisites](#input\_install\_prerequisites) | Specifies whether the instance requires packages to be installed | `bool` | `false` | no |
+| <a name="input_is_gpu_instance"></a> [is\_gpu\_instance](#input\_is\_gpu\_instance) | Specifies whether the instance contains a GPU to install GPU drivers | `bool` | `false` | no |
 | <a name="input_k3s_config"></a> [k3s\_config](#input\_k3s\_config) | Specifies additional custom K3s configuration in YAML format. Default is empty. | `string` | `""` | no |
 | <a name="input_k3s_token"></a> [k3s\_token](#input\_k3s\_token) | Specifies the shared token used by all nodes to join the K3s cluster. Default is 'null'. | `string` | `null` | no |
 | <a name="input_k3s_version"></a> [k3s\_version](#input\_k3s\_version) | Specifies the K3s version to install. Default is 'v1.33.5+k3s1'. | `string` | `"v1.33.5+k3s1"` | no |
