@@ -34,6 +34,24 @@ resource "digitalocean_droplet" "nodes" {
   user_data = var.user_data
 }
 
+resource "null_resource" "checking_cloud_init_script" {
+  depends_on = [digitalocean_droplet.nodes, digitalocean_volume_attachment.data_disk_attachment]
+  connection {
+    type        = "ssh"
+    host        = digitalocean_droplet.nodes[0].ipv4_address
+    user        = local.ssh_username
+    private_key = var.ssh_private_key_content
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Waiting for startup script to complete...'",
+      "while [ ! -f /var/run/startup_script_done ]; do echo 'Startup script is still running, sleeping 3 seconds' && sleep 3; done",
+      "echo 'Completed startup script!'"
+    ]
+  }
+}
+
 resource "digitalocean_firewall" "main_firewall" {
   name        = "${var.prefix}-firewall"
   droplet_ids = digitalocean_droplet.nodes[*].id

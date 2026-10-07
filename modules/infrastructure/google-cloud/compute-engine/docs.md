@@ -38,6 +38,8 @@ No modules.
 | <a name="input_data_disk_count"></a> [data\_disk\_count](#input\_data\_disk\_count) | Specifies the number of additional data disks to attach to each VM instance. Default is '1'. | `number` | `1` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'. | `number` | `350` | no |
 | <a name="input_data_disk_type"></a> [data\_disk\_type](#input\_data\_disk\_type) | Specifies the type of the additional data disks ('pd-standard', 'pd-balanced', or 'pd-ssd'). Default is 'pd-ssd'. | `string` | `"pd-ssd"` | no |
+| <a name="input_gpu_count"></a> [gpu\_count](#input\_gpu\_count) | Specifies the count of GPU to be attached to the VM. | `number` | `0` | no |
+| <a name="input_gpu_type"></a> [gpu\_type](#input\_gpu\_type) | Specifies the type of GPU to be used. | `string` | `null` | no |
 | <a name="input_instance_count"></a> [instance\_count](#input\_instance\_count) | Specifies the number of GCP Compute Engine instances to create. Default is '1'. | `number` | `1` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Specifies the name of a GCP machine type. Default is 'n2-standard-8'. | `string` | `"n2-standard-8"` | no |
 | <a name="input_ip_cidr_range"></a> [ip\_cidr\_range](#input\_ip\_cidr\_range) | Specifies the range of private IPs available for the Subnet and VPC. Default is '10.10.0.0/24'. | `string` | `"10.10.0.0/24"` | no |
@@ -47,12 +49,13 @@ No modules.
 | <a name="input_public_ip_source_addresses"></a> [public\_ip\_source\_addresses](#input\_public\_ip\_source\_addresses) | Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level). | `list(string)` | `[]` | no |
 | <a name="input_region"></a> [region](#input\_region) | Specifies the GCP region used for all resources. Default is 'europe-west1'. | `string` | `"europe-west1"` | no |
 | <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'. | `bool` | `true` | no |
+| <a name="input_ssh_private_key_content"></a> [ssh\_private\_key\_content](#input\_ssh\_private\_key\_content) | Specifies the private SSH key content. Default is 'null'. | `string` | `null` | no |
 | <a name="input_ssh_public_key_content"></a> [ssh\_public\_key\_content](#input\_ssh\_public\_key\_content) | Specifies the public SSH key content. Default is 'null'. | `string` | `null` | no |
 | <a name="input_startup_script"></a> [startup\_script](#input\_startup\_script) | Specifies a Bash script executed by Google Guest Agent during the VM boot phase (useful for pre-installing OS packages). Default is 'null'. | `string` | `null` | no |
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | Specifies the name or self\_link of an existing GCP Subnet where the instances will be deployed. Default is 'null'. | `string` | `null` | no |
 | <a name="input_user_data"></a> [user\_data](#input\_user\_data) | Specifies cloud-init user\_data used to bootstrap the GCP Compute Instance. Default is 'null'. | `string` | `null` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | Specifies the name or self\_link of an existing VPC network. Default is 'null'. | `string` | `null` | no |
-| <a name="input_zone"></a> [zone](#input\_zone) | Specifies the GCP zone where the instances will be deployed. If null, a zone in the region will be randomly chosen. | `string` | `null` | no |
+| <a name="input_zone"></a> [zone](#input\_zone) | Specifies the GCP zone letter (e.g., 'a', 'b', 'c') where the instances will be deployed. If null, a zone in the region will be randomly chosen. | `string` | `null` | no |
 
 ## Outputs
 

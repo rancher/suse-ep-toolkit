@@ -108,6 +108,12 @@ variable "user_data" {
   default     = null
 }
 
+variable "ssh_username" {
+  description = "Specifies username used for ssh connection"
+  type        = string
+  default     = null
+}
+
 variable "ip_cidr_range" {
   description = "Specifies the range of private IPs available for the AWS Subnet and VPC. Default is '10.10.0.0'."
   type        = string

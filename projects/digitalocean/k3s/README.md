@@ -8,6 +8,8 @@ The deployment can optionally install and configure:
 - Rancher
 - NeuVector
 - SUSE Observability
+- SUSE AI
+- SUSE AI Factory
 
 All components are deployed automatically using reusable modules from the repository.
 
@@ -126,6 +128,45 @@ nvidia_password            = "************"
 suse_registry_password     = "************"
 ```
 
+## SUSE AI with GPU
+
+To deploy SUSE AI, you can select a GPU instance for better performance.
+
+Example:
+
+```hcl
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+instance_type              = "gpu-h100x1-80gb" # or any instance with GPU https://slugs.do-api.dev/
+
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
+## SUSE AI without GPU
+
+To deploy SUSE AI without GPU and limited performance.
+
+Example:
+
+```hcl
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
 # Example deployment scenarios
 
 ## Minimal single-node K3s cluster
@@ -167,6 +208,43 @@ nvidia_password            = "************"
 suse_registry_password     = "************"
 ```
 
+## HA K3s Cluster with Rancher and SUSE AI with GPU
+
+```hcl
+prefix                     = "<PREFIX>"
+do_token                   = "<DIGITALOCEAN_TOKEN>"
+instance_count             = 3
+
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+instance_type              = "gpu-h100x1-80gb"
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
+## HA K3s Cluster with Rancher and SUSE AI without GPU
+
+```hcl
+prefix                     = "<PREFIX>"
+do_token                   = "<DIGITALOCEAN_TOKEN>"
+instance_count             = 3
+
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
 ## Full stack deployment
 
 ```hcl
@@ -188,10 +266,13 @@ suse_observability_license      = "<LICENSE>"
 suse_observability_rancher_auth = true
 
 ai_factory_enabled              = true
-app_collection_username         = "************"
-app_collection_password         = "************"
 nvidia_password                 = "************"
 suse_registry_password          = "************"
+
+suse_ai_enabled                 = true
+
+app_collection_username         = "************"
+app_collection_password         = "************"
 ```
 
 # Terraform Apply
@@ -258,3 +339,4 @@ Depending on enabled components, the following services become available:
 - When SUSE Observability is enabled, dedicated Ingress resources for OTLP/gRPC and OTLP/HTTP are automatically created to expose the OpenTelemetry Collector
 - `sslip.io` is used by default for automatic DNS resolution
 - Multi-node deployments automatically configure HA K3s server nodes
+- OpenWebUI is accessible via the exposed Ingress URL (the first user to register will automatically become the administrator).

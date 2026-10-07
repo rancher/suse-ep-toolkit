@@ -41,7 +41,7 @@ longhorn_hc_version = null
 rancher_enabled = false
 
 ## -- Specifies the Rancher Helm chart version to install.
-rancher_version = null
+rancher_hc_version = null
 
 ## -- Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled.
 rancher_bootstrap_password = null
@@ -85,20 +85,32 @@ neuvector_controller_count = null
 ## -- Specifies the number of NeuVector scanner replicas to deploy.
 neuvector_scanner_count = null
 
-## -- Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'.
+## -- Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster.
 ai_factory_enabled = false
 
-## -- Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'.
+## -- Specifies the SUSE AI Factory Helm chart version to install.
 ai_factory_hc_version = null
 
-## -- Specifies the SUSE AppCo username. Default is 'null'.
+## -- Specifies whether SUSE AI stack should be installed on the Kubernetes cluster.
+suse_ai_enabled = false
+
+## -- Specifies the Milvus Helm chart version to install.
+milvus_hc_version = "null"
+
+## -- Specifies the Ollama Helm chart version to install.
+ollama_hc_version = null
+
+## -- Specifies the Open WebUI Helm chart version to install.
+openwebui_hc_version = null
+
+## -- Specifies the SUSE AppCo username.
 app_collection_username = null
 
-## -- Specifies the SUSE AppCo password. Default is 'null'.
+## -- Specifies the SUSE AppCo password.
 app_collection_password = null
 
-## -- Specifies the NVIDIA password. Default is 'null'.
+## -- Specifies the NVIDIA password.
 nvidia_password = null
 
-## -- Specifies the SUSE registry password. Default is 'null'.
+## -- Specifies the SUSE registry password.
 suse_registry_password = null

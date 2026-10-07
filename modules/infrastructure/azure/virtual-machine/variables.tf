@@ -85,8 +85,20 @@ variable "region" {
   }
 }
 
+variable "zone" {
+  description = "Specifies the zone where resources will be created"
+  type        = number
+  default     = null
+}
+
 variable "ssh_public_key_content" {
   description = "Specifies the public SSH key content. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "ssh_private_key_content" {
+  description = "Specifies the private SSH key content. Default is 'null'."
   type        = string
   default     = null
 }
@@ -116,9 +128,11 @@ variable "instance_type" {
       "Standard_D32s_v5",
       "Standard_D48s_v5",
       "Standard_D64s_v5",
-      "Standard_D96s_v5"
+      "Standard_D96s_v5",
+      "Standard_NC40ads_H100_v5",
+      "Standard_NC16as_T4_v3"
     ], var.instance_type)
-    error_message = "Instance type not allowed. Must be from one of the dsv5 series https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/dsv5-series"
+    error_message = "Instance type not allowed. Must be from dsv5 series https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/dsv5-series"
   }
 }
 
@@ -155,7 +169,7 @@ variable "image_version" {
 variable "os_disk_type" {
   description = "Specifies the type of the disk attached to each node ('Standard_LRS, 'StandardSSD_LRS', 'Premium_LRS' or 'UltraSSD_LRS'). Default is 'StandardSSD_LRS'."
   type        = string
-  default     = "StandardSSD_LRS"
+  default     = "Premium_LRS"
 }
 
 variable "os_disk_size" {
@@ -171,15 +185,27 @@ variable "data_disk_count" {
 }
 
 variable "data_disk_type" {
-  description = "Specifies the type of the disks attached to each node ('Standard_LRS, 'StandardSSD_LRS', 'Premium_LRS' or 'UltraSSD_LRS'). Default is 'Premium_LRS'."
+  description = "Specifies the type of the disks attached to each node ('Standard_LRS, 'StandardSSD_LRS', 'Premium_LRS' or 'UltraSSD_LRS'). Default is 'PremiumV2_LRS'."
   type        = string
-  default     = "Premium_LRS"
+  default     = "PremiumV2_LRS"
 }
 
 variable "data_disk_size" {
   description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'."
   type        = number
   default     = 350
+}
+
+variable "disk_throughput_mbps_read_write" {
+  description = "Specifies the amount of disk throughput on the data disk"
+  type        = number
+  default     = 750
+}
+
+variable "disk_iops_read_write" {
+  description = "Specifies the amount of disk IOPS on the data disk"
+  type        = number
+  default     = 3000
 }
 
 variable "public_ip_source_addresses" {

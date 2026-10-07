@@ -15,15 +15,15 @@
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | 7.30.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.5.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | n/a |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.9.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.9.1 |
 | <a name="provider_ssh"></a> [ssh](#provider\_ssh) | 2.7.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_ai_factory"></a> [ai\_factory](#module\_ai\_factory) | ../../../modules/distribution/ai-factory | n/a |
 | <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh/google-cloud | n/a |
 | <a name="module_k3s_additional_servers"></a> [k3s\_additional\_servers](#module\_k3s\_additional\_servers) | ../../../modules/distribution/k3s | n/a |
 | <a name="module_k3s_additional_workers"></a> [k3s\_additional\_workers](#module\_k3s\_additional\_workers) | ../../../modules/distribution/k3s | n/a |
@@ -35,6 +35,7 @@
 | <a name="module_neuvector"></a> [neuvector](#module\_neuvector) | ../../../modules/distribution/neuvector | n/a |
 | <a name="module_os_image"></a> [os\_image](#module\_os\_image) | ../../../modules/custom-os-image/google-cloud | n/a |
 | <a name="module_rancher"></a> [rancher](#module\_rancher) | ../../../modules/distribution/rancher | n/a |
+| <a name="module_suse_ai"></a> [suse\_ai](#module\_suse\_ai) | ../../../modules/distribution/suse-ai | n/a |
 | <a name="module_suse_observability"></a> [suse\_observability](#module\_suse\_observability) | ../../../modules/distribution/suse-observability | n/a |
 
 ## Resources
@@ -42,7 +43,6 @@
 | Name | Type |
 |------|------|
 | [local_file.kubeconfig_yaml](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
-| [null_resource.install_prerequisites](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_string.k3s_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [ssh_resource.retrieve_kubeconfig](https://registry.terraform.io/providers/loafoe/ssh/2.7.0/docs/resources/resource) | resource |
 | [google_compute_image.custom_image](https://registry.terraform.io/providers/hashicorp/google/7.30.0/docs/data-sources/compute_image) | data source |
@@ -53,8 +53,14 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_ai_factory_enabled"></a> [ai\_factory\_enabled](#input\_ai\_factory\_enabled) | Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
+| <a name="input_ai_factory_hc_version"></a> [ai\_factory\_hc\_version](#input\_ai\_factory\_hc\_version) | Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'. | `string` | `null` | no |
 | <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | Specifies the image family, self\_link, or name of the custom OS image. Must start with 'opensuse-leap-16' and end with 'x86-64'. Default is empty. | `string` | `""` | no |
+| <a name="input_app_collection_password"></a> [app\_collection\_password](#input\_app\_collection\_password) | Specifies the SUSE AppCo password. Default is 'null'. | `string` | `null` | no |
+| <a name="input_app_collection_username"></a> [app\_collection\_username](#input\_app\_collection\_username) | Specifies the SUSE AppCo username. Default is 'null'. | `string` | `null` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'. | `number` | `350` | no |
+| <a name="input_gpu_count"></a> [gpu\_count](#input\_gpu\_count) | Specifies the count of GPU to be attached to the VM. | `number` | `0` | no |
+| <a name="input_gpu_type"></a> [gpu\_type](#input\_gpu\_type) | Specifies the type of GPU to be used. | `string` | `null` | no |
 | <a name="input_instance_count"></a> [instance\_count](#input\_instance\_count) | Specifies the number of GCP Compute Engine instances (nodes) to create for the k3s cluster. This value defines the total cluster size, including the first server node, additional server nodes (if count <= 3), and worker nodes (if count > 3). Default is '1'. | `number` | `1` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Specifies the name of a GCP machine type. Default is 'n2-standard-8'. | `string` | `"n2-standard-8"` | no |
 | <a name="input_k3s_ingress"></a> [k3s\_ingress](#input\_k3s\_ingress) | Specifies the ingress controller to deploy. Allowed values are 'traefik', 'nginx', or 'none'. Default is 'traefik'. | `string` | `"traefik"` | no |
@@ -62,6 +68,7 @@
 | <a name="input_longhorn_admin_password"></a> [longhorn\_admin\_password](#input\_longhorn\_admin\_password) | Specifies the Longhorn administrator password used for securing the Longhorn UI via basic authentication. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is 'null'. | `string` | `null` | no |
 | <a name="input_longhorn_enabled"></a> [longhorn\_enabled](#input\_longhorn\_enabled) | Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
 | <a name="input_longhorn_hc_version"></a> [longhorn\_hc\_version](#input\_longhorn\_hc\_version) | Specifies the Longhorn Helm chart version to install. Default is 'null' (latest version). | `string` | `null` | no |
+| <a name="input_milvus_hc_version"></a> [milvus\_hc\_version](#input\_milvus\_hc\_version) | Specifies the milvus Helm chart version to install. Default is null (latest version). | `string` | `"4.2.2"` | no |
 | <a name="input_neuvector_admin_password"></a> [neuvector\_admin\_password](#input\_neuvector\_admin\_password) | Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is empty. | `string` | `""` | no |
 | <a name="input_neuvector_controller_count"></a> [neuvector\_controller\_count](#input\_neuvector\_controller\_count) | Specifies the number of NeuVector controller replicas to deploy. Default is 'null'. | `number` | `null` | no |
 | <a name="input_neuvector_enabled"></a> [neuvector\_enabled](#input\_neuvector\_enabled) | Specifies whether NeuVector should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
@@ -69,6 +76,9 @@
 | <a name="input_neuvector_scanner_count"></a> [neuvector\_scanner\_count](#input\_neuvector\_scanner\_count) | Specifies the number of NeuVector scanner replicas to deploy. Default is 'null'. | `number` | `null` | no |
 | <a name="input_neuvector_version"></a> [neuvector\_version](#input\_neuvector\_version) | Specifies the NeuVector application version deployed by the Helm chart. Default is empty (chart default version). | `string` | `""` | no |
 | <a name="input_node_role"></a> [node\_role](#input\_node\_role) | Specifies the k3s node role for this instance. Valid values are 'server' or 'agent'. The role determines whether the node participates in the control plane/etcd cluster ('server') or joins as a worker node ('agent'). Default is 'agent'. | `string` | `"agent"` | no |
+| <a name="input_nvidia_password"></a> [nvidia\_password](#input\_nvidia\_password) | Specifies the NVIDIA password. Default is 'null'. | `string` | `null` | no |
+| <a name="input_ollama_hc_version"></a> [ollama\_hc\_version](#input\_ollama\_hc\_version) | Specifies the ollama Helm chart version to install. Default is null (latest version). | `string` | `null` | no |
+| <a name="input_openwebui_hc_version"></a> [openwebui\_hc\_version](#input\_openwebui\_hc\_version) | Specifies the ollama Helm chart version to install. Default is null (latest version). | `string` | `null` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Specifies the prefix added to the names of all resources. Default is 'gcp-tf'. | `string` | `"gcp-tf"` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Specifies the GCP Project ID that will contain all created resources. Default is empty. | `string` | `""` | no |
 | <a name="input_public_ip_source_addresses"></a> [public\_ip\_source\_addresses](#input\_public\_ip\_source\_addresses) | Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level). | `list(string)` | `[]` | no |
@@ -77,12 +87,15 @@
 | <a name="input_rancher_hc_version"></a> [rancher\_hc\_version](#input\_rancher\_hc\_version) | Specifies the Rancher Helm chart version to install. Default is 'null' (latest version). | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | Specifies the GCP region used for all resources. Default is 'europe-west1'. | `string` | `"europe-west1"` | no |
 | <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'. | `bool` | `true` | no |
+| <a name="input_suse_ai_enabled"></a> [suse\_ai\_enabled](#input\_suse\_ai\_enabled) | Specifies whether suse ai stack will be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
 | <a name="input_suse_observability_admin_password"></a> [suse\_observability\_admin\_password](#input\_suse\_observability\_admin\_password) | Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is empty. | `string` | `""` | no |
 | <a name="input_suse_observability_enabled"></a> [suse\_observability\_enabled](#input\_suse\_observability\_enabled) | Specifies whether SUSE Observability should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
 | <a name="input_suse_observability_hc_version"></a> [suse\_observability\_hc\_version](#input\_suse\_observability\_hc\_version) | Specifies the SUSE Observability Helm chart version to install. Default is null (latest version). Default is 'null'. | `string` | `null` | no |
 | <a name="input_suse_observability_license"></a> [suse\_observability\_license](#input\_suse\_observability\_license) | Specifies the SUSE Observability license key required for installation. Default is 'null'. | `string` | `""` | no |
 | <a name="input_suse_observability_profile"></a> [suse\_observability\_profile](#input\_suse\_observability\_profile) | Specifies the SUSE Observability deployment sizing profile. Supported values depend on the Helm chart configuration. Default is 'trial'. | `string` | `"trial"` | no |
 | <a name="input_suse_observability_rancher_auth"></a> [suse\_observability\_rancher\_auth](#input\_suse\_observability\_rancher\_auth) | Specifies whether Rancher should be used as the OIDC provider for SUSE Observability. Default is 'false'. | `bool` | `false` | no |
+| <a name="input_suse_registry_password"></a> [suse\_registry\_password](#input\_suse\_registry\_password) | Specifies the SUSE registry password. Default is 'null'. | `string` | `null` | no |
+| <a name="input_zone"></a> [zone](#input\_zone) | Specifies the GCP zone letter (e.g., 'a', 'b', 'c') where the instances will be deployed. If null, a zone in the region will be randomly chosen. | `string` | `null` | no |
 
 ## Outputs
 
@@ -92,6 +105,7 @@
 | <a name="output_longhorn_url"></a> [longhorn\_url](#output\_longhorn\_url) | Longhorn web UI URL. |
 | <a name="output_neuvector_url"></a> [neuvector\_url](#output\_neuvector\_url) | NeuVector web UI URL. |
 | <a name="output_observability_url"></a> [observability\_url](#output\_observability\_url) | SUSE Observability web UI URL. |
+| <a name="output_open_webui_url"></a> [open\_webui\_url](#output\_open\_webui\_url) | n/a |
 | <a name="output_rancher_url"></a> [rancher\_url](#output\_rancher\_url) | Rancher Dashboard web UI URL. |
 | <a name="output_server_nodes_public_ip"></a> [server\_nodes\_public\_ip](#output\_server\_nodes\_public\_ip) | GCP Compute Engine instance public IPs for additional server nodes. |
 | <a name="output_worker_nodes_public_ip"></a> [worker\_nodes\_public\_ip](#output\_worker\_nodes\_public\_ip) | GCP Compute Engine instance public IPs for worker nodes. |

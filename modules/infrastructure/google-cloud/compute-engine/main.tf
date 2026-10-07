@@ -3,7 +3,7 @@ locals {
   ssh_username     = local.instance_os_type
   tcp_ports        = ["68", "443", "2379", "2380", "2381", "10010", "2112", "30000-32767", "3260", "5900", "6444", "8181", "8443", "8444", "9091", "9099", "9796", "10245", "10246-10249", "10250", "10251", "10252", "10256", "10257", "10258", "10259"]
   udp_ports        = ["8472", "68"]
-  target_zone      = var.zone != null ? var.zone : random_shuffle.random_zone[0].result[0]
+  target_zone      = var.zone != null ? "${var.region}-${var.zone}" : random_shuffle.random_zone[0].result[0]
   common_labels = {
     name       = var.prefix
     workload   = "harvester"
@@ -107,9 +107,17 @@ resource "google_compute_instance" "vm" {
   labels                  = local.common_labels
   metadata_startup_script = var.startup_script
   scheduling {
-    preemptible        = var.spot_instance
-    provisioning_model = var.spot_instance ? "SPOT" : "STANDARD"
-    automatic_restart  = var.spot_instance ? false : true
+    preemptible         = var.spot_instance
+    provisioning_model  = var.spot_instance ? "SPOT" : "STANDARD"
+    automatic_restart   = var.spot_instance ? false : true
+    on_host_maintenance = (var.spot_instance || (var.gpu_type != null && var.gpu_count != null && var.gpu_count > 0)) ? "TERMINATE" : "MIGRATE"
+  }
+  dynamic "guest_accelerator" {
+    for_each = (var.gpu_type != null && var.gpu_count != null) ? (var.gpu_count > 0 ? [1] : []) : []
+    content {
+      type  = var.gpu_type
+      count = var.gpu_count
+    }
   }
   boot_disk {
     initialize_params {
@@ -146,5 +154,20 @@ resource "google_compute_instance" "vm" {
   }
   lifecycle {
     create_before_destroy = true
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Waiting for startup script to complete...'",
+      "while [ ! -f /var/run/startup_script_done ]; do echo 'Startup script is still running, sleeping 3 seconds' && sleep 3; done",
+      "echo 'Completed startup script!'"
+    ]
+
+    connection {
+      type        = "ssh"
+      host        = self.network_interface[0].access_config[0].nat_ip
+      user        = local.ssh_username
+      private_key = var.ssh_private_key_content
+    }
   }
 }

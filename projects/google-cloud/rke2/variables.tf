@@ -60,6 +60,16 @@ variable "region" {
   }
 }
 
+variable "zone" {
+  description = "Specifies the GCP zone letter (e.g., 'a', 'b', 'c') where the instances will be deployed. If null, a zone in the region will be randomly chosen."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.zone == null ? true : can(regex("^[a-z]$", var.zone))
+    error_message = "The zone must be a single lowercase letter (e.g., 'a', 'b', 'c')."
+  }
+}
+
 variable "instance_count" {
   description = "Specifies the number of GCP Compute Engine instances (nodes) to create for the RKE2 cluster. This value defines the total cluster size, including the first server node, additional server nodes (if count <= 3), and worker nodes (if count > 3). Default is '1'."
   type        = number
@@ -79,7 +89,26 @@ variable "spot_instance" {
 variable "instance_type" {
   description = "Specifies the name of a GCP machine type. Default is 'n2-standard-8'."
   type        = string
-  default     = "n2-standard-8"
+  default     = "n2-standard-16"
+}
+
+variable "gpu_type" {
+  description = "Specifies the type of GPU to be used."
+  type        = string
+  default     = null
+}
+
+variable "gpu_count" {
+  description = "Specifies the count of GPU to be attached to the VM."
+  type        = number
+  default     = 0
+  validation {
+    condition = (
+      var.gpu_type == null ||
+      var.gpu_count == 1
+    )
+    error_message = "When gpu_type is defined, gpu_count must be 1."
+  }
 }
 
 variable "ami_id" {
@@ -148,13 +177,6 @@ variable "longhorn_enabled" {
   description = "Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
-  validation {
-    condition = (
-      var.longhorn_enabled == false ||
-      var.instance_count >= 3
-    )
-    error_message = "When longhorn_enabled is true, instance_count must be at least 3."
-  }
 }
 
 variable "longhorn_admin_password" {
@@ -397,6 +419,39 @@ variable "nvidia_password" {
 
 variable "suse_registry_password" {
   description = "Specifies the SUSE registry password. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "suse_ai_enabled" {
+  description = "Specifies whether suse ai stack will be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      var.rancher_enabled == true &&
+      var.longhorn_enabled == true
+    )
+    error_message = "When suse_ai_enabled is true, enabled_enabled and Longhorn_enabled must also be true."
+  }
+}
+
+
+variable "milvus_hc_version" {
+  description = "Specifies the milvus Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = "4.2.2"
+}
+
+variable "ollama_hc_version" {
+  description = "Specifies the ollama Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "openwebui_hc_version" {
+  description = "Specifies the ollama Helm chart version to install. Default is null (latest version)."
   type        = string
   default     = null
 }
