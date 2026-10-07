@@ -32,6 +32,16 @@ resource "digitalocean_droplet" "nodes" {
   image     = var.image_id
   ssh_keys  = [var.ssh_key_id]
   user_data = var.user_data
+}
+
+resource "null_resource" "checking_cloud_init_script" {
+  depends_on = [digitalocean_droplet.nodes, digitalocean_volume_attachment.data_disk_attachment]
+  connection {
+    type        = "ssh"
+    host        = digitalocean_droplet.nodes[0].ipv4_address
+    user        = local.ssh_username
+    private_key = var.ssh_private_key_content
+  }
 
   provisioner "remote-exec" {
     inline = [
@@ -39,13 +49,6 @@ resource "digitalocean_droplet" "nodes" {
       "while [ ! -f /var/run/startup_script_done ]; do echo 'Startup script is still running, sleeping 3 seconds' && sleep 3; done",
       "echo 'Completed startup script!'"
     ]
-
-    connection {
-      type        = "ssh"
-      host        = self.ipv4_address
-      user        = local.ssh_username
-      private_key = var.ssh_private_key_content
-    }
   }
 }
 
