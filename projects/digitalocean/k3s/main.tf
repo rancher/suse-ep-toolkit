@@ -85,6 +85,7 @@ module "k3s_servers" {
   prefix                     = "${var.prefix}-server-${each.value}"
   region                     = var.region
   ssh_key_id                 = module.identity.ssh_key_id
+  ssh_private_key_content    = module.identity.ssh_private_key
   instance_type              = local.instance_type
   data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
@@ -110,6 +111,7 @@ module "k3s_workers" {
   prefix                     = "${var.prefix}-worker-${each.value}"
   region                     = var.region
   ssh_key_id                 = module.identity.ssh_key_id
+  ssh_private_key_content    = module.identity.ssh_private_key
   instance_type              = local.instance_type
   data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
