@@ -138,8 +138,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
   name                = "${var.prefix}-vm"
   resource_group_name = var.resource_group.name
   location            = var.resource_group.location
-  size                = var.instance_type
   zone                = var.zone
+  size                = var.instance_type
   admin_username      = local.ssh_username
   network_interface_ids = [
     azurerm_network_interface.nic.id
@@ -173,12 +173,12 @@ resource "azurerm_managed_disk" "data_disk" {
   count                = var.data_disk_count
   name                 = "${var.prefix}-data-disk-${count.index + 1}"
   location             = var.resource_group.location
+  zone                 = var.zone
   resource_group_name  = var.resource_group.name
   storage_account_type = var.data_disk_type
   create_option        = "Empty"
   disk_size_gb         = var.data_disk_size
   tags                 = local.common_tags
-  zone                 = var.zone
   disk_iops_read_write = var.disk_iops_read_write
   disk_mbps_read_write = var.disk_throughput_mbps_read_write
 }
@@ -199,7 +199,6 @@ resource "null_resource" "checking_cloud_init_script" {
       "while [ ! -f /var/run/startup_script_done ]; do echo 'Startup script is still running, sleeping 3 seconds' && sleep 3; done",
       "echo 'Completed startup script!'"
     ]
-
     connection {
       type        = "ssh"
       host        = azurerm_linux_virtual_machine.vm[0].public_ip_address

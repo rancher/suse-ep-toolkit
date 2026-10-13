@@ -86,19 +86,19 @@ variable "region" {
 }
 
 variable "zone" {
-  description = "Specifies the zone where resources will be created"
+  description = "Specifies the Azure zone where resources will be allocated. Default is 'null'."
   type        = number
   default     = null
 }
 
 variable "ssh_public_key_content" {
-  description = "Specifies the public SSH key content. Default is 'null'."
+  description = "Specifies the SSH PUBLIC key content. Default is 'null'."
   type        = string
   default     = null
 }
 
 variable "ssh_private_key_content" {
-  description = "Specifies the private SSH key content. Default is 'null'."
+  description = "Specifies the SSH PRIVATE key content. Default is 'null'."
   type        = string
   default     = null
 }
@@ -167,7 +167,7 @@ variable "image_version" {
 }
 
 variable "os_disk_type" {
-  description = "Specifies the type of the disk attached to each node ('Standard_LRS, 'StandardSSD_LRS', 'Premium_LRS' or 'UltraSSD_LRS'). Default is 'StandardSSD_LRS'."
+  description = "Specifies the type of the disk attached to each node ('Standard_LRS, 'StandardSSD_LRS', 'Premium_LRS' or 'UltraSSD_LRS'). Default is 'Premium_LRS'."
   type        = string
   default     = "Premium_LRS"
 }
@@ -191,21 +191,21 @@ variable "data_disk_type" {
 }
 
 variable "data_disk_size" {
-  description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'."
+  description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '500'."
   type        = number
-  default     = 350
+  default     = 500
 }
 
 variable "disk_throughput_mbps_read_write" {
-  description = "Specifies the amount of disk throughput on the data disk"
+  description = "Specify the disk throughput value for data disks. Default is '1000'."
   type        = number
-  default     = 750
+  default     = 1000
 }
 
 variable "disk_iops_read_write" {
-  description = "Specifies the amount of disk IOPS on the data disk"
+  description = "Specify the number of disk IOPS for data disks. Default is '6000'."
   type        = number
-  default     = 3000
+  default     = 6000
 }
 
 variable "public_ip_source_addresses" {

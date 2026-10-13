@@ -180,7 +180,6 @@ resource "null_resource" "checking_cloud_init_script" {
     user        = local.ssh_username
     private_key = var.ssh_key_content
   }
-
   provisioner "remote-exec" {
     inline = [
       "echo 'Waiting for startup script to complete...'",

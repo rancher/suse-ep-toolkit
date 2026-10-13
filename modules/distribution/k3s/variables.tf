@@ -15,9 +15,9 @@ variable "k3s_token" {
 }
 
 variable "k3s_version" {
-  description = "Specifies the K3s version to install. Default is 'v1.33.5+k3s1'."
+  description = "Specifies the K3s version to install. Default is 'v1.36.5+k3s1'."
   type        = string
-  default     = "v1.33.5+k3s1"
+  default     = "v1.36.5+k3s1"
   validation {
     condition     = can(regex("^v.*$", var.k3s_version))
     error_message = "The K3s version must start with 'v'."
@@ -49,13 +49,13 @@ variable "volume_device" {
 }
 
 variable "is_gpu_instance" {
-  description = "Specifies whether the instance contains a GPU to install GPU drivers"
+  description = "Specifies whether the instance contains a GPU to install GPU drivers. Default is 'false'."
   type        = bool
   default     = false
 }
 
 variable "install_prerequisites" {
-  description = "Specifies whether the instance requires packages to be installed"
+  description = "Specifies whether the instance requires packages to be installed. Default is 'false'."
   type        = bool
   default     = false
 }

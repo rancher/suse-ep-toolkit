@@ -1,11 +1,11 @@
 variable "ai_factory_enabled" {
-  description = "Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'."
+  description = "Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
 }
 
 variable "ai_factory_hc_version" {
-  description = "Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'."
+  description = "Specifies the SUSE AI Factory Helm chart version to install. Default is 'null' (latest version)."
   type        = string
   default     = null
 }

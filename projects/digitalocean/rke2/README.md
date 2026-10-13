@@ -8,8 +8,8 @@ The deployment can optionally install and configure:
 - Rancher
 - NeuVector
 - SUSE Observability
-- SUSE AI
 - SUSE AI Factory
+- SUSE AI
 
 All components are deployed automatically using reusable modules from the repository.
 
@@ -109,9 +109,9 @@ neuvector_enabled        = true
 neuvector_admin_password = "************"
 ```
 
-## AI Factory
+## SUSE AI Factory
 
-AI Factory requires:
+SUSE AI Factory requires:
 
 ```hcl
 longhorn_enabled           = true
@@ -127,9 +127,9 @@ nvidia_password            = "************"
 suse_registry_password     = "************"
 ```
 
-## SUSE AI with GPU
+## SUSE AI with GPUs
 
-To deploy SUSE AI, you can select a GPU instance for better performance.
+To deploy SUSE AI, you must select a GPU-enabled Droplet size for better performance.
 
 Example:
 
@@ -147,9 +147,9 @@ app_collection_username    = "************"
 app_collection_password    = "************"
 ```
 
-## SUSE AI without GPU
+## SUSE AI without GPUs (CPU-only)
 
-To deploy SUSE AI without GPU and limited performance.
+To deploy SUSE AI without GPUs.
 
 Example:
 
@@ -165,6 +165,8 @@ suse_ai_enabled            = true
 app_collection_username    = "************"
 app_collection_password    = "************"
 ```
+
+Note: Performance will be reduced.
 
 # Example deployment scenarios
 
@@ -187,7 +189,7 @@ longhorn_enabled        = true
 longhorn_admin_password = "************"
 ```
 
-## HA RKE2 cluster with Rancher and AI factory
+## HA RKE2 cluster with Rancher and SUSE AI Factory
 
 ```hcl
 prefix                     = "<PREFIX>"
@@ -207,7 +209,7 @@ nvidia_password            = "************"
 suse_registry_password     = "************"
 ```
 
-## HA RKE2 Cluster with Rancher and SUSE AI with GPU
+## HA RKE2 Cluster with Rancher and SUSE AI with GPUs
 
 ```hcl
 prefix                     = "<PREFIX>"
@@ -226,7 +228,7 @@ app_collection_username    = "************"
 app_collection_password    = "************"
 ```
 
-## HA RKE2 Cluster with Rancher and SUSE AI without GPU
+## HA RKE2 Cluster with Rancher and SUSE AI without GPUs
 
 ```hcl
 prefix                     = "<PREFIX>"
@@ -339,4 +341,4 @@ Depending on enabled components, the following services become available:
 - When SUSE Observability is enabled, dedicated Ingress resources for OTLP/gRPC and OTLP/HTTP are automatically created to expose the OpenTelemetry Collector
 - `sslip.io` is used by default for automatic DNS resolution
 - Multi-node deployments automatically configure HA RKE2 server nodes
-- OpenWebUI is accessible via the exposed Ingress URL (the first user to register will automatically become the administrator).
+- OpenWebUI is accessible via the exposed Ingress URL (the first user to register will automatically become the admin).

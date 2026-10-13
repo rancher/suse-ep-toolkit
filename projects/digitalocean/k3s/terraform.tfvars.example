@@ -32,7 +32,7 @@ node_role = "agent"
 k3s_token = "SecretToken.123"
 
 ## -- Specifies the K3s version to install.
-k3s_version = "v1.33.5+k3s1"
+k3s_version = "v1.36.5+k3s1"
 
 ## -- Specifies the URL of the first K3s server node.
 server_url = null
@@ -106,11 +106,14 @@ ai_factory_enabled = false
 ## -- Specifies the SUSE AI Factory Helm chart version to install.
 ai_factory_hc_version = null
 
-## -- Specifies whether SUSE AI stack should be installed on the Kubernetes cluster.
+## -- Specifies whether SUSE AI stack with GPU should be installed on the Kubernetes cluster.
 suse_ai_enabled = false
 
+## -- Enable GPU support for SUSE AI. If true, requires a GPU-capable instance_type.
+suse_ai_gpu = false
+
 ## -- Specifies the Milvus Helm chart version to install.
-milvus_hc_version = "null"
+milvus_hc_version = "4.2.2"
 
 ## -- Specifies the Ollama Helm chart version to install.
 ollama_hc_version = null

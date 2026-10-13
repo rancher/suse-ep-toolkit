@@ -33,7 +33,7 @@ variable "ssh_key_id" {
 }
 
 variable "ssh_private_key_content" {
-  description = "Specifies the private SSH key content. Default is 'null'."
+  description = "Specifies the SSH PRIVATE key content. Default is 'null'."
   type        = string
   default     = null
 }

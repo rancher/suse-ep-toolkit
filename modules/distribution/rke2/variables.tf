@@ -53,13 +53,13 @@ variable "volume_device" {
 }
 
 variable "is_gpu_instance" {
-  description = "Specifies whether the instance contains a GPU to install GPU drivers"
+  description = "Specifies whether the instance contains a GPU to install GPU drivers. Default is 'false'."
   type        = bool
   default     = false
 }
 
 variable "install_prerequisites" {
-  description = "Specifies whether the instance requires packages to be installed"
+  description = "Specifies whether the instance requires packages to be installed. Default is 'false'."
   type        = bool
   default     = false
 }

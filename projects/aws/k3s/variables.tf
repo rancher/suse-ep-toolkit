@@ -100,9 +100,9 @@ variable "node_role" {
 }
 
 variable "k3s_version" {
-  description = "Specifies the K3s version to install. Default is 'v1.33.5+k3s1'."
+  description = "Specifies the K3s version to install. Default is 'v1.36.5+k3s1'."
   type        = string
-  default     = "v1.33.5+k3s1"
+  default     = "v1.36.5+k3s1"
   validation {
     condition     = can(regex("^v.*$", var.k3s_version))
     error_message = "The K3s version must start with 'v'."
@@ -317,7 +317,7 @@ variable "neuvector_scanner_count" {
 }
 
 variable "ai_factory_enabled" {
-  description = "Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'."
+  description = "Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
   validation {
@@ -325,12 +325,50 @@ variable "ai_factory_enabled" {
       var.ai_factory_enabled == false ||
       var.rancher_enabled == true
     )
-    error_message = "When ai_factory_enabled is true, enabled_enabled must also be true."
+    error_message = "When ai_factory_enabled is true, longhorn_enabled and rancher_enabled must also be set to true."
   }
 }
 
 variable "ai_factory_hc_version" {
-  description = "Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'."
+  description = "Specifies the SUSE AI Factory Helm chart version to install. Default is 'null' (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "suse_ai_enabled" {
+  description = "Specifies whether SUSE AI stack with GPU should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      var.rancher_enabled == true &&
+      var.longhorn_enabled == true
+    )
+    error_message = "When suse_ai_enabled is true, longhorn_enabled and rancher_enabled must also be set to true."
+  }
+}
+
+variable "suse_ai_gpu" {
+  description = "Enable GPU support for SUSE AI. If true, requires a GPU-capable instance_type. Default is 'false'."
+  type        = bool
+  default     = false
+}
+
+variable "milvus_hc_version" {
+  description = "Specifies the Milvus Helm chart version to install. Default is '4.2.2'."
+  type        = string
+  default     = "4.2.2"
+}
+
+variable "ollama_hc_version" {
+  description = "Specifies the Ollama Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "openwebui_hc_version" {
+  description = "Specifies the Open WebUI Helm chart version to install. Default is null (latest version)."
   type        = string
   default     = null
 }
@@ -369,39 +407,6 @@ variable "nvidia_password" {
 
 variable "suse_registry_password" {
   description = "Specifies the SUSE registry password. Default is 'null'."
-  type        = string
-  default     = null
-}
-
-variable "suse_ai_enabled" {
-  description = "Specifies whether suse ai stack will be installed on the Kubernetes cluster. Default is 'false'."
-  type        = bool
-  default     = false
-  validation {
-    condition = (
-      var.suse_ai_enabled == false ||
-      var.rancher_enabled == true &&
-      var.longhorn_enabled == true
-    )
-    error_message = "When suse_ai_enabled is true, enabled_enabled and Longhorn_enabled must also be true."
-  }
-}
-
-
-variable "milvus_hc_version" {
-  description = "Specifies the milvus Helm chart version to install. Default is null (latest version)."
-  type        = string
-  default     = "4.2.2"
-}
-
-variable "ollama_hc_version" {
-  description = "Specifies the ollama Helm chart version to install. Default is null (latest version)."
-  type        = string
-  default     = null
-}
-
-variable "openwebui_hc_version" {
-  description = "Specifies the ollama Helm chart version to install. Default is null (latest version)."
   type        = string
   default     = null
 }

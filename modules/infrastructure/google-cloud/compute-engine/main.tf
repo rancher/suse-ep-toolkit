@@ -155,14 +155,12 @@ resource "google_compute_instance" "vm" {
   lifecycle {
     create_before_destroy = true
   }
-
   provisioner "remote-exec" {
     inline = [
       "echo 'Waiting for startup script to complete...'",
       "while [ ! -f /var/run/startup_script_done ]; do echo 'Startup script is still running, sleeping 3 seconds' && sleep 3; done",
-      "echo 'Completed startup script!'"
+      "echo 'Startup script completed!'"
     ]
-
     connection {
       type        = "ssh"
       host        = self.network_interface[0].access_config[0].nat_ip
