@@ -134,8 +134,6 @@ variable "data_disk_size" {
   default     = 350
 }
 
-
-
 variable "public_ip_source_addresses" {
   description = "Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level)."
   type        = list(string)
@@ -192,7 +190,7 @@ variable "gpu_type" {
 }
 
 variable "gpu_count" {
-  description = "Specifies the number of GPUs to attach to the VMs. Default is 'null'."
+  description = "Specifies the number of GPUs to attach to the VMs. Default is '0'."
   type        = number
   default     = 0
 }

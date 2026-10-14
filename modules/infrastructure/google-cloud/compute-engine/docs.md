@@ -38,7 +38,7 @@ No modules.
 | <a name="input_data_disk_count"></a> [data\_disk\_count](#input\_data\_disk\_count) | Specifies the number of additional data disks to attach to each VM instance. Default is '1'. | `number` | `1` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'. | `number` | `350` | no |
 | <a name="input_data_disk_type"></a> [data\_disk\_type](#input\_data\_disk\_type) | Specifies the type of the additional data disks ('pd-standard', 'pd-balanced', or 'pd-ssd'). Default is 'pd-ssd'. | `string` | `"pd-ssd"` | no |
-| <a name="input_gpu_count"></a> [gpu\_count](#input\_gpu\_count) | Specifies the number of GPUs to attach to the VMs. Default is 'null'. | `number` | `0` | no |
+| <a name="input_gpu_count"></a> [gpu\_count](#input\_gpu\_count) | Specifies the number of GPUs to attach to the VMs. Default is '0'. | `number` | `0` | no |
 | <a name="input_gpu_type"></a> [gpu\_type](#input\_gpu\_type) | Specifies the type of GPU to use. Default is 'null'. | `string` | `null` | no |
 | <a name="input_instance_count"></a> [instance\_count](#input\_instance\_count) | Specifies the number of GCP Compute Engine instances to create. Default is '1'. | `number` | `1` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Specifies the name of a GCP machine type. Default is 'n2-standard-8'. | `string` | `"n2-standard-8"` | no |

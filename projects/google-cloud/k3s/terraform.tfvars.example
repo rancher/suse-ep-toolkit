@@ -8,7 +8,7 @@ project_id = ""
 region = "europe-west1"
 
 ## -- Specifies the GCP zone letter (e.g., 'a', 'b', 'c') where the instances will be deployed. If null, a zone in the region will be randomly chosen.
-# zone = "b"
+zone = "b"
 
 ## -- Specifies the number of Compute Engine instances (nodes) to create for the K3s cluster.
 instance_count = 1
@@ -19,12 +19,6 @@ spot_instance = true
 ## -- Specifies the name of the Compute Engine instance type.
 instance_type = "n2-standard-8"
 
-## -- Specifies the type of GPU to be used (e.g., nvidia-tesla-t4).
-# gpu_type = "nvidia-tesla-t4"
-
-## -- Specifies the count of GPU to be attached to the VM.
-# gpu_count = 0
-
 ## -- Specifies the image family, self_link or name of the OS image.
 ami_id = ""
 
@@ -34,11 +28,17 @@ data_disk_size = 350
 ## -- Specifies a list of CIDR blocks allowed to access port 22 (SSH).
 public_ip_source_addresses = []
 
+## -- Specifies the type of GPU to use (e.g., nvidia-tesla-t4).
+gpu_type = "nvidia-tesla-t4"
+
+## -- Specifies the number of GPUs to attach to the VMs.
+gpu_count = 0
+
 ## -- Specifies the shared token used by all nodes to join the k3s cluster.
 k3s_token = "SecretToken.123"
 
 ## -- Specifies the k3s version to install.
-k3s_version = "v1.35.4+k3sr1"
+k3s_version = "v1.36.5+k3s1"
 
 ## -- Specifies whether Longhorn should be installed on the Kubernetes cluster.
 longhorn_enabled = false
