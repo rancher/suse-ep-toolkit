@@ -130,7 +130,7 @@ suse_registry_password     = "************"
 
 ## SUSE AI with GPUs
 
-To deploy SUSE AI, you must select a GPU-enabled Droplet size for better performance.
+To deploy SUSE AI, you must configure gpu_type and gpu_count variables for better formance.
 
 Example:
 
