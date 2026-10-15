@@ -110,7 +110,7 @@ ai_factory_hc_version = null
 suse_ai_enabled = false
 
 ## -- Specifies the Milvus Helm chart version to install.
-milvus_hc_version = "null"
+milvus_hc_version = null
 
 ## -- Specifies the Ollama Helm chart version to install.
 ollama_hc_version = null

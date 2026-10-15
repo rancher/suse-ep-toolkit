@@ -19,12 +19,6 @@ ami_id = ""
 ## -- Specifies the size of the additional data disks attached to the EC2 instance, in GB.
 data_disk_size = 350
 
-## -- Specify the disk throughput value for data disks.
-disk_throughput_mbps_read_write = 1000
-
-## -- Specify the number of disk IOPS for data disks.
-disk_iops_read_write = 6000
-
 ## -- Specifies a list of CIDR blocks allowed to access port 22 (SSH).
 public_ip_source_addresses = []
 

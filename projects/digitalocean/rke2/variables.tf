@@ -356,7 +356,7 @@ variable "ai_factory_enabled" {
       var.ai_factory_enabled == false ||
       var.rancher_enabled == true
     )
-    error_message = "When ai_factory_enabled is true, longhorn_enabled and rancher_enabled must also be set to true."
+    error_message = "When ai_factory_enabled is true, rancher_enabled must also be set to true."
   }
 }
 
