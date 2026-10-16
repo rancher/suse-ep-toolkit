@@ -8,6 +8,8 @@ The deployment can optionally install and configure:
 - Rancher
 - NeuVector
 - SUSE Observability
+- SUSE AI Factory
+- SUSE AI
 
 All components are deployed automatically using reusable modules from the repository.
 
@@ -34,7 +36,6 @@ Some components depend on others and cannot be enabled independently.
 
 Longhorn requires:
 
-- `instance_count >= 3`
 - `longhorn_admin_password`
 
 Example:
@@ -109,9 +110,9 @@ neuvector_enabled        = true
 neuvector_admin_password = "************"
 ```
 
-## AI Factory
+## SUSE AI Factory
 
-AI Factory requires:
+SUSE AI Factory requires:
 
 ```hcl
 longhorn_enabled           = true
@@ -126,6 +127,47 @@ app_collection_password    = "************"
 nvidia_password            = "************"
 suse_registry_password     = "************"
 ```
+
+## SUSE AI with GPUs
+
+To deploy SUSE AI, you must select a GPU-enabled Virtual Machine size for better performance. Allowed GPU instances are `Standard_NC40ads_H100_v5` and `Standard_NC16as_T4_v3`.
+
+Example:
+
+```hcl
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+instance_type              = "Standard_NC16as_T4_v3"
+
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
+## SUSE AI without GPUs (CPU-only)
+
+To deploy SUSE AI without GPUs.
+
+Example:
+
+```hcl
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
+Note: Performance will be reduced.
 
 # OS Image selection
 
@@ -165,7 +207,7 @@ longhorn_enabled        = true
 longhorn_admin_password = "************"
 ```
 
-## HA K3s cluster with Rancher and AI factory
+## HA K3s cluster with Rancher and SUSE AI Factory
 
 ```hcl
 prefix                     = "<PREFIX>"
@@ -183,6 +225,45 @@ app_collection_username    = "************"
 app_collection_password    = "************"
 nvidia_password            = "************"
 suse_registry_password     = "************"
+```
+
+## HA K3s Cluster with Rancher and SUSE AI with GPUs
+
+```hcl
+prefix                     = "<PREFIX>"
+subscription_id            = "<SUBSCRIPTION_ID>"
+instance_count             = 3
+
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+instance_type              = "Standard_NC16as_T4_v3"
+
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
+## HA K3s Cluster with Rancher and SUSE AI without GPUs
+
+```hcl
+prefix                     = "<PREFIX>"
+subscription_id            = "<SUBSCRIPTION_ID>"
+instance_count             = 3
+
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+
+app_collection_username    = "************"
+app_collection_password    = "************"
 ```
 
 ## Full stack deployment
@@ -206,10 +287,13 @@ suse_observability_license      = "<LICENSE>"
 suse_observability_rancher_auth = true
 
 ai_factory_enabled              = true
-app_collection_username         = "************"
-app_collection_password         = "************"
 nvidia_password                 = "************"
 suse_registry_password          = "************"
+
+suse_ai_enabled                 = true
+
+app_collection_username         = "************"
+app_collection_password         = "************"
 ```
 
 # Terraform Apply
@@ -266,6 +350,7 @@ Depending on enabled components, the following services become available:
 | SUSE Observability | `https://observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/gRPC) | `https://otlp-observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/HTTP) | `https://otlp-http-observability.<NODE_IP>.sslip.io` |
+| OpenWebUI | `https://openwebui.<NODE_IP>.sslip.io` |
 
 # Notes
 
@@ -276,3 +361,4 @@ Depending on enabled components, the following services become available:
 - When SUSE Observability is enabled, dedicated Ingress resources for OTLP/gRPC and OTLP/HTTP are automatically created to expose the OpenTelemetry Collector
 - `sslip.io` is used by default for automatic DNS resolution
 - Multi-node deployments automatically configure HA K3s server nodes
+- OpenWebUI is accessible via the exposed Ingress URL (the first user to register will automatically become the admin).

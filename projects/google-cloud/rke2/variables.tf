@@ -60,6 +60,16 @@ variable "region" {
   }
 }
 
+variable "zone" {
+  description = "Specifies the GCP zone letter (e.g., 'a', 'b', 'c') where the instances will be deployed. If null, a zone in the region will be randomly chosen. Default is 'null'."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.zone == null ? true : can(regex("^[a-z]$", var.zone))
+    error_message = "The zone must be a single lowercase letter (e.g., 'a', 'b', 'c')."
+  }
+}
+
 variable "instance_count" {
   description = "Specifies the number of GCP Compute Engine instances (nodes) to create for the RKE2 cluster. This value defines the total cluster size, including the first server node, additional server nodes (if count <= 3), and worker nodes (if count > 3). Default is '1'."
   type        = number
@@ -79,7 +89,7 @@ variable "spot_instance" {
 variable "instance_type" {
   description = "Specifies the name of a GCP machine type. Default is 'n2-standard-8'."
   type        = string
-  default     = "n2-standard-8"
+  default     = "n2-standard-16"
 }
 
 variable "ami_id" {
@@ -111,6 +121,25 @@ variable "public_ip_source_addresses" {
       can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}\\/([0-9]|[12][0-9]|3[0-2])$", cidr))
     ])
     error_message = "Each value must be in CIDR format (A.B.C.D/N), e.g. [\"203.0.113.10/32\", \"198.51.100.0/24\"]."
+  }
+}
+
+variable "gpu_type" {
+  description = "Specifies the type of GPU to use. Default is 'null'."
+  type        = string
+  default     = null
+}
+
+variable "gpu_count" {
+  description = "Specifies the number of GPUs to attach to the VMs. Default is '0'."
+  type        = number
+  default     = 0
+  validation {
+    condition = (
+      var.gpu_type == null ||
+      var.gpu_count == 1
+    )
+    error_message = "When gpu_type is defined, gpu_count must be 1."
   }
 }
 
@@ -148,13 +177,6 @@ variable "longhorn_enabled" {
   description = "Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
-  validation {
-    condition = (
-      var.longhorn_enabled == false ||
-      var.instance_count >= 3
-    )
-    error_message = "When longhorn_enabled is true, instance_count must be at least 3."
-  }
 }
 
 variable "longhorn_admin_password" {
@@ -359,7 +381,7 @@ variable "neuvector_scanner_count" {
 }
 
 variable "ai_factory_enabled" {
-  description = "Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'."
+  description = "Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
   validation {
@@ -367,12 +389,50 @@ variable "ai_factory_enabled" {
       var.ai_factory_enabled == false ||
       var.rancher_enabled == true
     )
-    error_message = "When ai_factory_enabled is true, enabled_enabled must also be true."
+    error_message = "When ai_factory_enabled is true, rancher_enabled must also be set to true."
   }
 }
 
 variable "ai_factory_hc_version" {
-  description = "Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'."
+  description = "Specifies the SUSE AI Factory Helm chart version to install. Default is 'null' (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "suse_ai_enabled" {
+  description = "Specifies whether SUSE AI stack with GPU should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      var.rancher_enabled == true &&
+      var.longhorn_enabled == true
+    )
+    error_message = "When suse_ai_enabled is true, longhorn_enabled and rancher_enabled must also be set to true."
+  }
+}
+
+variable "suse_ai_gpu" {
+  description = "Enable GPU support for SUSE AI. If true, requires a GPU-capable instance_type. Default is 'false'."
+  type        = bool
+  default     = false
+}
+
+variable "milvus_hc_version" {
+  description = "Specifies the Milvus Helm chart version to install. Default is '4.2.2'."
+  type        = string
+  default     = "4.2.2"
+}
+
+variable "ollama_hc_version" {
+  description = "Specifies the Ollama Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "openwebui_hc_version" {
+  description = "Specifies the Open WebUI Helm chart version to install. Default is null (latest version)."
   type        = string
   default     = null
 }
@@ -381,12 +441,26 @@ variable "app_collection_username" {
   description = "Specifies the SUSE AppCo username. Default is 'null'."
   type        = string
   default     = null
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      (var.app_collection_username != null && length(var.app_collection_username) > 0)
+    )
+    error_message = "When suse_ai_enabled is true, app_collection_username must be provided to pull the images from SUSE Registry."
+  }
 }
 
 variable "app_collection_password" {
   description = "Specifies the SUSE AppCo password. Default is 'null'."
   type        = string
   default     = null
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      (var.app_collection_password != null && length(var.app_collection_password) > 0)
+    )
+    error_message = "When suse_ai_enabled is true, app_collection_password must be provided to pull the images from SUSE Registry."
+  }
 }
 
 variable "nvidia_password" {

@@ -28,6 +28,9 @@ locals {
   suse_observability_otlp_host      = "otlp-${local.suse_observability_host}"
   suse_observability_otlp_http_host = "otlp-http-${local.suse_observability_host}"
   neuvector_host                    = "neuvector.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  openwebui_host                    = "openwebui.${module.rke2_first_server.instances_public_ip[0]}.sslip.io"
+  is_gpu_instance                   = can(regex("gpu", var.instance_type))
+  suse_ai_gpu                       = var.suse_ai_enabled && local.is_gpu_instance
 }
 
 module "identity" {
@@ -42,12 +45,14 @@ module "os_image" {
 }
 
 module "rke2_first" {
-  source        = "../../../modules/distribution/rke2"
-  node_role     = "server"
-  rke2_token    = local.rke2_token
-  rke2_version  = var.rke2_version
-  rke2_ingress  = var.rke2_ingress
-  volume_device = local.volume_device
+  source                = "../../../modules/distribution/rke2"
+  node_role             = "server"
+  rke2_token            = local.rke2_token
+  rke2_version          = var.rke2_version
+  rke2_ingress          = var.rke2_ingress
+  volume_device         = local.volume_device
+  is_gpu_instance       = local.is_gpu_instance
+  install_prerequisites = false
 }
 
 module "rke2_first_server" {
@@ -55,6 +60,7 @@ module "rke2_first_server" {
   prefix                     = "${var.prefix}-server-1"
   region                     = var.region
   ssh_key_id                 = module.identity.ssh_key_id
+  ssh_private_key_content    = module.identity.ssh_private_key
   instance_type              = local.instance_type
   data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
@@ -64,13 +70,15 @@ module "rke2_first_server" {
 }
 
 module "rke2_additional_servers" {
-  source        = "../../../modules/distribution/rke2"
-  node_role     = "server"
-  rke2_token    = local.rke2_token
-  rke2_version  = var.rke2_version
-  rke2_ingress  = var.rke2_ingress
-  server_url    = local.first_server_url
-  volume_device = local.volume_device
+  source                = "../../../modules/distribution/rke2"
+  node_role             = "server"
+  rke2_token            = local.rke2_token
+  rke2_version          = var.rke2_version
+  rke2_ingress          = var.rke2_ingress
+  server_url            = local.first_server_url
+  volume_device         = local.volume_device
+  is_gpu_instance       = local.is_gpu_instance
+  install_prerequisites = false
 }
 
 module "rke2_servers" {
@@ -79,6 +87,7 @@ module "rke2_servers" {
   prefix                     = "${var.prefix}-server-${each.value}"
   region                     = var.region
   ssh_key_id                 = module.identity.ssh_key_id
+  ssh_private_key_content    = module.identity.ssh_private_key
   instance_type              = local.instance_type
   data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
@@ -88,13 +97,14 @@ module "rke2_servers" {
 }
 
 module "rke2_additional_workers" {
-  source        = "../../../modules/distribution/rke2"
-  node_role     = "agent"
-  rke2_token    = local.rke2_token
-  rke2_version  = var.rke2_version
-  rke2_ingress  = var.rke2_ingress
-  server_url    = local.first_server_url
-  volume_device = local.volume_device
+  source                = "../../../modules/distribution/rke2"
+  node_role             = "agent"
+  rke2_token            = local.rke2_token
+  rke2_version          = var.rke2_version
+  rke2_ingress          = var.rke2_ingress
+  server_url            = local.first_server_url
+  volume_device         = local.volume_device
+  install_prerequisites = false
 }
 
 module "rke2_workers" {
@@ -103,6 +113,7 @@ module "rke2_workers" {
   prefix                     = "${var.prefix}-worker-${each.value}"
   region                     = var.region
   ssh_key_id                 = module.identity.ssh_key_id
+  ssh_private_key_content    = module.identity.ssh_private_key
   instance_type              = local.instance_type
   data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
@@ -118,6 +129,7 @@ data "local_file" "ssh_private_key" {
 
 resource "ssh_resource" "retrieve_kubeconfig" {
   depends_on = [
+    module.rke2_first_server,
     module.rke2_servers,
     module.rke2_workers
   ]
@@ -136,6 +148,31 @@ resource "local_file" "kubeconfig_yaml" {
   file_permission = "0600"
 }
 
+resource "null_resource" "install_prerequisites" {
+  count      = var.instance_count
+  depends_on = [module.rke2_first_server, module.rke2_servers, module.rke2_workers, ssh_resource.retrieve_kubeconfig]
+  connection {
+    type        = "ssh"
+    user        = local.ssh_username
+    private_key = data.local_file.ssh_private_key.content
+    host = element(
+      concat(
+        module.rke2_first_server.instances_public_ip,
+        flatten([for m in module.rke2_servers : m.instances_public_ip]),
+        flatten([for m in module.rke2_workers : m.instances_public_ip])
+      ),
+      count.index
+    )
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 15",
+      "while sudo fuser /var/run/zypp.pid >/dev/null 2>&1; do echo 'Waiting for initial zypper lock...'; sleep 3; done",
+      "sudo rm -f /var/run/zypp.pid /var/lib/Zypper/lock"
+    ]
+  }
+}
+
 provider "kubernetes" {
   config_path = local_file.kubeconfig_yaml.filename
 }
@@ -148,7 +185,7 @@ provider "helm" {
 
 module "longhorn" {
   source                  = "../../../modules/distribution/longhorn"
-  depends_on              = [module.rke2_first_server]
+  depends_on              = [module.rke2_first_server, local_file.kubeconfig_yaml]
   longhorn_enabled        = var.longhorn_enabled
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version
@@ -214,4 +251,24 @@ module "ai_factory" {
   app_collection_password = var.app_collection_password
   nvidia_password         = var.nvidia_password
   suse_registry_password  = var.suse_registry_password
+}
+
+module "suse_ai" {
+  source                  = "../../../modules/distribution/suse-ai"
+  depends_on              = [module.rke2_first_server, module.rancher]
+  suse_ai_enabled         = var.suse_ai_enabled
+  suse_ai_gpu             = local.suse_ai_gpu
+  milvus_hc_version       = var.milvus_hc_version
+  ollama_hc_version       = var.ollama_hc_version
+  openwebui_hc_version    = var.openwebui_hc_version
+  app_collection_username = var.app_collection_username
+  app_collection_password = var.app_collection_password
+  openwebui_host          = local.openwebui_host
+  ssh_private_key         = data.local_file.ssh_private_key.content
+  node_ips = concat(
+    [module.rke2_first_server.instances_public_ip[0]],
+    flatten([for m in module.rke2_servers : m.instances_public_ip]),
+    flatten([for m in module.rke2_workers : m.instances_public_ip])
+  )
+  kubeconfig_path = local_file.kubeconfig_yaml.filename
 }

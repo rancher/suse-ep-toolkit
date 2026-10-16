@@ -51,3 +51,15 @@ variable "volume_device" {
   type        = string
   default     = "/dev/sda"
 }
+
+variable "is_gpu_instance" {
+  description = "Specifies whether the instance contains a GPU to install GPU drivers. Default is 'false'."
+  type        = bool
+  default     = false
+}
+
+variable "install_prerequisites" {
+  description = "Specifies whether the instance requires packages to be installed. Default is 'false'."
+  type        = bool
+  default     = false
+}

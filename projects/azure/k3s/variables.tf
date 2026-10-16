@@ -78,6 +78,12 @@ variable "region" {
   }
 }
 
+variable "zone" {
+  description = "Specifies the Azure zone where resources will be allocated. Default is '1'."
+  type        = number
+  default     = 1
+}
+
 variable "instance_count" {
   description = "Specifies the number of Azure virtual machines instances (nodes) to create for the k3s cluster. This value defines the total cluster size, including the first server node, additional server nodes (if count <= 3), and worker nodes (if count > 3). Default is '1'."
   type        = number
@@ -107,7 +113,9 @@ variable "instance_type" {
       "Standard_D32s_v5",
       "Standard_D48s_v5",
       "Standard_D64s_v5",
-      "Standard_D96s_v5"
+      "Standard_D96s_v5",
+      "Standard_NC40ads_H100_v5",
+      "Standard_NC16as_T4_v3"
     ], var.instance_type)
     error_message = "Instance type not allowed. Must be from dsv5 series https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/dsv5-series"
   }
@@ -138,9 +146,21 @@ variable "image_version" {
 }
 
 variable "data_disk_size" {
-  description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '350'."
+  description = "Specifies the size of the additional data disks for each VM instance, in GB. Default is '500'."
   type        = number
-  default     = 350
+  default     = 500
+}
+
+variable "disk_throughput_mbps_read_write" {
+  description = "Specify the disk throughput value for data disks. Default is '1000'."
+  type        = number
+  default     = 1000
+}
+
+variable "disk_iops_read_write" {
+  description = "Specify the number of disk IOPS for data disks. Default is '6000'."
+  type        = number
+  default     = 6000
 }
 
 variable "public_ip_source_addresses" {
@@ -167,9 +187,9 @@ variable "node_role" {
 }
 
 variable "k3s_version" {
-  description = "Specifies the K3s version to install. Default is 'v1.33.5+k3s1'."
+  description = "Specifies the K3s version to install. Default is 'v1.36.5+k3s1'."
   type        = string
-  default     = "v1.33.5+k3s1"
+  default     = "v1.36.5+k3s1"
   validation {
     condition     = can(regex("^v.*$", var.k3s_version))
     error_message = "The K3s version must start with 'v'."
@@ -190,13 +210,6 @@ variable "longhorn_enabled" {
   description = "Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
-  validation {
-    condition = (
-      var.longhorn_enabled == false ||
-      var.instance_count >= 3
-    )
-    error_message = "When longhorn_enabled is true, instance_count must be at least 3."
-  }
 }
 
 variable "longhorn_admin_password" {
@@ -401,7 +414,7 @@ variable "neuvector_scanner_count" {
 }
 
 variable "ai_factory_enabled" {
-  description = "Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'."
+  description = "Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
   validation {
@@ -409,12 +422,50 @@ variable "ai_factory_enabled" {
       var.ai_factory_enabled == false ||
       var.rancher_enabled == true
     )
-    error_message = "When ai_factory_enabled is true, enabled_enabled must also be true."
+    error_message = "When ai_factory_enabled is true, rancher_enabled must also be set to true."
   }
 }
 
 variable "ai_factory_hc_version" {
-  description = "Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'."
+  description = "Specifies the SUSE AI Factory Helm chart version to install. Default is 'null' (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "suse_ai_enabled" {
+  description = "Specifies whether SUSE AI stack with GPU should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      var.rancher_enabled == true &&
+      var.longhorn_enabled == true
+    )
+    error_message = "When suse_ai_enabled is true, longhorn_enabled and rancher_enabled must also be set to true."
+  }
+}
+
+variable "suse_ai_gpu" {
+  description = "Enable GPU support for SUSE AI. If true, requires a GPU-capable instance_type. Default is 'false'."
+  type        = bool
+  default     = false
+}
+
+variable "milvus_hc_version" {
+  description = "Specifies the Milvus Helm chart version to install. Default is '4.2.2'."
+  type        = string
+  default     = "4.2.2"
+}
+
+variable "ollama_hc_version" {
+  description = "Specifies the Ollama Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "openwebui_hc_version" {
+  description = "Specifies the Open WebUI Helm chart version to install. Default is null (latest version)."
   type        = string
   default     = null
 }
@@ -423,12 +474,26 @@ variable "app_collection_username" {
   description = "Specifies the SUSE AppCo username. Default is 'null'."
   type        = string
   default     = null
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      (var.app_collection_username != null && length(var.app_collection_username) > 0)
+    )
+    error_message = "When suse_ai_enabled is true, app_collection_username must be provided to pull the images from SUSE Registry."
+  }
 }
 
 variable "app_collection_password" {
   description = "Specifies the SUSE AppCo password. Default is 'null'."
   type        = string
   default     = null
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      (var.app_collection_password != null && length(var.app_collection_password) > 0)
+    )
+    error_message = "When suse_ai_enabled is true, app_collection_password must be provided to pull the images from SUSE Registry."
+  }
 }
 
 variable "nvidia_password" {

@@ -123,13 +123,6 @@ variable "longhorn_enabled" {
   description = "Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
-  validation {
-    condition = (
-      var.longhorn_enabled == false ||
-      var.instance_count >= 3
-    )
-    error_message = "When longhorn_enabled is true, instance_count must be at least 3."
-  }
 }
 
 variable "longhorn_admin_password" {
@@ -334,7 +327,7 @@ variable "neuvector_scanner_count" {
 }
 
 variable "ai_factory_enabled" {
-  description = "Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'."
+  description = "Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster. Default is 'false'."
   type        = bool
   default     = false
   validation {
@@ -342,12 +335,50 @@ variable "ai_factory_enabled" {
       var.ai_factory_enabled == false ||
       var.rancher_enabled == true
     )
-    error_message = "When ai_factory_enabled is true, enabled_enabled must also be true."
+    error_message = "When ai_factory_enabled is true, rancher_enabled must also be set to true."
   }
 }
 
 variable "ai_factory_hc_version" {
-  description = "Specifies the Rancher Helm chart version to install. Default is null (latest version). Default is 'null'."
+  description = "Specifies the SUSE AI Factory Helm chart version to install. Default is 'null' (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "suse_ai_enabled" {
+  description = "Specifies whether SUSE AI stack with GPU should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      var.rancher_enabled == true &&
+      var.longhorn_enabled == true
+    )
+    error_message = "When suse_ai_enabled is true, longhorn_enabled and rancher_enabled must also be set to true."
+  }
+}
+
+variable "suse_ai_gpu" {
+  description = "Enable GPU support for SUSE AI. If true, requires a GPU-capable instance_type. Default is 'false'."
+  type        = bool
+  default     = false
+}
+
+variable "milvus_hc_version" {
+  description = "Specifies the Milvus Helm chart version to install. Default is '4.2.2'."
+  type        = string
+  default     = "4.2.2"
+}
+
+variable "ollama_hc_version" {
+  description = "Specifies the Ollama Helm chart version to install. Default is null (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "openwebui_hc_version" {
+  description = "Specifies the Open WebUI Helm chart version to install. Default is null (latest version)."
   type        = string
   default     = null
 }
@@ -356,12 +387,26 @@ variable "app_collection_username" {
   description = "Specifies the SUSE AppCo username. Default is 'null'."
   type        = string
   default     = null
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      (var.app_collection_username != null && length(var.app_collection_username) > 0)
+    )
+    error_message = "When suse_ai_enabled is true, app_collection_username must be provided to pull the images from SUSE Registry."
+  }
 }
 
 variable "app_collection_password" {
   description = "Specifies the SUSE AppCo password. Default is 'null'."
   type        = string
   default     = null
+  validation {
+    condition = (
+      var.suse_ai_enabled == false ||
+      (var.app_collection_password != null && length(var.app_collection_password) > 0)
+    )
+    error_message = "When suse_ai_enabled is true, app_collection_password must be provided to pull the images from SUSE Registry."
+  }
 }
 
 variable "nvidia_password" {

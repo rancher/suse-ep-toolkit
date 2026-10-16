@@ -9,6 +9,7 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_digitalocean"></a> [digitalocean](#provider\_digitalocean) | 2.85.1 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
@@ -23,6 +24,7 @@ No modules.
 | [digitalocean_firewall.main_firewall](https://registry.terraform.io/providers/digitalocean/digitalocean/2.85.1/docs/resources/firewall) | resource |
 | [digitalocean_volume.data_disk](https://registry.terraform.io/providers/digitalocean/digitalocean/2.85.1/docs/resources/volume) | resource |
 | [digitalocean_volume_attachment.data_disk_attachment](https://registry.terraform.io/providers/digitalocean/digitalocean/2.85.1/docs/resources/volume_attachment) | resource |
+| [null_resource.checking_cloud_init_script](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_id.volume_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 
 ## Inputs
@@ -38,6 +40,7 @@ No modules.
 | <a name="input_public_ip_source_addresses"></a> [public\_ip\_source\_addresses](#input\_public\_ip\_source\_addresses) | Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level). | `list(string)` | `[]` | no |
 | <a name="input_region"></a> [region](#input\_region) | Specifies the DigitalOcean region used for all resources. Default is 'fra1'. | `string` | `"fra1"` | no |
 | <a name="input_ssh_key_id"></a> [ssh\_key\_id](#input\_ssh\_key\_id) | n/a | `string` | `null` | no |
+| <a name="input_ssh_private_key_content"></a> [ssh\_private\_key\_content](#input\_ssh\_private\_key\_content) | Specifies the SSH PRIVATE key content. Default is 'null'. | `string` | `null` | no |
 | <a name="input_user_data"></a> [user\_data](#input\_user\_data) | Specifies cloud-init user\_data used to bootstrap the Droplet. Default is 'null'. | `string` | `null` | no |
 
 ## Outputs

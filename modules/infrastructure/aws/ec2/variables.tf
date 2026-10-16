@@ -47,6 +47,12 @@ variable "ssh_key_content" {
   default     = null
 }
 
+variable "ssh_username" {
+  description = "Specifies the SSH username used to connect to cluster nodes. Default is 'null'."
+  type        = string
+  default     = null
+}
+
 variable "instance_count" {
   description = "Specifies the number of EC2 instances to create. Default is 1."
   type        = number

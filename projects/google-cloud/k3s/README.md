@@ -8,6 +8,8 @@ The deployment can optionally install and configure:
 - Rancher
 - NeuVector
 - SUSE Observability
+- SUSE AI Factory
+- SUSE AI
 
 All components are deployed automatically using reusable modules from the repository.
 
@@ -34,7 +36,6 @@ Some components depend on others and cannot be enabled independently.
 
 Longhorn requires:
 
-- `instance_count >= 3`
 - `longhorn_admin_password`
 
 Example:
@@ -109,9 +110,9 @@ neuvector_enabled        = true
 neuvector_admin_password = "************"
 ```
 
-## AI Factory
+## SUSE AI Factory
 
-AI Factory requires:
+SUSE AI Factory requires:
 
 ```hcl
 longhorn_enabled           = true
@@ -127,11 +128,75 @@ nvidia_password            = "************"
 suse_registry_password     = "************"
 ```
 
+## SUSE AI with GPUs
+
+To deploy SUSE AI, you must configure gpu_type and gpu_count variables for better formance.
+
+Example:
+
+```hcl
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+gpu_type                   = "nvidia-tesla-t4"
+gpu_count                  = 1
+
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
+## SUSE AI without GPUs (CPU-only)
+
+To deploy SUSE AI without GPUs.
+
+Example:
+
+```hcl
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
+Note: Performance will be reduced.
+
+# Handling GPU Availability (STOCKOUT)
+
+When deploying instances with GPUs, you might encounter a `STOCKOUT` error. This happens when Google Cloud does not have enough resources of the requested type in a specific zone.
+
+The project automatically tries to pick a zone that supports the requested GPU type, but it cannot predict current stock levels.
+
+## How to check availability manually
+
+You can use the following `gcloud` command to check which zones in your region support the requested GPU type:
+
+```bash
+REGION="europe-west4"
+GPU_TYPE="nvidia-tesla-t4"
+gcloud compute accelerator-types list --filter="zone:( ${REGION}-* ) AND name:${GPU_TYPE}"
+```
+
+If you get a `STOCKOUT` error during `terraform apply`, the error message usually suggests alternative zones with capacity. You can then specify just the zone letter (e.g., `a`, `b`, `c`) of one of those zones in your `terraform.tfvars`:
+
+```hcl
+zone = "c"
+```
+
 # OS Image selection
 
-By default, if `ami_id` is left empty (`""`), the project automatically builds and uses a custom openSUSE OS image via the `custom-os-image` module.
+By default, if `ami_id` is left empty (`""`), the project automatically builds and uses a custom openSUSE OS image via the `custom-os-image` module with the default `instance_type` (`n2-standard-8`).
 
-If you want to use an existing custom image or image family, specify `ami_id` in your `terraform.tfvars`:
+If you want to use an existing custom/Marketplace AMI, specify `ami_id` in your `terraform.tfvars`:
 
 ```hcl
 ami_id = "opensuse-leap-16-0-v20260629-x86-64"
@@ -162,7 +227,7 @@ longhorn_enabled        = true
 longhorn_admin_password = "************"
 ```
 
-## HA K3s cluster with Rancher and AI factory
+## HA K3s cluster with Rancher and SUSE AI Factory
 
 ```hcl
 prefix                     = "<PREFIX>"
@@ -180,6 +245,44 @@ app_collection_username    = "************"
 app_collection_password    = "************"
 nvidia_password            = "************"
 suse_registry_password     = "************"
+```
+
+## HA K3s Cluster with Rancher and SUSE AI with GPUs
+
+```hcl
+prefix                     = "<PREFIX>"
+project_id                 = "<PROJECT_ID>"
+instance_count             = 3
+
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+gpu_type                   = "nvidia-tesla-t4"
+gpu_count                  = 1
+app_collection_username    = "************"
+app_collection_password    = "************"
+```
+
+## HA K3s Cluster with Rancher and SUSE AI without GPUs
+
+```hcl
+prefix                     = "<PREFIX>"
+project_id                 = "<PROJECT_ID>"
+instance_count             = 3
+
+longhorn_enabled           = true
+longhorn_admin_password    = "************"
+
+rancher_enabled            = true
+rancher_bootstrap_password = "************"
+
+suse_ai_enabled            = true
+app_collection_username    = "************"
+app_collection_password    = "************"
 ```
 
 ## Full stack deployment
@@ -203,10 +306,13 @@ suse_observability_license      = "<LICENSE>"
 suse_observability_rancher_auth = true
 
 ai_factory_enabled              = true
-app_collection_username         = "************"
-app_collection_password         = "************"
 nvidia_password                 = "************"
 suse_registry_password          = "************"
+
+suse_ai_enabled                 = true
+
+app_collection_username         = "************"
+app_collection_password         = "************"
 ```
 
 # Terraform Apply
@@ -263,6 +369,7 @@ Depending on enabled components, the following services become available:
 | SUSE Observability | `https://observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/gRPC) | `https://otlp-observability.<NODE_IP>.sslip.io` |
 | OpenTelemetry (OTLP/HTTP) | `https://otlp-http-observability.<NODE_IP>.sslip.io` |
+| OpenWebUI | `https://openwebui.<NODE_IP>.sslip.io` |
 
 # Notes
 
@@ -273,3 +380,4 @@ Depending on enabled components, the following services become available:
 - When SUSE Observability is enabled, dedicated Ingress resources for OTLP/gRPC and OTLP/HTTP are automatically created to expose the OpenTelemetry Collector
 - `sslip.io` is used by default for automatic DNS resolution
 - Multi-node deployments automatically configure HA K3s server nodes
+- OpenWebUI is accessible via the exposed Ingress URL (the first user to register will automatically become the admin).

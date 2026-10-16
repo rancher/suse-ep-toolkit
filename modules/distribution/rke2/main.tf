@@ -64,6 +64,18 @@ runcmd:
   - mount /var/lib/rancher
   # Verify mount
   - df -h /var/lib/rancher
+  # Configuring required drivers
+%{if var.is_gpu_instance~}
+  - |
+      export PATH=$PATH:/sbin:/usr/sbin
+      sudo zypper ar https://developer.download.nvidia.com/compute/cuda/repos/opensuse15/x86_64/cuda-opensuse15.repo
+      sudo zypper --gpg-auto-import-keys refresh
+      sudo zypper install -y --auto-agree-with-licenses nv-prefer-signed-open-driver || { res=$?; [ $res -eq 107 ] || exit $res; }
+      export version=$(rpm -qa --queryformat '%%{VERSION}' nv-prefer-signed-open-driver | cut -d '_' -f1 | sort -u | tail -n 1)
+      sudo zypper install -y --auto-agree-with-licenses nvidia-compute-utils-G06=$${version} nvidia-persistenced=$${version} || { res=$?; [ $res -eq 107 ] || exit $res; }
+      printf 'fs.inotify.max_user_watches=524288\nfs.inotify.max_user_instances=1024\n' | sudo tee /etc/sysctl.d/99-suse-ai.conf
+      sudo sysctl --system
+%{endif~}
   # Configuring Public IP and Private IP on RKE2 config
   - |
       PUBLIC_IP=$(curl -s http://icanhazip.com)
@@ -96,5 +108,10 @@ runcmd:
           get nodes >/dev/null 2>&1 && break
         sleep 2
       done
+%{if var.install_prerequisites~}
+  - sudo zypper --non-interactive install -y curl tar which python3 open-iscsi nfs-client cryptsetup device-mapper util-linux || true
+  - sudo systemctl enable --now iscsid || true
+%{endif~}
+  - touch /var/run/startup_script_done
 EOF
 }
