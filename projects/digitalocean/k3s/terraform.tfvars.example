@@ -28,9 +28,6 @@ user_data = null
 ## -- Specifies the K3s node role for this instance.
 node_role = "agent"
 
-## -- Specifies the shared token used by all nodes to join the K3s cluster.
-k3s_token = "SecretToken.123"
-
 ## -- Specifies the K3s version to install.
 k3s_version = "v1.36.5+k3s1"
 
@@ -60,9 +57,6 @@ rancher_hc_version = null
 
 ## -- Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled.
 rancher_bootstrap_password = null
-
-## -- Specifies the TLS certificate source used by Rancher.
-rancher_tls_source = "letsEncrypt"
 
 ## -- Specifies whether SUSE Observability should be installed on the Kubernetes cluster.
 suse_observability_enabled = false

@@ -96,12 +96,6 @@ variable "node_role" {
   }
 }
 
-variable "k3s_token" {
-  description = "Specifies the shared token used by all nodes to join the K3s cluster. Default is 'null'."
-  type        = string
-  default     = null
-}
-
 variable "k3s_version" {
   description = "Specifies the K3s version to install. Default is 'v1.36.5+k3s1'."
   type        = string
@@ -199,12 +193,6 @@ variable "rancher_bootstrap_password" {
     )
     error_message = "When rancher_enabled is true, rancher_bootstrap_password must be at least 12 characters long and include at least 1 uppercase letter, 1 number, and 1 special character."
   }
-}
-
-variable "rancher_tls_source" {
-  description = "Specifies the TLS certificate source used by Rancher. Default is 'letsEncrypt'."
-  type        = string
-  default     = "letsEncrypt"
 }
 
 variable "suse_observability_enabled" {
