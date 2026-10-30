@@ -101,7 +101,7 @@ variable "public_ip_source_addresses" {
 variable "rke2_version" {
   description = "Specifies the RKE2 version to install. Default is 'v1.35.4+rke2r1'."
   type        = string
-  default     = "v1.30.4+rke2r1"
+  default     = "v1.35.4+rke2r1"
   validation {
     condition     = can(regex("^v.*$", var.rke2_version))
     error_message = "The RKE2 version must start with 'v'."
