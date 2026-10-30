@@ -23,7 +23,7 @@ locals {
   volume_device              = "/dev/sdb"
   ami_id                     = var.ami_id != "" ? data.google_compute_image.custom_image[0].self_link : module.os_image[0].image_id
   install_prerequisites      = var.ami_id != "" ? true : false
-  gcp_prep_script = <<-EOF
+  gcp_prep_script            = <<-EOF
     #!/bin/bash
     set -e
     zypper --non-interactive install -y curl tar which python3 cloud-init || true
@@ -90,7 +90,7 @@ module "eptoolkit_node" {
 
 resource "ssh_resource" "retrieve_kubeconfig" {
   depends_on = [module.eptoolkit_node]
-  host = module.eptoolkit_node.instances_public_ip[0]
+  host       = module.eptoolkit_node.instances_public_ip[0]
   commands = [
     "timeout=600; while [ ! -f /etc/rancher/rke2/rke2.yaml ]; do sleep 5; done",
     "sudo cat /etc/rancher/rke2/rke2.yaml | sed -e 's/127.0.0.1/${module.eptoolkit_node.instances_public_ip[0]}/g' -e '/certificate-authority-data:/c\\    insecure-skip-tls-verify: true'"
