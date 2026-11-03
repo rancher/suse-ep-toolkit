@@ -1,0 +1,87 @@
+name: Test AWS Infra and RKE2 Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  aws_infra_rke2_test:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Ensure netcat is installed
+        run: sudo apt-get update && sudo apt-get install -y netcat-openbsd
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: "1.9.0"
+      - name: Install and verify kubectl CLI
+        run: |
+          KUBECTL_VERSION="v1.30.4"
+          curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+          curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256"
+          echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          rm -f kubectl kubectl.sha256
+          kubectl version --client --output=yaml
+      - name: Authenticate to AWS Cloud
+        uses: aws-actions/configure-aws-credentials@e3ddf133cb7dd11502ecb87a441452ca5703bef8 # v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Get GitHub Runner Public IP
+        id: get_ip
+        run: |
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
+          echo "Detected GitHub Runner IP: $RUNNER_IP"
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: tests/aws/infra-only
+      - name: Run Terraform Apply
+        run: |
+          terraform apply \
+            -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
+            -auto-approve
+        working-directory: tests/aws/infra-only
+      - name: Get public IP from Terraform output
+        id: ip
+        run: |
+          ip=$(terraform output -json instance_public_ip | jq -r '.')
+          echo "INSTANCE_IP=$ip" >> $GITHUB_ENV
+        working-directory: tests/aws/infra-only
+      - name: Wait for SSH (port 22) to become available
+        run: |
+          echo "Waiting for port 22 on $INSTANCE_IP..."
+          for i in {1..30}; do
+            if nc -zv $INSTANCE_IP 22; then
+              echo "Port 22 is open."
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+          echo "SSH not available after 30 attempts. Failing."
+          exit 1
+        env:
+          INSTANCE_IP: ${{ env.INSTANCE_IP }}
+      - name: Validate Cluster via Terraform Output and Kubectl
+        run: |
+          KUBECONFIG_PATH=$(terraform output -raw kubeconfig_path)
+          echo "Kubeconfig path: $KUBECONFIG_PATH"
+          echo "=== 1. Node status from Terraform ssh_resource ==="
+          terraform output -raw cluster_nodes_status
+          echo "=== 2. Direct kubectl validation from GitHub Runner ==="
+          export KUBECONFIG="$KUBECONFIG_PATH"
+          kubectl get nodes -o wide
+          kubectl get pods -A
+        working-directory: tests/aws/infra-only
+      - name: Run Terraform Destroy
+        if: always()
+        run: |
+          terraform destroy \
+            -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
+            -auto-approve
+        working-directory: tests/aws/infra-only
