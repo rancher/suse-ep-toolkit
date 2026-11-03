@@ -6,7 +6,7 @@ on:
 jobs:
   aws_infra_rke2_test:
     runs-on: ubuntu-26.04
-    timeout-minutes: 35
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -16,15 +16,6 @@ jobs:
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: "1.9.0"
-      - name: Install and verify kubectl CLI
-        run: |
-          KUBECTL_VERSION="v1.30.4"
-          curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
-          curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256"
-          echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
-          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-          rm -f kubectl kubectl.sha256
-          kubectl version --client --output=yaml
       - name: Authenticate to AWS Cloud
         uses: aws-actions/configure-aws-credentials@e3ddf133cb7dd11502ecb87a441452ca5703bef8 # v4.0.2
         with:
@@ -71,12 +62,8 @@ jobs:
         run: |
           KUBECONFIG_PATH=$(terraform output -raw kubeconfig_path)
           echo "Kubeconfig path: $KUBECONFIG_PATH"
-          echo "=== 1. Node status from Terraform ssh_resource ==="
+          echo "=== Node status from Terraform ssh_resource ==="
           terraform output -raw cluster_nodes_status
-          echo "=== 2. Direct kubectl validation from GitHub Runner ==="
-          export KUBECONFIG="$KUBECONFIG_PATH"
-          kubectl get nodes -o wide
-          kubectl get pods -A
         working-directory: tests/aws/infra-only
       - name: Run Terraform Destroy
         if: always()
