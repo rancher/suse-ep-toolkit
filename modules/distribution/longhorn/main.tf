@@ -41,9 +41,11 @@ resource "null_resource" "longhorn_auth" {
   count      = var.longhorn_enabled ? 1 : 0
   depends_on = [null_resource.longhorn_dependencies]
   provisioner "local-exec" {
+    environment = {
+      KUBECONFIG    = var.kubeconfig_path
+      AUTH_PASSWORD = var.longhorn_admin_password
+    }
     command = <<EOF
-export KUBECONFIG=${var.kubeconfig_path}
-
 set -euo pipefail
 
 until kubectl get crd middlewares.traefik.io >/dev/null 2>&1; do
@@ -51,7 +53,7 @@ until kubectl get crd middlewares.traefik.io >/dev/null 2>&1; do
   sleep 5
 done
 
-HASHED_PASSWORD=$(openssl passwd -apr1 "${var.longhorn_admin_password}")
+HASHED_PASSWORD=$(printf '%s' "$AUTH_PASSWORD" | openssl passwd -apr1 -stdin)
 
 kubectl create namespace longhorn-system --dry-run=client -o yaml | kubectl apply -f -
 
