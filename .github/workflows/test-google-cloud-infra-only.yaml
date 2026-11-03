@@ -59,7 +59,7 @@ jobs:
           exit 1
         env:
           INSTANCE_IP: ${{ env.INSTANCE_IP }}
-      - name: Validate Cluster via Terraform Output and Kubectl
+      - name: Validate Cluster via Terraform Output
         run: |
           KUBECONFIG_PATH=$(terraform output -raw kubeconfig_path)
           echo "Kubeconfig path: $KUBECONFIG_PATH"
