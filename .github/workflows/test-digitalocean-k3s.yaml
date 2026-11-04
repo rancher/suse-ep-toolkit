@@ -3,6 +3,10 @@ name: Test DigitalOcean Infra and K3s Deploy
 on:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   do_infra_k3s_test:
     runs-on: ubuntu-26.04
