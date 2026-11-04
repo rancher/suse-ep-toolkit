@@ -5,7 +5,7 @@ No requirements.
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | n/a |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
@@ -17,7 +17,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [helm_release.milvus](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.ollama](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.open_webui](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -33,7 +33,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_app_collection_password"></a> [app\_collection\_password](#input\_app\_collection\_password) | Specifies the SUSE AppCo password. Default is 'null'. | `string` | `null` | no |
 | <a name="input_app_collection_username"></a> [app\_collection\_username](#input\_app\_collection\_username) | Specifies the SUSE AppCo username. Default is 'null'. | `string` | `null` | no |
 | <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to kubeconfig file used by kubectl. Default is 'null'. | `string` | `null` | no |

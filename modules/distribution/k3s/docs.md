@@ -17,7 +17,7 @@ No resources.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_disable_components"></a> [disable\_components](#input\_disable\_components) | Specifies bundled K3s components to disable. Default is empty. | `list(string)` | `[]` | no |
 | <a name="input_install_prerequisites"></a> [install\_prerequisites](#input\_install\_prerequisites) | Specifies whether the instance requires packages to be installed. Default is 'false'. | `bool` | `false` | no |
 | <a name="input_is_gpu_instance"></a> [is\_gpu\_instance](#input\_is\_gpu\_instance) | Specifies whether the instance contains a GPU to install GPU drivers. Default is 'false'. | `bool` | `false` | no |
@@ -31,6 +31,6 @@ No resources.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_install_type"></a> [install\_type](#output\_install\_type) | Indicates whether the node is installed as 'server' or 'agent'. |
 | <a name="output_user_data"></a> [user\_data](#output\_user\_data) | Cloud-init user\_data script used to bootstrap the K3s node. |
