@@ -1,7 +1,7 @@
 variable "prefix" {
-  description = "Specifies the prefix added to the names of all resources. Default is 'eptoolkitinfratest'."
+  description = "Specifies the prefix added to the names of all resources. Default is 'eptoolkit-rke2-test'."
   type        = string
-  default     = "eptoolkitinfratest"
+  default     = "eptoolkit-rke2-test"
 }
 
 variable "ami_id" {

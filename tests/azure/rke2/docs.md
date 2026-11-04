@@ -52,7 +52,7 @@
 | <a name="input_image_sku"></a> [image\_sku](#input\_image\_sku) | Specifies the SKU of the Marketplace image used when ami\_id is not provided. Default is 'null'. | `string` | `null` | no |
 | <a name="input_image_version"></a> [image\_version](#input\_image\_version) | Specifies the version of the Marketplace image used when ami\_id is not provided. Default is 'null'. | `string` | `null` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Specifies the name of an Azure Virtual Machine type. Default is 'Standard\_D8s\_v5'. https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/general-purpose/dsv5-series | `string` | `"Standard_D4s_v5"` | no |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | Specifies the prefix added to the names of all resources. Default is 'azure-tf'. | `string` | `"eptoolkitinfratest"` | no |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | Specifies the prefix added to the names of all resources. Default is 'eptoolkit-rke2-test'. | `string` | `"eptoolkit-rke2-test"` | no |
 | <a name="input_public_ip_source_addresses"></a> [public\_ip\_source\_addresses](#input\_public\_ip\_source\_addresses) | Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level). | `list(string)` | `[]` | no |
 | <a name="input_rke2_ingress"></a> [rke2\_ingress](#input\_rke2\_ingress) | Specifies the ingress controller to deploy. Allowed values are 'traefik', 'nginx', or 'none'. Default is 'traefik'. | `string` | `"traefik"` | no |
 | <a name="input_rke2_version"></a> [rke2\_version](#input\_rke2\_version) | Specifies the RKE2 version to install. Default is 'v1.35.4+rke2r1'. | `string` | `"v1.35.4+rke2r1"` | no |
