@@ -1,7 +1,7 @@
 variable "prefix" {
-  description = "Specifies the prefix added to the names of all resources. Default is 'eptoolkit-k3s-test'."
+  description = "Specifies the prefix added to the names of all resources. Default is 'eptoolkitk3stest'."
   type        = string
-  default     = "eptoolkit-k3s-test"
+  default     = "eptoolkitk3stest"
 }
 
 variable "subscription_id" {
