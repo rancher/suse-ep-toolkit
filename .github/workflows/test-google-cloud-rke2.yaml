@@ -28,7 +28,7 @@ jobs:
           echo "Detected GitHub Runner IP: $RUNNER_IP"
       - name: Initialize Terraform
         run: terraform init
-        working-directory: tests/google-cloud/infra-only
+        working-directory: tests/google-cloud/rke2
       - name: Run Terraform Apply
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -37,13 +37,13 @@ jobs:
             -var "project_id=$GCP_PROJECT_ID" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
             -auto-approve
-        working-directory: tests/google-cloud/infra-only
+        working-directory: tests/google-cloud/rke2
       - name: Get public IP from Terraform output
         id: ip
         run: |
           ip=$(terraform output -json instance_public_ip | jq -r '.')
           echo "INSTANCE_IP=$ip" >> $GITHUB_ENV
-        working-directory: tests/google-cloud/infra-only
+        working-directory: tests/google-cloud/rke2
       - name: Wait for SSH (port 22) to become available
         run: |
           echo "Waiting for port 22 on $INSTANCE_IP..."
@@ -65,7 +65,7 @@ jobs:
           echo "Kubeconfig path: $KUBECONFIG_PATH"
           echo "=== Node status from Terraform ssh_resource ==="
           terraform output -raw cluster_nodes_status
-        working-directory: tests/google-cloud/infra-only
+        working-directory: tests/google-cloud/rke2
       - name: Run Terraform Destroy
         if: always()
         env:
@@ -75,4 +75,4 @@ jobs:
             -var "project_id=$GCP_PROJECT_ID" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
             -auto-approve
-        working-directory: tests/google-cloud/infra-only
+        working-directory: tests/google-cloud/rke2

@@ -1,21 +1,27 @@
-name: Test DigitalOcean Infra and RKE2 Deploy
+name: Test AWS Infra and RKE2 Deploy
 
 on:
   workflow_dispatch:
 
 jobs:
-  do_infra_rke2_test:
+  aws_infra_rke2_test:
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
       - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Ensure netcat is installed
         run: sudo apt-get update && sudo apt-get install -y netcat-openbsd
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
-          terraform_version: "v1.17.0"
+          terraform_version: "1.9.0"
+      - name: Authenticate to AWS Cloud
+        uses: aws-actions/configure-aws-credentials@e3ddf133cb7dd11502ecb87a441452ca5703bef8 # v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: Get GitHub Runner Public IP
         id: get_ip
         run: |
@@ -23,34 +29,20 @@ jobs:
           echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
           echo "Detected GitHub Runner IP: $RUNNER_IP"
       - name: Initialize Terraform
-        env:
-          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
         run: terraform init
-        working-directory: tests/digitalocean/infra-only
+        working-directory: tests/aws/rke2
       - name: Run Terraform Apply
-        env:
-          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
         run: |
           terraform apply \
-            -var "do_token=$DIGITALOCEAN_TOKEN" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
             -auto-approve
-        working-directory: tests/digitalocean/infra-only
-      - name: Refresh Terraform State
-        env:
-          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
-        run: |
-          terraform apply -refresh-only \
-            -var "do_token=$DIGITALOCEAN_TOKEN" \
-            -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
-            -auto-approve
-        working-directory: tests/digitalocean/infra-only
+        working-directory: tests/aws/rke2
       - name: Get public IP from Terraform output
         id: ip
         run: |
           ip=$(terraform output -json instance_public_ip | jq -r '.')
           echo "INSTANCE_IP=$ip" >> $GITHUB_ENV
-        working-directory: tests/digitalocean/infra-only
+        working-directory: tests/aws/rke2
       - name: Wait for SSH (port 22) to become available
         run: |
           echo "Waiting for port 22 on $INSTANCE_IP..."
@@ -72,14 +64,11 @@ jobs:
           echo "Kubeconfig path: $KUBECONFIG_PATH"
           echo "=== Node status from Terraform ssh_resource ==="
           terraform output -raw cluster_nodes_status
-        working-directory: tests/digitalocean/infra-only
+        working-directory: tests/aws/rke2
       - name: Run Terraform Destroy
         if: always()
-        env:
-          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
         run: |
           terraform destroy \
-            -var "do_token=$DIGITALOCEAN_TOKEN" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
             -auto-approve
-        working-directory: tests/digitalocean/infra-only
+        working-directory: tests/aws/rke2
