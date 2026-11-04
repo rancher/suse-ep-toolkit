@@ -64,7 +64,7 @@ resource "ssh_resource" "retrieve_kubeconfig" {
   depends_on = [module.k3s_first_server]
   host       = module.k3s_first_server.instances_public_ip[0]
   commands = [
-    "timeout=600; while [ ! -f /etc/rancher/k3s/k3s.yaml ]; do sleep 5; done",
+    "timeout 600; while [ ! -f /etc/rancher/k3s/k3s.yaml ]; do sleep 5; done",
     "sudo cat /etc/rancher/k3s/k3s.yaml | sed 's/127.0.0.1/${module.k3s_first_server.instances_public_ip[0]}/g'"
   ]
   user        = local.ssh_username
