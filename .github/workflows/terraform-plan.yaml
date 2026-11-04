@@ -12,6 +12,8 @@ on:
 jobs:
   gcp_terraform_plan:
     runs-on: ubuntu-26.04
+    # Do not execute cloud authentication and plan on untrusted fork PRs
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
       fail-fast: false
       matrix:
@@ -43,6 +45,8 @@ jobs:
           fi
   azure_terraform_plan:
     runs-on: ubuntu-26.04
+    # Do not execute cloud authentication and plan on untrusted fork PRs
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
       fail-fast: false
       matrix:
@@ -72,6 +76,8 @@ jobs:
           fi
   digitalocean_terraform_plan:
     runs-on: ubuntu-26.04
+    # Do not execute cloud authentication and plan on untrusted fork PRs
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
       fail-fast: false
       matrix:
@@ -101,6 +107,8 @@ jobs:
           fi
   aws_terraform_plan:
     runs-on: ubuntu-26.04
+    # Do not execute cloud authentication and plan on untrusted fork PRs
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     strategy:
       fail-fast: false
       matrix:
