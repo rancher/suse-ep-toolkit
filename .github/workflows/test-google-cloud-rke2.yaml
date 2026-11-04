@@ -3,6 +3,10 @@ name: Test Google Cloud Infra and RKE2 Deploy
 on:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   gcp_infra_rke2_test:
     runs-on: ubuntu-26.04
