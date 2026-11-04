@@ -1,13 +1,13 @@
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.42.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 6.42.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
@@ -19,7 +19,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_key_pair.generated](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/key_pair) | resource |
 | [local_file.private_key_pem](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.public_key_pem](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
@@ -28,13 +28,13 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Specifies the prefix added to the names of all resources. Default is empty. | `string` | `""` | no |
 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_private_ssh_key_path"></a> [private\_ssh\_key\_path](#output\_private\_ssh\_key\_path) | Path of the generated SSH private key. |
 | <a name="output_public_ssh_key_path"></a> [public\_ssh\_key\_path](#output\_public\_ssh\_key\_path) | Path of the generated SSH public key. |
 | <a name="output_ssh_key_name"></a> [ssh\_key\_name](#output\_ssh\_key\_name) | AWS SSH key Name generated for the infrastructure. |

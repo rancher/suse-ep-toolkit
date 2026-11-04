@@ -1,13 +1,13 @@
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.42.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 6.42.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
@@ -19,7 +19,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_ebs_volume.data](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/ebs_volume) | resource |
 | [aws_eip.static_ip](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/eip) | resource |
 | [aws_eip_association.eip_assoc](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/eip_association) | resource |
@@ -38,7 +38,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | Specifies the ID of the custom OS image used to provision all RKE2 cluster EC2 instances. Default is empty. | `string` | `""` | no |
 | <a name="input_create_network_resources"></a> [create\_network\_resources](#input\_create\_network\_resources) | Specifies whether to create the VPC networking resources (security group and related resources). Default is 'false'. | `bool` | `false` | no |
 | <a name="input_data_disk_count"></a> [data\_disk\_count](#input\_data\_disk\_count) | Specifies the number of additional data disks to attach to each VM instance. Default is 1. | `number` | `1` | no |
@@ -61,7 +61,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_aws_security_group"></a> [aws\_security\_group](#output\_aws\_security\_group) | AWS Security Group. |
 | <a name="output_aws_subnet"></a> [aws\_subnet](#output\_aws\_subnet) | AWS Subnet. |
 | <a name="output_instances_private_ip"></a> [instances\_private\_ip](#output\_instances\_private\_ip) | AWS EC2 Instance Private IPs. |

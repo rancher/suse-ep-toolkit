@@ -1,7 +1,7 @@
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.79.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | 3.1.1 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.5.0 |
@@ -12,7 +12,7 @@
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.79.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.5.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
@@ -22,7 +22,7 @@
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_ai_factory"></a> [ai\_factory](#module\_ai\_factory) | ../../../modules/distribution/ai-factory | n/a |
 | <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh/azure | n/a |
 | <a name="module_k3s_additional_servers"></a> [k3s\_additional\_servers](#module\_k3s\_additional\_servers) | ../../../modules/distribution/k3s | n/a |
@@ -41,7 +41,7 @@
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/resource_group) | resource |
 | [local_file.kubeconfig_yaml](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [random_string.k3s_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
@@ -52,7 +52,7 @@
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_ai_factory_enabled"></a> [ai\_factory\_enabled](#input\_ai\_factory\_enabled) | Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
 | <a name="input_ai_factory_hc_version"></a> [ai\_factory\_hc\_version](#input\_ai\_factory\_hc\_version) | Specifies the SUSE AI Factory Helm chart version to install. Default is 'null' (latest version). | `string` | `null` | no |
 | <a name="input_app_collection_password"></a> [app\_collection\_password](#input\_app\_collection\_password) | Specifies the SUSE AppCo password. Default is 'null'. | `string` | `null` | no |
@@ -104,7 +104,7 @@
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_first_server_public_ip"></a> [first\_server\_public\_ip](#output\_first\_server\_public\_ip) | n/a |
 | <a name="output_longhorn_url"></a> [longhorn\_url](#output\_longhorn\_url) | n/a |
 | <a name="output_neuvector_url"></a> [neuvector\_url](#output\_neuvector\_url) | n/a |

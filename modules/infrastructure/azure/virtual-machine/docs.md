@@ -1,13 +1,13 @@
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.79.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.79.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
@@ -19,7 +19,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [azurerm_linux_virtual_machine.vm](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/linux_virtual_machine) | resource |
 | [azurerm_managed_disk.data_disk](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/managed_disk) | resource |
 | [azurerm_network_interface.nic](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_interface) | resource |
@@ -40,7 +40,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | Specifies the ID of the custom OS image used to provision all RKE2 cluster Azure Virtual Machines. Default is empty. | `string` | `""` | no |
 | <a name="input_create_network_resources"></a> [create\_network\_resources](#input\_create\_network\_resources) | Specifies whether to create the VNet networking resources (security group and related resources). Default is 'false'. | `bool` | `false` | no |
 | <a name="input_data_disk_count"></a> [data\_disk\_count](#input\_data\_disk\_count) | Specifies the number of additional data disks to attach to each VM instance. Default is '1'. | `number` | `1` | no |
@@ -61,7 +61,7 @@ No modules.
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Specifies the prefix added to the names of all resources. Default is 'azure-tf'. | `string` | `"azure-tf"` | no |
 | <a name="input_public_ip_source_addresses"></a> [public\_ip\_source\_addresses](#input\_public\_ip\_source\_addresses) | Specifies a list of CIDR blocks allowed to access port 22 (SSH). Default is an empty list (no restrictions defined at variable level). | `list(string)` | `[]` | no |
 | <a name="input_region"></a> [region](#input\_region) | Specifies the Azure region used for all resources. Default is 'westeurope'. | `string` | `"westeurope"` | no |
-| <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | Specifies the resource group where resources will be allocated. Default is 'null'. | <pre>object({<br>    name     = string<br>    location = string<br>  })</pre> | `null` | no |
+| <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | Specifies the resource group where resources will be allocated. Default is 'null'. | <pre>object({<br/>    name     = string<br/>    location = string<br/>  })</pre> | `null` | no |
 | <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'. | `bool` | `true` | no |
 | <a name="input_ssh_private_key_content"></a> [ssh\_private\_key\_content](#input\_ssh\_private\_key\_content) | Specifies the SSH PRIVATE key content. Default is 'null'. | `string` | `null` | no |
 | <a name="input_ssh_public_key_content"></a> [ssh\_public\_key\_content](#input\_ssh\_public\_key\_content) | Specifies the SSH PUBLIC key content. Default is 'null'. | `string` | `null` | no |
@@ -72,7 +72,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_azure_nsg"></a> [azure\_nsg](#output\_azure\_nsg) | Azure Network Security Group. |
 | <a name="output_azure_subnet"></a> [azure\_subnet](#output\_azure\_subnet) | Azure Subnet. |
 | <a name="output_instances_private_ip"></a> [instances\_private\_ip](#output\_instances\_private\_ip) | Azure Virtual Machine Private IPs. |
