@@ -293,11 +293,5 @@ module "suse_ai" {
   app_collection_username = var.app_collection_username
   app_collection_password = var.app_collection_password
   openwebui_host          = local.openwebui_host
-  ssh_private_key         = data.local_file.ssh_private_key.content
-  node_ips = concat(
-    [module.k3s_first_server.instances_public_ip],
-    flatten([for m in module.k3s_servers : m.instances_public_ip]),
-    flatten([for m in module.k3s_workers : m.instances_public_ip])
-  )
   kubeconfig_path = local_file.kubeconfig_yaml.filename
 }
