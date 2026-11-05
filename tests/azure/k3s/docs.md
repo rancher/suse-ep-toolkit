@@ -3,9 +3,7 @@
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.81.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | 3.1.1 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.5.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 3.1.0 |
 | <a name="requirement_ssh"></a> [ssh](#requirement\_ssh) | 2.7.0 |
 
 ## Providers
