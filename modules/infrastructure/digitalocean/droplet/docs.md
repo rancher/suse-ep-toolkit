@@ -1,13 +1,13 @@
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_digitalocean"></a> [digitalocean](#requirement\_digitalocean) | 2.85.1 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_digitalocean"></a> [digitalocean](#provider\_digitalocean) | 2.85.1 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
@@ -19,7 +19,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [digitalocean_droplet.nodes](https://registry.terraform.io/providers/digitalocean/digitalocean/2.85.1/docs/resources/droplet) | resource |
 | [digitalocean_firewall.main_firewall](https://registry.terraform.io/providers/digitalocean/digitalocean/2.85.1/docs/resources/firewall) | resource |
 | [digitalocean_volume.data_disk](https://registry.terraform.io/providers/digitalocean/digitalocean/2.85.1/docs/resources/volume) | resource |
@@ -30,7 +30,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_data_disk_count"></a> [data\_disk\_count](#input\_data\_disk\_count) | Specifies the number of additional data disks to attach to each VM instance. Default is 1. | `number` | `1` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of each additional data disks attached to the Droplet, in GB. Default is '350'. | `number` | `350` | no |
 | <a name="input_image_id"></a> [image\_id](#input\_image\_id) | Specifies the ID of the custom OS image used to provision all RKE2 cluster droplets. Defailt is empty. | `string` | `""` | no |
@@ -46,5 +46,5 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_instances_public_ip"></a> [instances\_public\_ip](#output\_instances\_public\_ip) | Public IP addresses of the DigitalOcean Droplets. |
