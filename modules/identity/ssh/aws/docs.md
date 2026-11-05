@@ -2,13 +2,13 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.42.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.71.0 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.42.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.71.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
 
@@ -20,7 +20,7 @@ No modules.
 
 | Name | Type |
 | ---- | ---- |
-| [aws_key_pair.generated](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/key_pair) | resource |
+| [aws_key_pair.generated](https://registry.terraform.io/providers/hashicorp/aws/6.71.0/docs/resources/key_pair) | resource |
 | [local_file.private_key_pem](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.public_key_pem](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [tls_private_key.ssh](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
