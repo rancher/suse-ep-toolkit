@@ -2,14 +2,12 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.42.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.71.0 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.42.0 |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 6.71.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
@@ -22,17 +20,6 @@ No modules.
 
 | Name | Type |
 | ---- | ---- |
-| [aws_ebs_volume.data](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/ebs_volume) | resource |
-| [aws_eip.static_ip](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/eip) | resource |
-| [aws_eip_association.eip_assoc](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/eip_association) | resource |
-| [aws_instance.vm](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/instance) | resource |
-| [aws_internet_gateway.gateway](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/internet_gateway) | resource |
-| [aws_route_table.public](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/route_table) | resource |
-| [aws_route_table_association.assoc](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/route_table_association) | resource |
-| [aws_security_group.sg](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/security_group) | resource |
-| [aws_subnet.public](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/subnet) | resource |
-| [aws_volume_attachment.data_attach](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/volume_attachment) | resource |
-| [aws_vpc.vpc](https://registry.terraform.io/providers/hashicorp/aws/6.42.0/docs/resources/vpc) | resource |
 | [aws_ebs_volume.data](https://registry.terraform.io/providers/hashicorp/aws/6.71.0/docs/resources/ebs_volume) | resource |
 | [aws_eip.static_ip](https://registry.terraform.io/providers/hashicorp/aws/6.71.0/docs/resources/eip) | resource |
 | [aws_eip_association.eip_assoc](https://registry.terraform.io/providers/hashicorp/aws/6.71.0/docs/resources/eip_association) | resource |

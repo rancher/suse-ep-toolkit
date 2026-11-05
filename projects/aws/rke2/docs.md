@@ -2,7 +2,6 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.42.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.71.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | 3.1.1 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.5.0 |
@@ -14,7 +13,6 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.42.0 |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 6.71.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.5.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
