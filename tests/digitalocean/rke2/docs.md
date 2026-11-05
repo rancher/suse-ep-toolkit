@@ -1,17 +1,15 @@
 ## Requirements
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="requirement_digitalocean"></a> [digitalocean](#requirement\_digitalocean) | 2.106.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | 3.1.1 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.5.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 3.1.0 |
 | <a name="requirement_ssh"></a> [ssh](#requirement\_ssh) | 2.7.0 |
 
 ## Providers
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="provider_http"></a> [http](#provider\_http) | 3.5.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
@@ -20,7 +18,7 @@
 ## Modules
 
 | Name | Source | Version |
-| ---- | ------ | ------- |
+|------|--------|---------|
 | <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh/digitalocean | n/a |
 | <a name="module_os_image"></a> [os\_image](#module\_os\_image) | ../../../modules/custom-os-image/digitalocean | n/a |
 | <a name="module_rke2_first"></a> [rke2\_first](#module\_rke2\_first) | ../../../modules/distribution/rke2 | n/a |
@@ -29,7 +27,7 @@
 ## Resources
 
 | Name | Type |
-| ---- | ---- |
+|------|------|
 | [local_file.kubeconfig_yaml](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [random_string.rke2_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [ssh_resource.retrieve_kubeconfig](https://registry.terraform.io/providers/loafoe/ssh/2.7.0/docs/resources/resource) | resource |
@@ -40,7 +38,7 @@
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-| ---- | ----------- | ---- | ------- | :------: |
+|------|-------------|------|---------|:--------:|
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disks attached to the Droplet, in GB. Default is '350'. | `number` | `40` | no |
 | <a name="input_do_token"></a> [do\_token](#input\_do\_token) | DigitalOcean API token used to deploy the infrastructure. Default is 'null'. | `string` | `null` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Specifies the name of the DigitalOcean Droplet type. Default is 'g-16vcpu-64gb'. | `string` | `"s-4vcpu-8gb"` | no |
@@ -52,7 +50,7 @@
 ## Outputs
 
 | Name | Description |
-| ---- | ----------- |
+|------|-------------|
 | <a name="output_cluster_nodes_status"></a> [cluster\_nodes\_status](#output\_cluster\_nodes\_status) | n/a |
 | <a name="output_instance_public_ip"></a> [instance\_public\_ip](#output\_instance\_public\_ip) | n/a |
 | <a name="output_kubeconfig_path"></a> [kubeconfig\_path](#output\_kubeconfig\_path) | n/a |
