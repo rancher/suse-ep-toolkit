@@ -32,6 +32,9 @@ resource "aws_subnet" "public" {
   availability_zone       = local.available_azs[0]
   tags                    = local.common_tags
   lifecycle {
+    ignore_changes = [
+      availability_zone
+    ]
     precondition {
       condition     = local.selected_az != null
       error_message = "No availability zones available in this region for instance type ${var.instance_type}."
@@ -144,6 +147,12 @@ resource "aws_instance" "vm" {
   key_name                    = var.ssh_key_name
   user_data                   = var.startup_script != null ? "${var.startup_script}\n${var.user_data}" : var.user_data
   tags                        = local.common_tags
+  lifecycle {
+    ignore_changes = [
+      associate_public_ip_address,
+      instance_market_options
+    ]
+  }
   root_block_device {
     volume_size = 100
     volume_type = "gp3"

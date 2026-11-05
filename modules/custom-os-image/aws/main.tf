@@ -97,7 +97,7 @@ resource "aws_iam_role_policy" "vmimport" {
 }
 
 resource "aws_ebs_snapshot_import" "opensuse_snapshot" {
-  description = "Opensuse Cerfied Image for SUSE ep-toolkit"
+  description = "Opensuse Certified Image for SUSE ep-toolkit"
   role_name   = aws_iam_role.vmimport.name
   disk_container {
     format = "VHD"
@@ -106,7 +106,15 @@ resource "aws_ebs_snapshot_import" "opensuse_snapshot" {
       s3_key    = aws_s3_object.vhd.key
     }
   }
-  depends_on = [aws_s3_object.vhd]
+
+  lifecycle {
+    ignore_changes = all
+  }
+
+  depends_on = [
+    aws_s3_object.vhd,
+    aws_iam_role_policy.vmimport
+  ]
 }
 
 resource "aws_ami" "opensuse_ami" {
