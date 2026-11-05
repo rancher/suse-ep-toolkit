@@ -2,13 +2,13 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.79.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 4.81.0 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.79.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 4.81.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
@@ -20,19 +20,19 @@ No modules.
 
 | Name | Type |
 | ---- | ---- |
-| [azurerm_linux_virtual_machine.vm](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/linux_virtual_machine) | resource |
-| [azurerm_managed_disk.data_disk](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/managed_disk) | resource |
-| [azurerm_network_interface.nic](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_interface) | resource |
-| [azurerm_network_interface_security_group_association.nsg_assoc](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_interface_security_group_association) | resource |
-| [azurerm_network_security_group.nsg](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_group) | resource |
-| [azurerm_network_security_rule.allow_admin_access](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
-| [azurerm_network_security_rule.allow_cluster_join](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
-| [azurerm_network_security_rule.allow_inbound](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
-| [azurerm_network_security_rule.allow_outbound](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/network_security_rule) | resource |
-| [azurerm_public_ip.vm_ip](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/public_ip) | resource |
-| [azurerm_subnet.subnet](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/subnet) | resource |
-| [azurerm_virtual_machine_data_disk_attachment.data_disk_attachment](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/virtual_machine_data_disk_attachment) | resource |
-| [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/4.79.0/docs/resources/virtual_network) | resource |
+| [azurerm_linux_virtual_machine.vm](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/linux_virtual_machine) | resource |
+| [azurerm_managed_disk.data_disk](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/managed_disk) | resource |
+| [azurerm_network_interface.nic](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/network_interface) | resource |
+| [azurerm_network_interface_security_group_association.nsg_assoc](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/network_interface_security_group_association) | resource |
+| [azurerm_network_security_group.nsg](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/network_security_group) | resource |
+| [azurerm_network_security_rule.allow_admin_access](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/network_security_rule) | resource |
+| [azurerm_network_security_rule.allow_cluster_join](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/network_security_rule) | resource |
+| [azurerm_network_security_rule.allow_inbound](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/network_security_rule) | resource |
+| [azurerm_network_security_rule.allow_outbound](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/network_security_rule) | resource |
+| [azurerm_public_ip.vm_ip](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/public_ip) | resource |
+| [azurerm_subnet.subnet](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/subnet) | resource |
+| [azurerm_virtual_machine_data_disk_attachment.data_disk_attachment](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/virtual_machine_data_disk_attachment) | resource |
+| [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/4.81.0/docs/resources/virtual_network) | resource |
 | [null_resource.checking_cloud_init_script](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_id.volume_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [random_string.random](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
