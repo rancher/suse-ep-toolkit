@@ -1,7 +1,7 @@
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_google"></a> [google](#requirement\_google) | 7.46.2 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.5.0 |
 | <a name="requirement_ssh"></a> [ssh](#requirement\_ssh) | 2.7.0 |
@@ -9,7 +9,7 @@
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_google"></a> [google](#provider\_google) | 7.46.2 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.5.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
@@ -19,7 +19,7 @@
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_eptoolkit_node"></a> [eptoolkit\_node](#module\_eptoolkit\_node) | ../../../modules/infrastructure/google-cloud/compute-engine | n/a |
 | <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh/google-cloud | n/a |
 | <a name="module_longhorn"></a> [longhorn](#module\_longhorn) | ../../../modules/distribution/longhorn | n/a |
@@ -31,7 +31,7 @@
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [local_file.kubeconfig_yaml](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [random_string.rke2_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [ssh_resource.retrieve_kubeconfig](https://registry.terraform.io/providers/loafoe/ssh/2.7.0/docs/resources/resource) | resource |
@@ -45,7 +45,7 @@
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | Specifies the image family, self\_link, or name of the custom OS image. Must start with 'opensuse-leap-16' and end with 'x86-64'. Default is empty. | `string` | `""` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disks for each VM instance, in GB. Default is '150'. | `number` | `150` | no |
 | <a name="input_instance_count"></a> [instance\_count](#input\_instance\_count) | Specifies the number of GCP Compute Engine instances (nodes) to create for the k3s cluster. This value defines the total cluster size, including the first server node, additional server nodes (if count <= 3), and worker nodes (if count > 3). Default is '1'. | `number` | `1` | no |
@@ -72,7 +72,7 @@
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_cluster_node_status"></a> [cluster\_node\_status](#output\_cluster\_node\_status) | n/a |
 | <a name="output_cluster_pod_status"></a> [cluster\_pod\_status](#output\_cluster\_pod\_status) | n/a |
 | <a name="output_instance_public_ip"></a> [instance\_public\_ip](#output\_instance\_public\_ip) | n/a |
