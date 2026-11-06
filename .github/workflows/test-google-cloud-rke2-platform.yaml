@@ -1,28 +1,7 @@
-name: Test Google Cloud Infra - RKE2 Platform Tools deploy and destroy
+name: Test Google Cloud Infra & RKE2 Platform
 
 on:
   workflow_dispatch:
-    inputs:
-      instance_count:
-        description: 'Number of VM instances'
-        required: false
-        default: '3'
-        type: string
-      longhorn_enabled:
-        description: 'Enable Longhorn'
-        required: true
-        type: boolean
-        default: true
-      rancher_enabled:
-        description: 'Enable Rancher'
-        required: true
-        type: boolean
-        default: true
-      suse_observability_enabled:
-        description: 'Enable SUSE Observability'
-        required: true
-        type: boolean
-        default: false
 
 concurrency:
   group: ${{ github.workflow }}
@@ -70,17 +49,16 @@ jobs:
       - name: Run Terraform Apply
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          INSTANCE_COUNT: ${{ inputs.instance_count || '3' }}
           OBS_LICENSE: ${{ secrets.TEST_OBSERVABILITY_LICENSE || '' }}
         run: |
           terraform apply \
             -var "project_id=$GCP_PROJECT_ID" \
-            -var "instance_count=$INSTANCE_COUNT" \
+            -var "instance_count=1" \
             -var "instance_type=n2-standard-16" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
-            -var "longhorn_enabled=${{ inputs.longhorn_enabled }}" \
-            -var "rancher_enabled=${{ inputs.rancher_enabled }}" \
-            -var "suse_observability_enabled=${{ inputs.suse_observability_enabled }}" \
+            -var "longhorn_enabled=true" \
+            -var "rancher_enabled=true" \
+            -var "suse_observability_enabled=true" \
             -var "suse_observability_license=$OBS_LICENSE" \
             -var "suse_observability_rancher_auth=false" \
             -auto-approve
@@ -119,17 +97,16 @@ jobs:
         if: always()
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          INSTANCE_COUNT: ${{ inputs.instance_count || '3' }}
           OBS_LICENSE: ${{ secrets.TEST_OBSERVABILITY_LICENSE || '' }}
         run: |
           terraform destroy \
             -var "project_id=$GCP_PROJECT_ID" \
-            -var "instance_count=$INSTANCE_COUNT" \
+            -var "instance_count=1" \
             -var "instance_type=n2-standard-16" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
-            -var "longhorn_enabled=${{ inputs.longhorn_enabled }}" \
-            -var "rancher_enabled=${{ inputs.rancher_enabled }}" \
-            -var "suse_observability_enabled=${{ inputs.suse_observability_enabled }}" \
+            -var "longhorn_enabled=true" \
+            -var "rancher_enabled=true" \
+            -var "suse_observability_enabled=true" \
             -var "suse_observability_license=$OBS_LICENSE" \
             -var "suse_observability_rancher_auth=false" \
             -auto-approve

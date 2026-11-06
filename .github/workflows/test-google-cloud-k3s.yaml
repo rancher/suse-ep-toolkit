@@ -1,4 +1,4 @@
-name: Test Google Cloud Infra - K3s deploy and destroy
+name: Test Google Cloud Infra & K3s
 
 on:
   workflow_dispatch:

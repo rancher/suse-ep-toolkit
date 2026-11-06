@@ -1,4 +1,4 @@
-name: Test AWS Infra - RKE2 deploy and destroy
+name: Test AWS Infra & RKE2
 
 on:
   workflow_dispatch:
