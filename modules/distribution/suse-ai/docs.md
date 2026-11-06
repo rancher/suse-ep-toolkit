@@ -42,8 +42,6 @@ No modules.
 | <a name="input_ollama_hc_version"></a> [ollama\_hc\_version](#input\_ollama\_hc\_version) | Specifies the Ollama Helm chart version to install. Default is null (latest version). | `string` | `null` | no |
 | <a name="input_openwebui_hc_version"></a> [openwebui\_hc\_version](#input\_openwebui\_hc\_version) | Specifies the Open WebUI Helm chart version to install. Default is null (latest version). | `string` | `null` | no |
 | <a name="input_openwebui_host"></a> [openwebui\_host](#input\_openwebui\_host) | Specifies the hostname used to expose Open WebUI via Ingress (e.g. sslip.io or custom domain). Default is 'null'. | `string` | `null` | no |
-| <a name="input_ssh_private_key"></a> [ssh\_private\_key](#input\_ssh\_private\_key) | Specifies the SSH private key content used to connect to cluster nodes for Longhorn dependency preparation. Default is 'true'. | `string` | n/a | yes |
-| <a name="input_ssh_username"></a> [ssh\_username](#input\_ssh\_username) | Specifies the SSH username used to connect to cluster nodes. Default is 'opensuse'. | `string` | `"opensuse"` | no |
 | <a name="input_suse_ai_enabled"></a> [suse\_ai\_enabled](#input\_suse\_ai\_enabled) | Specifies whether SUSE AI stack with GPU should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
 | <a name="input_suse_ai_gpu"></a> [suse\_ai\_gpu](#input\_suse\_ai\_gpu) | Enable GPU support for SUSE AI. If true, requires a GPU-capable instance\_type. Default is 'false'. | `bool` | `false` | no |
 
