@@ -1,4 +1,4 @@
-name: Test DigitalOcean Infra and RKE2 Deploy
+name: Test DigitalOcean Infra - RKE2 deploy and destroy
 
 on:
   workflow_dispatch:

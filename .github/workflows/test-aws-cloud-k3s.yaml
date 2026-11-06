@@ -1,4 +1,4 @@
-name: Test AWS Infra and K3s Deploy
+name: Test AWS Infra - K3s deploy and destroy
 
 on:
   workflow_dispatch:
