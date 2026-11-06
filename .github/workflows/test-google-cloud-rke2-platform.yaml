@@ -1,0 +1,136 @@
+name: Test Google Cloud Infra - RKE2 Platform Tools deploy and destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance_count:
+        description: 'Number of VM instances'
+        required: false
+        default: '3'
+        type: string
+      longhorn_enabled:
+        description: 'Enable Longhorn'
+        required: true
+        type: boolean
+        default: true
+      rancher_enabled:
+        description: 'Enable Rancher'
+        required: true
+        type: boolean
+        default: true
+      suse_observability_enabled:
+        description: 'Enable SUSE Observability'
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  gcp_infra_rke2_platform_test:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 50
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Ensure netcat is installed
+        run: sudo apt-get update && sudo apt-get install -y netcat-openbsd
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: "v1.17.1"
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - name: Generate and Mask Ephemeral Cluster Password
+        id: gen_pass
+        run: |
+          # Generate an ephemeral password meeting complexity rules:
+          # length >= 12, contains uppercase, lowercase, digit, and special character
+          AUTO_PASS="Ep$(openssl rand -hex 8)!9A"
+          # Mask password from appearing in runner logs
+          echo "::add-mask::$AUTO_PASS"
+          # Export to standard Terraform TF_VAR environment variables
+          echo "TF_VAR_longhorn_admin_password=$AUTO_PASS" >> $GITHUB_ENV
+          echo "TF_VAR_rancher_bootstrap_password=$AUTO_PASS" >> $GITHUB_ENV
+          echo "TF_VAR_suse_observability_admin_password=$AUTO_PASS" >> $GITHUB_ENV
+          echo "Generated and masked ephemeral credentials."
+      - name: Get GitHub Runner Public IP
+        id: get_ip
+        run: |
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
+          echo "Detected GitHub Runner IP: $RUNNER_IP"
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: tests/google-cloud/rke2
+      - name: Run Terraform Apply
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          INSTANCE_COUNT: ${{ inputs.instance_count || '3' }}
+          OBS_LICENSE: ${{ secrets.TEST_OBSERVABILITY_LICENSE || '' }}
+        run: |
+          terraform apply \
+            -var "project_id=$GCP_PROJECT_ID" \
+            -var "instance_count=$INSTANCE_COUNT" \
+            -var "instance_type=n2-standard-16" \
+            -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
+            -var "longhorn_enabled=${{ inputs.longhorn_enabled }}" \
+            -var "rancher_enabled=${{ inputs.rancher_enabled }}" \
+            -var "suse_observability_enabled=${{ inputs.suse_observability_enabled }}" \
+            -var "suse_observability_license=$OBS_LICENSE" \
+            -var "suse_observability_rancher_auth=false" \
+            -auto-approve
+        working-directory: tests/google-cloud/rke2
+      - name: Get public IP from Terraform output
+        id: ip
+        run: |
+          ip=$(terraform output -json instance_public_ip | jq -r '.')
+          echo "INSTANCE_IP=$ip" >> $GITHUB_ENV
+        working-directory: tests/google-cloud/rke2
+      - name: Wait for SSH (port 22) to become available
+        run: |
+          echo "Waiting for port 22 on $INSTANCE_IP..."
+          for i in {1..30}; do
+            if nc -zv $INSTANCE_IP 22; then
+              echo "Port 22 is open."
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+          echo "SSH not available after 30 attempts. Failing."
+          exit 1
+        env:
+          INSTANCE_IP: ${{ env.INSTANCE_IP }}
+      - name: Validate Cluster and Workloads via Terraform Output
+        run: |
+          KUBECONFIG_PATH=$(terraform output -raw kubeconfig_path)
+          echo "Kubeconfig path: $KUBECONFIG_PATH"
+          echo "=== Node Status ==="
+          terraform output -raw cluster_node_status
+          echo -e "\n=== Pod Status ==="
+          terraform output -raw cluster_pod_status
+        working-directory: tests/google-cloud/rke2
+      - name: Run Terraform Destroy
+        if: always()
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          INSTANCE_COUNT: ${{ inputs.instance_count || '3' }}
+          OBS_LICENSE: ${{ secrets.TEST_OBSERVABILITY_LICENSE || '' }}
+        run: |
+          terraform destroy \
+            -var "project_id=$GCP_PROJECT_ID" \
+            -var "instance_count=$INSTANCE_COUNT" \
+            -var "instance_type=n2-standard-16" \
+            -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
+            -var "longhorn_enabled=${{ inputs.longhorn_enabled }}" \
+            -var "rancher_enabled=${{ inputs.rancher_enabled }}" \
+            -var "suse_observability_enabled=${{ inputs.suse_observability_enabled }}" \
+            -var "suse_observability_license=$OBS_LICENSE" \
+            -var "suse_observability_rancher_auth=false" \
+            -auto-approve
+        working-directory: tests/google-cloud/rke2

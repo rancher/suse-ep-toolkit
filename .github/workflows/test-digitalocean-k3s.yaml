@@ -1,4 +1,4 @@
-name: Test DigitalOcean Infra and K3s Deploy
+name: Test DigitalOcean Infra - K3s deploy and destroy
 
 on:
   workflow_dispatch:

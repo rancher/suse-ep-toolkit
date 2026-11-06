@@ -1,4 +1,4 @@
-name: Test Azure Infra and K3s Deploy
+name: Test Azure Infra - K3s deploy and destroy
 
 on:
   workflow_dispatch:
