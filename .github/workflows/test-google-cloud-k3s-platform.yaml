@@ -78,9 +78,9 @@ jobs:
             -var "instance_count=$INSTANCE_COUNT" \
             -var "instance_type=n2-standard-16" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
-            -var "longhorn_enabled=${{ inputs.longhorn_enabled || true }}" \
-            -var "rancher_enabled=${{ inputs.rancher_enabled || true }}" \
-            -var "suse_observability_enabled=${{ inputs.suse_observability_enabled || false }}" \
+            -var "longhorn_enabled=${{ inputs.longhorn_enabled }}" \
+            -var "rancher_enabled=${{ inputs.rancher_enabled }}" \
+            -var "suse_observability_enabled=${{ inputs.suse_observability_enabled }}" \
             -var "suse_observability_license=$OBS_LICENSE" \
             -var "suse_observability_rancher_auth=false" \
             -auto-approve
@@ -127,9 +127,9 @@ jobs:
             -var "instance_count=$INSTANCE_COUNT" \
             -var "instance_type=n2-standard-16" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
-            -var "longhorn_enabled=${{ inputs.longhorn_enabled || true }}" \
-            -var "rancher_enabled=${{ inputs.rancher_enabled || true }}" \
-            -var "suse_observability_enabled=${{ inputs.suse_observability_enabled || false }}" \
+            -var "longhorn_enabled=${{ inputs.longhorn_enabled }}" \
+            -var "rancher_enabled=${{ inputs.rancher_enabled }}" \
+            -var "suse_observability_enabled=${{ inputs.suse_observability_enabled }}" \
             -var "suse_observability_license=$OBS_LICENSE" \
             -var "suse_observability_rancher_auth=false" \
             -auto-approve

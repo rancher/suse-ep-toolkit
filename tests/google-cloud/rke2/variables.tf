@@ -20,16 +20,6 @@ variable "zone" {
   }
 }
 
-variable "instance_count" {
-  description = "Specifies the number of GCP Compute Engine instances (nodes) to create for the k3s cluster. This value defines the total cluster size, including the first server node, additional server nodes (if count <= 3), and worker nodes (if count > 3). Default is '1'."
-  type        = number
-  default     = 1
-  validation {
-    condition     = var.instance_count == 1 || var.instance_count >= 3
-    error_message = "instance_count must be either 1 (single-node cluster) or >= 3 (multi-node k3s cluster)."
-  }
-}
-
 variable "instance_type" {
   description = "Specifies the name of a GCP machine type. Default is 'n2-standard-8'."
   type        = string

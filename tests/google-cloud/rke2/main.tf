@@ -15,6 +15,7 @@ data "http" "my_public_ip_address" {
 
 locals {
   region                            = "europe-west8"
+  instance_count                    = 1
   ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
   ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
   ssh_username                      = "opensuse"
@@ -66,6 +67,7 @@ module "rke2_first" {
   node_role             = "server"
   rke2_token            = local.rke2_token
   rke2_version          = var.rke2_version
+  rke2_ingress          = var.rke2_ingress
   volume_device         = local.volume_device
   is_gpu_instance       = false
   install_prerequisites = local.install_prerequisites
@@ -84,7 +86,7 @@ module "eptoolkit_node" {
   data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
   ami_id                     = local.ami_id
-  instance_count             = var.instance_count
+  instance_count             = local.instance_count
   spot_instance              = false
   create_network_resources   = true
   startup_script             = local.startup_script
