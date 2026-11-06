@@ -4,7 +4,7 @@
 | ---- | ------- |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.71.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | 3.1.1 |
-| <a name="requirement_http"></a> [http](#requirement\_http) | 3.5.0 |
+| <a name="requirement_http"></a> [http](#requirement\_http) | 3.6.3 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 3.1.0 |
 | <a name="requirement_rancher2"></a> [rancher2](#requirement\_rancher2) | 14.1.0 |
 | <a name="requirement_ssh"></a> [ssh](#requirement\_ssh) | 2.7.0 |
@@ -14,7 +14,7 @@
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 6.71.0 |
-| <a name="provider_http"></a> [http](#provider\_http) | 3.5.0 |
+| <a name="provider_http"></a> [http](#provider\_http) | 3.6.3 |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 | <a name="provider_ssh"></a> [ssh](#provider\_ssh) | 2.7.0 |
@@ -46,7 +46,7 @@
 | [random_string.rke2_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [ssh_resource.retrieve_kubeconfig](https://registry.terraform.io/providers/loafoe/ssh/2.7.0/docs/resources/resource) | resource |
 | [aws_ami.ami_validation](https://registry.terraform.io/providers/hashicorp/aws/6.71.0/docs/data-sources/ami) | data source |
-| [http_http.my_public_ip_address](https://registry.terraform.io/providers/hashicorp/http/3.5.0/docs/data-sources/http) | data source |
+| [http_http.my_public_ip_address](https://registry.terraform.io/providers/hashicorp/http/3.6.3/docs/data-sources/http) | data source |
 | [local_file.ssh_private_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
 
 ## Inputs
