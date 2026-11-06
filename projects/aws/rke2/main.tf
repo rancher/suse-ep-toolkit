@@ -272,5 +272,5 @@ module "suse_ai" {
   app_collection_username = var.app_collection_username
   app_collection_password = var.app_collection_password
   openwebui_host          = local.openwebui_host
-  kubeconfig_path = local_file.kubeconfig_yaml.filename
+  kubeconfig_path         = local_file.kubeconfig_yaml.filename
 }

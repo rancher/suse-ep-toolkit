@@ -63,15 +63,17 @@ EOF
 }
 
 resource "helm_release" "milvus" {
-  count            = var.suse_ai_enabled ? 1 : 0
-  depends_on       = [null_resource.appco_credentials_and_longhorn_storageclass]
-  name             = "milvus"
-  repository       = "oci://dp.apps.rancher.io/charts"
-  chart            = "milvus"
-  namespace        = "suse-ai"
-  create_namespace = true
-  timeout          = 1200
-  version          = var.milvus_hc_version
+  count               = var.suse_ai_enabled ? 1 : 0
+  depends_on          = [null_resource.appco_credentials_and_longhorn_storageclass]
+  name                = "milvus"
+  repository_username = var.app_collection_username
+  repository_password = var.app_collection_password
+  repository          = "oci://dp.apps.rancher.io/charts"
+  chart               = "milvus"
+  namespace           = "suse-ai"
+  create_namespace    = true
+  timeout             = 1200
+  version             = var.milvus_hc_version
   values = [
     <<EOF
 global:
@@ -109,15 +111,17 @@ EOF
 }
 
 resource "helm_release" "ollama" {
-  count            = var.suse_ai_enabled ? 1 : 0
-  depends_on       = [null_resource.appco_credentials_and_longhorn_storageclass]
-  name             = "ollama"
-  repository       = "oci://dp.apps.rancher.io/charts"
-  chart            = "ollama"
-  namespace        = "suse-ai"
-  create_namespace = true
-  timeout          = 1200
-  version          = var.ollama_hc_version
+  count               = var.suse_ai_enabled ? 1 : 0
+  depends_on          = [null_resource.appco_credentials_and_longhorn_storageclass]
+  name                = "ollama"
+  repository_username = var.app_collection_username
+  repository_password = var.app_collection_password
+  repository          = "oci://dp.apps.rancher.io/charts"
+  chart               = "ollama"
+  namespace           = "suse-ai"
+  create_namespace    = true
+  timeout             = 1200
+  version             = var.ollama_hc_version
   values = [
     <<EOF
 global:
@@ -147,15 +151,17 @@ EOF
 }
 
 resource "helm_release" "open_webui" {
-  count            = var.suse_ai_enabled ? 1 : 0
-  depends_on       = [null_resource.appco_credentials_and_longhorn_storageclass]
-  name             = "open-webui"
-  repository       = "oci://dp.apps.rancher.io/charts"
-  chart            = "open-webui"
-  namespace        = "suse-ai"
-  create_namespace = true
-  timeout          = 1200
-  version          = var.openwebui_hc_version
+  count               = var.suse_ai_enabled ? 1 : 0
+  depends_on          = [null_resource.appco_credentials_and_longhorn_storageclass]
+  name                = "open-webui"
+  repository_username = var.app_collection_username
+  repository_password = var.app_collection_password
+  repository          = "oci://dp.apps.rancher.io/charts"
+  chart               = "open-webui"
+  namespace           = "suse-ai"
+  create_namespace    = true
+  timeout             = 1200
+  version             = var.openwebui_hc_version
   values = [
     <<EOF
 global:

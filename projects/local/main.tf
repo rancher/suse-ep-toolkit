@@ -31,7 +31,7 @@ module "longhorn" {
   longhorn_admin_password = var.longhorn_admin_password
   longhorn_hc_version     = var.longhorn_hc_version
   longhorn_host           = local.longhorn_host
-  ssh_private_key         = data.local_file.ssh_private_key[0].content
+  ssh_private_key         = var.ssh_private_key_path != null ? data.local_file.ssh_private_key[0].content : 0
   ssh_username            = var.ssh_username
   node_ips                = local.target_node_ips
   kubeconfig_path         = var.kubeconfig_file_path
