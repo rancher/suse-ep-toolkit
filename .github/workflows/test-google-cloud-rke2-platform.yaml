@@ -53,7 +53,6 @@ jobs:
         run: |
           terraform apply \
             -var "project_id=$GCP_PROJECT_ID" \
-            -var "instance_count=1" \
             -var "instance_type=n2-standard-16" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
             -var "longhorn_enabled=true" \
@@ -101,7 +100,6 @@ jobs:
         run: |
           terraform destroy \
             -var "project_id=$GCP_PROJECT_ID" \
-            -var "instance_count=1" \
             -var "instance_type=n2-standard-16" \
             -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
             -var "longhorn_enabled=true" \
