@@ -1,36 +1,36 @@
 variable "node_ips" {
-  description = "IP list of the nodes to install longhorn dependencies via SSH only on SUSE Linux Distributions. IF empty, longhorn requirements must be installed in order to work properly"
+  description = "Specifies a list of node IP addresses used to install Longhorn dependencies via SSH on SUSE Linux distributions. If empty, prerequisites must be pre-installed on the nodes. Default is '[]'."
   type        = list(string)
   default     = []
 }
 
 variable "ingress_ip" {
-  description = "IP used to configure ingress objects on the RKE2/K3s cluster"
+  description = "Specifies the IP address used to configure ingress resources on the RKE2/K3s cluster. Default is 'null'."
   type        = string
   default     = null
 }
 
 variable "ssh_private_key_path" {
-  description = "Specifies Private key path"
+  description = "Specifies the file path to the SSH private key used for node authentication. Default is 'null'."
   type        = string
   default     = null
   sensitive   = true
 }
 
 variable "ssh_username" {
-  description = "Username used to access nodes"
+  description = "Specifies the SSH username used to access the cluster nodes. Default is 'opensuse'."
   type        = string
   default     = "opensuse"
 }
 
 variable "kubeconfig_file_path" {
-  description = "Specifies kubeconfig file path"
+  description = "Specifies the file path to the kubeconfig file used to interact with the Kubernetes cluster. Default is 'null'."
   type        = string
   default     = null
 }
 
 variable "is_gpu_instance" {
-  description = "Specifies whether nodes actually contains gpu or not"
+  description = "Specifies whether the cluster nodes are equipped with GPUs. Default is 'false'."
   type        = bool
   default     = false
 }

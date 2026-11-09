@@ -1,17 +1,20 @@
-## --  Specifies IP used when creating ingress for applications
+## -- Specifies the IP address used when creating ingress resources for applications on the Kubernetes cluster.
 ingress_ip = null
 
-## -- Specifies path where kubeconfig is located. This is required for installing applications.
+## -- Specifies the file path where kubeconfig is located. This is required for installing applications on the cluster.
 kubeconfig_file_path = null
 
-## --  Specifies the list of nodes IPs for installing longhorn required packages. This only works when OS of the nodes is OpenSUSE or SLEs. Otherwise, packages must be installed manually.
+## -- Specifies the list of node IP addresses used to install Longhorn required packages. This only works when the OS of the nodes is openSUSE or SLES. Otherwise, packages must be installed manually.
 node_ips = []
 
-## -- Specifies path where SSH private key is located used when installing longhorn required packages. This only works when OS of the nodes is OpenSUSE or SLEs. Otherwise, packages must be installed manually.
+## -- Specifies the file path to the SSH private key used when installing Longhorn required packages. This only works when the OS of the nodes is openSUSE or SLES. Otherwise, packages must be installed manually.
 ssh_private_key_path = null
 
-## -- Specifies ssh user used to access nodes when installing longhorn required packages. This only works when OS of the nodes is OpenSUSE or SLEs. Otherwise, packages must be installed manually.
+## -- Specifies the SSH user used to access nodes when installing Longhorn required packages. This only works when the OS of the nodes is openSUSE or SLES. Otherwise, packages must be installed manually.
 ssh_username = null
+
+## -- Specifies whether cluster nodes contain GPUs. If true, NVIDIA drivers must be present on the nodes as the script will not install them.
+is_gpu_instance = false
 
 ## -- Specifies whether Longhorn should be installed on the Kubernetes cluster.
 longhorn_enabled = false
