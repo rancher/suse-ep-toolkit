@@ -1,4 +1,4 @@
-name: Test Google Cloud Infra - K3s deploy and destroy
+name: Test Google Cloud Infra & K3s
 
 on:
   workflow_dispatch:
@@ -68,7 +68,7 @@ jobs:
           KUBECONFIG_PATH=$(terraform output -raw kubeconfig_path)
           echo "Kubeconfig path: $KUBECONFIG_PATH"
           echo "=== Node status from Terraform ssh_resource ==="
-          terraform output -raw cluster_nodes_status
+          terraform output -raw cluster_node_status
         working-directory: tests/google-cloud/k3s
       - name: Run Terraform Destroy
         if: always()
