@@ -67,7 +67,7 @@ jobs:
           KUBECONFIG_PATH=$(terraform output -raw kubeconfig_path)
           echo "Kubeconfig path: $KUBECONFIG_PATH"
           echo "=== Node status from Terraform ssh_resource ==="
-          terraform output -raw cluster_nodes_status
+          terraform output -raw cluster_node_status
         working-directory: tests/aws/rke2
       - name: Run Terraform Destroy
         if: always()
