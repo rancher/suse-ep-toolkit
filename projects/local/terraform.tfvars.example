@@ -1,0 +1,104 @@
+## -- Specifies the IP address used when creating ingress resources for applications on the Kubernetes cluster.
+ingress_ip = null
+
+## -- Specifies the file path where kubeconfig is located. This is required for installing applications on the cluster.
+kubeconfig_file_path = null
+
+## -- Specifies the list of node IP addresses used to install Longhorn required packages. This only works when the OS of the nodes is openSUSE or SLES. Otherwise, packages must be installed manually.
+node_ips = []
+
+## -- Specifies the file path to the SSH private key used when installing Longhorn required packages. This only works when the OS of the nodes is openSUSE or SLES. Otherwise, packages must be installed manually.
+ssh_private_key_path = null
+
+## -- Specifies the SSH user used to access nodes when installing Longhorn required packages. This only works when the OS of the nodes is openSUSE or SLES. Otherwise, packages must be installed manually.
+ssh_username = null
+
+## -- Specifies whether cluster nodes contain GPUs. If true, NVIDIA drivers must be present on the nodes as the script will not install them.
+is_gpu_instance = false
+
+## -- Specifies whether Longhorn should be installed on the Kubernetes cluster.
+longhorn_enabled = false
+
+## -- Specifies the Longhorn administrator password used for securing the Longhorn UI via basic authentication. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+longhorn_admin_password = null
+
+## -- Specifies the Longhorn Helm chart version to install.
+longhorn_hc_version = null
+
+## -- Specifies whether Rancher should be installed on the Kubernetes cluster.
+rancher_enabled = false
+
+## -- Specifies the Rancher Helm chart version to install.
+rancher_hc_version = null
+
+## -- Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled.
+rancher_bootstrap_password = null
+
+## -- Specifies whether SUSE Observability should be installed on the Kubernetes cluster.
+suse_observability_enabled = false
+
+## -- Specifies the SUSE Observability Helm chart version to install.
+suse_observability_hc_version = null
+
+## -- Specifies the SUSE Observability deployment sizing profile. Supported values depend on the Helm chart configuration.
+suse_observability_profile = "trial"
+
+## -- Specifies the SUSE Observability license key required for installation.
+suse_observability_license = null
+
+## -- Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+suse_observability_admin_password = null
+
+## -- Specifies whether Rancher should be used as the OIDC provider for SUSE Observability.
+suse_observability_rancher_auth = false
+
+## -- Specifies whether NeuVector should be installed on the Kubernetes cluster.
+neuvector_enabled = false
+
+## -- Specifies the NeuVector Helm chart version to install.
+neuvector_hc_version = null
+
+## -- Specifies the NeuVector application version deployed by the Helm chart.
+neuvector_version = ""
+
+## -- Specifies the NeuVector administrator password. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character.
+neuvector_admin_password = null
+
+## -- Specifies the number of NeuVector controller replicas to deploy.
+neuvector_controller_count = null
+
+## -- Specifies the number of NeuVector scanner replicas to deploy.
+neuvector_scanner_count = null
+
+## -- Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster.
+ai_factory_enabled = false
+
+## -- Specifies the SUSE AI Factory Helm chart version to install.
+ai_factory_hc_version = null
+
+## -- Specifies whether SUSE AI stack should be installed on the Kubernetes cluster.
+suse_ai_enabled = false
+
+## -- Specifies whether instances contains GPU or not. If true, NVIDIA drivers must be present on the nodes as script won't install them.
+is_gpu_instance = false
+
+## -- Specifies the Milvus Helm chart version to install.
+milvus_hc_version = null
+
+## -- Specifies the Ollama Helm chart version to install.
+ollama_hc_version = null
+
+## -- Specifies the Open WebUI Helm chart version to install.
+openwebui_hc_version = null
+
+## -- Specifies the SUSE AppCo username.
+app_collection_username = null
+
+## -- Specifies the SUSE AppCo password.
+app_collection_password = null
+
+## -- Specifies the NVIDIA password.
+nvidia_password = null
+
+## -- Specifies the SUSE registry password.
+suse_registry_password = null

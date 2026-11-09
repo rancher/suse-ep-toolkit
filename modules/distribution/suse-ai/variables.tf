@@ -16,18 +16,6 @@ variable "node_ips" {
   default     = []
 }
 
-variable "ssh_private_key" {
-  description = "Specifies the SSH private key content used to connect to cluster nodes for Longhorn dependency preparation. Default is 'true'."
-  type        = string
-  sensitive   = true
-}
-
-variable "ssh_username" {
-  description = "Specifies the SSH username used to connect to cluster nodes. Default is 'opensuse'."
-  type        = string
-  default     = "opensuse"
-}
-
 variable "kubeconfig_path" {
   description = "Path to kubeconfig file used by kubectl. Default is 'null'."
   type        = string
