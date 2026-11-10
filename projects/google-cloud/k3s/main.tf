@@ -279,7 +279,7 @@ resource "null_resource" "wait_for_fleet_crds" {
       "kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml rollout status deployment/rancher-webhook -n cattle-system --timeout=300s",
       "echo 'Waiting for fleet CRDs...'",
       "timeout 600 bash -c 'until kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get crd gitrepos.fleet.cattle.io >/dev/null 2>&1; do sleep 5; done'",
-      "echo 'CRD detected'"
+      "echo 'CRD detected!'"
     ]
   }
 }

@@ -101,7 +101,7 @@ resource "null_resource" "wait_for_fleet_crds" {
       while ! kubectl get crd gitrepos.fleet.cattle.io >/dev/null 2>&1; do
         sleep 5
       done
-      echo 'CRD detected'
+      echo 'CRD detected!'
     EOT
   }
 }
