@@ -148,31 +148,6 @@ resource "local_file" "kubeconfig_yaml" {
   file_permission = "0600"
 }
 
-resource "null_resource" "install_prerequisites" {
-  count      = var.instance_count
-  depends_on = [module.rke2_first_server, module.rke2_servers, module.rke2_workers, ssh_resource.retrieve_kubeconfig]
-  connection {
-    type        = "ssh"
-    user        = local.ssh_username
-    private_key = data.local_file.ssh_private_key.content
-    host = element(
-      concat(
-        module.rke2_first_server.instances_public_ip,
-        flatten([for m in module.rke2_servers : m.instances_public_ip]),
-        flatten([for m in module.rke2_workers : m.instances_public_ip])
-      ),
-      count.index
-    )
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "sleep 15",
-      "while sudo fuser /var/run/zypp.pid >/dev/null 2>&1; do echo 'Waiting for initial zypper lock...'; sleep 3; done",
-      "sudo rm -f /var/run/zypp.pid /var/lib/Zypper/lock"
-    ]
-  }
-}
-
 provider "kubernetes" {
   config_path = local_file.kubeconfig_yaml.filename
 }
@@ -242,9 +217,32 @@ module "neuvector" {
   kubeconfig_path            = local_file.kubeconfig_yaml.filename
 }
 
+resource "null_resource" "wait_for_fleet_crds" {
+  depends_on = [module.rancher]
+  count      = (var.rancher_enabled && var.ai_factory_enabled) ? 1 : 0
+  connection {
+    type        = "ssh"
+    user        = local.ssh_username
+    private_key = data.local_file.ssh_private_key.content
+    host        = module.rke2_first_server.instances_public_ip[0]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Waiting until rancher-webhook deployment is available...'",
+      "timeout 600 bash -c 'until /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get deployment rancher-webhook -n cattle-system >/dev/null 2>&1; do sleep 5; done'",
+      "echo 'Waiting until rancher-webhook pods are ready...'",
+      "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml rollout status deployment/rancher-webhook -n cattle-system --timeout=300s",
+      "echo 'Waiting for fleet CRDs...'",
+      "timeout 600 bash -c 'until /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get crd gitrepos.fleet.cattle.io >/dev/null 2>&1; do sleep 5; done'",
+      "echo 'CRD detected!'"
+    ]
+  }
+}
+
 module "ai_factory" {
   source                  = "../../../modules/distribution/ai-factory"
-  depends_on              = [module.rke2_first_server, module.rancher]
+  depends_on              = [module.rke2_first_server, module.rancher, null_resource.wait_for_fleet_crds]
   ai_factory_enabled      = var.ai_factory_enabled
   ai_factory_hc_version   = var.ai_factory_hc_version
   app_collection_username = var.app_collection_username

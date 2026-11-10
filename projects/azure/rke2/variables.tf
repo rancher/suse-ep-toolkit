@@ -474,12 +474,14 @@ variable "app_collection_username" {
   description = "Specifies the SUSE AppCo username. Default is 'null'."
   type        = string
   default     = null
+
   validation {
     condition = (
-      var.suse_ai_enabled == false ||
-      (var.app_collection_username != null && length(var.app_collection_username) > 0)
+      (var.suse_ai_enabled || var.ai_factory_enabled) ?
+      (var.app_collection_username != null && length(trimspace(var.app_collection_username)) > 0) :
+      true
     )
-    error_message = "When suse_ai_enabled is true, app_collection_username must be provided to pull the images from SUSE Registry."
+    error_message = "When suse_ai_enabled or ai_factory_enabled is true, app_collection_username must be provided to pull the images from SUSE Registry."
   }
 }
 
@@ -489,10 +491,11 @@ variable "app_collection_password" {
   default     = null
   validation {
     condition = (
-      var.suse_ai_enabled == false ||
-      (var.app_collection_password != null && length(var.app_collection_password) > 0)
+      (var.suse_ai_enabled || var.ai_factory_enabled) ?
+      (var.app_collection_password != null && length(trimspace(var.app_collection_password)) > 0) :
+      true
     )
-    error_message = "When suse_ai_enabled is true, app_collection_password must be provided to pull the images from SUSE Registry."
+    error_message = "When suse_ai_enabled or ai_factory_enabled is true, app_collection_password must be provided to pull the images from SUSE Registry."
   }
 }
 
