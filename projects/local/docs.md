@@ -1,24 +1,24 @@
 ## Requirements
 
 | Name | Version |
-|------|---------|
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | 3.1.1 |
+| ---- | ------- |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | 3.3.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.5.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 3.1.0 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 3.4.0 |
 | <a name="requirement_rancher2"></a> [rancher2](#requirement\_rancher2) | 14.1.0 |
 | <a name="requirement_ssh"></a> [ssh](#requirement\_ssh) | 2.7.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_ai_factory"></a> [ai\_factory](#module\_ai\_factory) | ../../modules/distribution/ai-factory | n/a |
 | <a name="module_longhorn"></a> [longhorn](#module\_longhorn) | ../../modules/distribution/longhorn | n/a |
 | <a name="module_neuvector"></a> [neuvector](#module\_neuvector) | ../../modules/distribution/neuvector | n/a |
@@ -29,14 +29,14 @@
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [null_resource.wait_for_fleet_crds](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [local_file.ssh_private_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_ai_factory_enabled"></a> [ai\_factory\_enabled](#input\_ai\_factory\_enabled) | Specifies whether SUSE AI Factory should be installed on the Kubernetes cluster. Default is 'false'. | `bool` | `false` | no |
 | <a name="input_ai_factory_hc_version"></a> [ai\_factory\_hc\_version](#input\_ai\_factory\_hc\_version) | Specifies the SUSE AI Factory Helm chart version to install. Default is 'null' (latest version). | `string` | `null` | no |
 | <a name="input_app_collection_password"></a> [app\_collection\_password](#input\_app\_collection\_password) | Specifies the SUSE AppCo password. Default is 'null'. | `string` | `null` | no |
@@ -76,7 +76,7 @@
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_longhorn_url"></a> [longhorn\_url](#output\_longhorn\_url) | Longhorn web UI URL. |
 | <a name="output_neuvector_url"></a> [neuvector\_url](#output\_neuvector\_url) | NeuVector web UI URL. |
 | <a name="output_observability_url"></a> [observability\_url](#output\_observability\_url) | SUSE Observability web UI URL. |
