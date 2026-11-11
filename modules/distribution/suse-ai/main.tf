@@ -2,7 +2,8 @@ resource "null_resource" "gpu_operator" {
   depends_on = [null_resource.openwebui_tls_secret]
   count      = (var.suse_ai_enabled && var.suse_ai_gpu) ? 1 : 0
   provisioner "local-exec" {
-    command = <<EOF
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<EOF
 export KUBECONFIG=${var.kubeconfig_path}
 set -euo pipefail
 kubectl apply -f - <<EOT
@@ -33,7 +34,8 @@ resource "null_resource" "appco_credentials_and_longhorn_storageclass" {
   count      = var.suse_ai_enabled ? 1 : 0
   depends_on = [null_resource.gpu_operator]
   provisioner "local-exec" {
-    command = <<EOF
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<EOF
 export KUBECONFIG=${var.kubeconfig_path}
 set -euo pipefail
 while ! kubectl get nodes >/dev/null 2>&1; do
@@ -175,13 +177,14 @@ persistence:
   enabled: true
   storageClass: longhorn
   size: 20Gi
+# The image runs as UID 999; make the Longhorn volume group-writable for it
+podSecurityContext:
+  fsGroup: 999
+  fsGroupChangePolicy: OnRootMismatch
 ollama:
   enabled: false
 pipelines:
-  enabled: true
-  persistence:
-    storageClass: longhorn
-    size: 20Gi
+  enabled: false
 ingress:
   enabled: true
   class: "traefik"

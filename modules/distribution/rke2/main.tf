@@ -26,6 +26,11 @@ write_files:
     content: |
       ${replace(local.final_config, "\n", "\n      ")}
 runcmd:
+%{if var.install_prerequisites~}
+  # Install prerequisites first: tools required for disk setup and the RKE2 tarball install
+  - zypper --non-interactive install -y curl tar which python3 parted xfsprogs open-iscsi nfs-client cryptsetup device-mapper util-linux || true
+  - systemctl enable --now iscsid || true
+%{endif~}
   # Wait volume attachment
   - |
       for i in $(seq 1 60); do
@@ -108,10 +113,6 @@ runcmd:
           get nodes >/dev/null 2>&1 && break
         sleep 2
       done
-%{if var.install_prerequisites~}
-  - sudo zypper --non-interactive install -y curl tar which python3 open-iscsi nfs-client cryptsetup device-mapper util-linux || true
-  - sudo systemctl enable --now iscsid || true
-%{endif~}
   - touch /var/run/startup_script_done
 EOF
 }
