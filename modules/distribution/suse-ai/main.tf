@@ -180,10 +180,7 @@ persistence:
 ollama:
   enabled: false
 pipelines:
-  enabled: true
-  persistence:
-    storageClass: longhorn
-    size: 20Gi
+  enabled: false
 ingress:
   enabled: true
   class: "traefik"
