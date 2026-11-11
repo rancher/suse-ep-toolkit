@@ -177,6 +177,10 @@ persistence:
   enabled: true
   storageClass: longhorn
   size: 20Gi
+# The image runs as UID 999; make the Longhorn volume group-writable for it
+podSecurityContext:
+  fsGroup: 999
+  fsGroupChangePolicy: OnRootMismatch
 ollama:
   enabled: false
 pipelines:
