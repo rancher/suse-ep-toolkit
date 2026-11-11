@@ -179,7 +179,7 @@ resource "ssh_resource" "retrieve_kubeconfig" {
   ]
   host = module.k3s_first_server.instances_public_ip[0]
   commands = [
-    "timeout=600; while [ ! -f /etc/rancher/k3s/k3s.yaml ]; do sleep 5; done",
+    "timeout 600; while [ ! -f /etc/rancher/k3s/k3s.yaml ]; do sleep 5; done",
     "sudo cat /etc/rancher/k3s/k3s.yaml | sed -e 's/127.0.0.1/${module.k3s_first_server.instances_public_ip[0]}/g' -e '/certificate-authority-data:/c\\    insecure-skip-tls-verify: true'"
   ]
   user        = local.ssh_username
