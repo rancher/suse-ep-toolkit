@@ -135,7 +135,7 @@ resource "ssh_resource" "retrieve_kubeconfig" {
   ]
   host = module.rke2_first_server.instances_public_ip[0]
   commands = [
-    "timeout=600; while [ ! -f /etc/rancher/rke2/rke2.yaml ]; do sleep 5; done",
+    "timeout 600; while [ ! -f /etc/rancher/rke2/rke2.yaml ]; do sleep 5; done",
     "sudo cat /etc/rancher/rke2/rke2.yaml | sed 's/127.0.0.1/${module.rke2_first_server.instances_public_ip[0]}/g'"
   ]
   user        = local.ssh_username
