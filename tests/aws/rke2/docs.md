@@ -1,27 +1,27 @@
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | 6.71.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | 3.1.1 |
-| <a name="requirement_http"></a> [http](#requirement\_http) | 3.5.0 |
+| <a name="requirement_http"></a> [http](#requirement\_http) | 3.6.3 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 3.1.0 |
-| <a name="requirement_ssh"></a> [ssh](#requirement\_ssh) | 2.7.0 |
+| <a name="requirement_ssh"></a> [ssh](#requirement\_ssh) | 2.9.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 6.71.0 |
-| <a name="provider_http"></a> [http](#provider\_http) | 3.5.0 |
+| <a name="provider_http"></a> [http](#provider\_http) | 3.6.3 |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
-| <a name="provider_ssh"></a> [ssh](#provider\_ssh) | 2.7.0 |
+| <a name="provider_ssh"></a> [ssh](#provider\_ssh) | 2.9.0 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_eptoolkit_node"></a> [eptoolkit\_node](#module\_eptoolkit\_node) | ../../../modules/infrastructure/aws/ec2 | n/a |
 | <a name="module_identity"></a> [identity](#module\_identity) | ../../../modules/identity/ssh/aws | n/a |
 | <a name="module_longhorn"></a> [longhorn](#module\_longhorn) | ../../../modules/distribution/longhorn | n/a |
@@ -33,21 +33,21 @@
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [local_file.kubeconfig_yaml](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [random_string.rke2_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
-| [ssh_resource.retrieve_kubeconfig](https://registry.terraform.io/providers/loafoe/ssh/2.7.0/docs/resources/resource) | resource |
-| [ssh_resource.single_node_watchdog](https://registry.terraform.io/providers/loafoe/ssh/2.7.0/docs/resources/resource) | resource |
-| [ssh_resource.verify_cluster](https://registry.terraform.io/providers/loafoe/ssh/2.7.0/docs/resources/resource) | resource |
-| [ssh_resource.verify_pods](https://registry.terraform.io/providers/loafoe/ssh/2.7.0/docs/resources/resource) | resource |
+| [ssh_resource.retrieve_kubeconfig](https://registry.terraform.io/providers/loafoe/ssh/2.9.0/docs/resources/resource) | resource |
+| [ssh_resource.single_node_watchdog](https://registry.terraform.io/providers/loafoe/ssh/2.9.0/docs/resources/resource) | resource |
+| [ssh_resource.verify_cluster](https://registry.terraform.io/providers/loafoe/ssh/2.9.0/docs/resources/resource) | resource |
+| [ssh_resource.verify_pods](https://registry.terraform.io/providers/loafoe/ssh/2.9.0/docs/resources/resource) | resource |
 | [aws_ami.ami_validation](https://registry.terraform.io/providers/hashicorp/aws/6.71.0/docs/data-sources/ami) | data source |
-| [http_http.my_public_ip_address](https://registry.terraform.io/providers/hashicorp/http/3.5.0/docs/data-sources/http) | data source |
+| [http_http.my_public_ip_address](https://registry.terraform.io/providers/hashicorp/http/3.6.3/docs/data-sources/http) | data source |
 | [local_file.ssh_private_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | Specifies the AWS AMI ID used to provision the VMs. If left empty, our custom OS image will be used. If specified, must be an OpenSUSE leap 15-6 or 16-0 AMI. Default is empty. | `string` | `""` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disks attached to the AWS EC2 instance, in GB. Default is '150'. | `number` | `150` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Specifies the AWS EC2 instance type. Default is 'm8i.4xlarge'. | `string` | `"m8i.4xlarge"` | no |
@@ -71,7 +71,7 @@
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_cluster_node_status"></a> [cluster\_node\_status](#output\_cluster\_node\_status) | n/a |
 | <a name="output_cluster_pod_status"></a> [cluster\_pod\_status](#output\_cluster\_pod\_status) | n/a |
 | <a name="output_instance_public_ip"></a> [instance\_public\_ip](#output\_instance\_public\_ip) | n/a |
