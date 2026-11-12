@@ -41,6 +41,7 @@ resource "null_resource" "longhorn_auth" {
   count      = var.longhorn_enabled ? 1 : 0
   depends_on = [null_resource.longhorn_dependencies]
   provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
     environment = {
       KUBECONFIG    = var.kubeconfig_path
       AUTH_PASSWORD = var.longhorn_admin_password

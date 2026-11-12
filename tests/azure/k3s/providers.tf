@@ -2,15 +2,15 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.81.0"
+      version = "5.12.0"
     }
     ssh = {
       source  = "loafoe/ssh"
-      version = "2.7.0"
+      version = "2.9.0"
     }
     http = {
       source  = "hashicorp/http"
-      version = "3.5.0"
+      version = "3.6.3"
     }
   }
 }

@@ -164,7 +164,7 @@ resource "ssh_resource" "retrieve_kubeconfig" {
   ]
   host = module.k3s_first_server.instances_public_ip
   commands = [
-    "timeout=600; while [ ! -f /etc/rancher/k3s/k3s.yaml ]; do sleep 5; done",
+    "timeout 600; while [ ! -f /etc/rancher/k3s/k3s.yaml ]; do sleep 5; done",
     "sudo cat /etc/rancher/k3s/k3s.yaml | sed -e 's/127.0.0.1/${module.k3s_first_server.instances_public_ip}/g' -e '/certificate-authority-data:/c\\    insecure-skip-tls-verify: true'"
   ]
   user        = local.ssh_username
@@ -247,9 +247,32 @@ module "neuvector" {
   kubeconfig_path            = local_file.kubeconfig_yaml.filename
 }
 
+resource "null_resource" "wait_for_fleet_crds" {
+  depends_on = [module.rancher]
+  count      = (var.rancher_enabled && var.ai_factory_enabled) ? 1 : 0
+  connection {
+    type        = "ssh"
+    user        = local.ssh_username
+    private_key = data.local_file.ssh_private_key.content
+    host        = module.k3s_first_server.instances_public_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Waiting until rancher-webhook deployment is available...'",
+      "timeout 600 bash -c 'until kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get deployment rancher-webhook -n cattle-system >/dev/null 2>&1; do sleep 5; done'",
+      "echo 'Waiting until rancher-webhook pods are ready...'",
+      "kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml rollout status deployment/rancher-webhook -n cattle-system --timeout=300s",
+      "echo 'Waiting for fleet CRDs...'",
+      "timeout 600 bash -c 'until kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get crd gitrepos.fleet.cattle.io >/dev/null 2>&1; do sleep 5; done'",
+      "echo 'CRD detected!'"
+    ]
+  }
+}
+
 module "ai_factory" {
   source                  = "../../../modules/distribution/ai-factory"
-  depends_on              = [module.k3s_first_server, module.rancher]
+  depends_on              = [module.k3s_first_server, module.rancher, null_resource.wait_for_fleet_crds]
   ai_factory_enabled      = var.ai_factory_enabled
   ai_factory_hc_version   = var.ai_factory_hc_version
   app_collection_username = var.app_collection_username
@@ -269,11 +292,5 @@ module "suse_ai" {
   app_collection_username = var.app_collection_username
   app_collection_password = var.app_collection_password
   openwebui_host          = local.openwebui_host
-  ssh_private_key         = data.local_file.ssh_private_key.content
-  node_ips = concat(
-    [module.k3s_first_server.instances_public_ip],
-    flatten([for m in module.k3s_servers : m.instances_public_ip]),
-    flatten([for m in module.k3s_workers : m.instances_public_ip])
-  )
-  kubeconfig_path = local_file.kubeconfig_yaml.filename
+  kubeconfig_path         = local_file.kubeconfig_yaml.filename
 }
