@@ -2,13 +2,13 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_digitalocean"></a> [digitalocean](#requirement\_digitalocean) | 2.106.0 |
+| <a name="requirement_digitalocean"></a> [digitalocean](#requirement\_digitalocean) | 2.107.0 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_digitalocean"></a> [digitalocean](#provider\_digitalocean) | 2.106.0 |
+| <a name="provider_digitalocean"></a> [digitalocean](#provider\_digitalocean) | 2.107.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
@@ -20,10 +20,10 @@ No modules.
 
 | Name | Type |
 | ---- | ---- |
-| [digitalocean_droplet.nodes](https://registry.terraform.io/providers/digitalocean/digitalocean/2.106.0/docs/resources/droplet) | resource |
-| [digitalocean_firewall.main_firewall](https://registry.terraform.io/providers/digitalocean/digitalocean/2.106.0/docs/resources/firewall) | resource |
-| [digitalocean_volume.data_disk](https://registry.terraform.io/providers/digitalocean/digitalocean/2.106.0/docs/resources/volume) | resource |
-| [digitalocean_volume_attachment.data_disk_attachment](https://registry.terraform.io/providers/digitalocean/digitalocean/2.106.0/docs/resources/volume_attachment) | resource |
+| [digitalocean_droplet.nodes](https://registry.terraform.io/providers/digitalocean/digitalocean/2.107.0/docs/resources/droplet) | resource |
+| [digitalocean_firewall.main_firewall](https://registry.terraform.io/providers/digitalocean/digitalocean/2.107.0/docs/resources/firewall) | resource |
+| [digitalocean_volume.data_disk](https://registry.terraform.io/providers/digitalocean/digitalocean/2.107.0/docs/resources/volume) | resource |
+| [digitalocean_volume_attachment.data_disk_attachment](https://registry.terraform.io/providers/digitalocean/digitalocean/2.107.0/docs/resources/volume_attachment) | resource |
 | [null_resource.checking_cloud_init_script](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_id.volume_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 
