@@ -4,6 +4,12 @@ variable "prefix" {
   default     = "eptoolkit-rke2-test"
 }
 
+variable "instance_type" {
+  description = "Specifies the AWS EC2 instance type. Default is 'm8i.4xlarge'."
+  type        = string
+  default     = "m8i.4xlarge"
+}
+
 variable "ami_id" {
   description = "Specifies the AWS AMI ID used to provision the VMs. If left empty, our custom OS image will be used. If specified, must be an OpenSUSE leap 15-6 or 16-0 AMI. Default is empty."
   type        = string
@@ -11,9 +17,9 @@ variable "ami_id" {
 }
 
 variable "data_disk_size" {
-  description = "Specifies the size of the additional data disks attached to the AWS EC2 instance, in GB. Default is '40'."
+  description = "Specifies the size of the additional data disks attached to the AWS EC2 instance, in GB. Default is '150'."
   type        = number
-  default     = 40
+  default     = 150
 }
 
 variable "public_ip_source_addresses" {
@@ -46,5 +52,148 @@ variable "rke2_ingress" {
   validation {
     condition     = contains(["traefik", "nginx", "none"], var.rke2_ingress)
     error_message = "Invalid ingress controller. Allowed values are 'traefik', 'nginx', or 'none'."
+  }
+}
+
+variable "longhorn_enabled" {
+  description = "Specifies whether Longhorn should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+}
+
+variable "longhorn_admin_password" {
+  description = "Specifies the Longhorn administrator password used for securing the Longhorn UI via basic authentication. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is 'null'."
+  type        = string
+  default     = null
+  sensitive   = true
+  validation {
+    condition = (
+      var.longhorn_enabled == false ||
+      (
+        var.longhorn_admin_password != null &&
+        length(var.longhorn_admin_password) >= 12 &&
+        can(regex("[A-Z]", var.longhorn_admin_password)) &&
+        can(regex("[0-9]", var.longhorn_admin_password)) &&
+        can(regex("[^A-Za-z0-9]", var.longhorn_admin_password))
+      )
+    )
+    error_message = "When longhorn_enabled is true, longhorn_admin_password must be at least 12 characters long and include at least 1 uppercase letter, 1 number, and 1 special character."
+  }
+}
+
+variable "longhorn_hc_version" {
+  description = "Specifies the Longhorn Helm chart version to install. Default is 'null' (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "rancher_enabled" {
+  description = "Specifies whether Rancher should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition = (
+      var.rancher_enabled == false ||
+      var.longhorn_enabled == true
+    )
+    error_message = "When rancher_enabled is true, longhorn_enabled must also be true."
+  }
+}
+
+variable "rancher_hc_version" {
+  description = "Specifies the Rancher Helm chart version to install. Default is 'null' (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "rancher_bootstrap_password" {
+  description = "Specifies the bootstrap administrator password used during Rancher installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character when Rancher is enabled. Default is empty."
+  type        = string
+  default     = ""
+  sensitive   = true
+  validation {
+    condition = (
+      var.rancher_enabled == false ||
+      (
+        var.rancher_bootstrap_password != null &&
+        length(var.rancher_bootstrap_password) >= 12 &&
+        can(regex("[A-Z]", var.rancher_bootstrap_password)) &&
+        can(regex("[0-9]", var.rancher_bootstrap_password)) &&
+        can(regex("[^A-Za-z0-9]", var.rancher_bootstrap_password))
+      )
+    )
+    error_message = "When rancher_enabled is true, rancher_bootstrap_password must be at least 12 characters long and include at least 1 uppercase letter, 1 number, and 1 special character."
+  }
+}
+
+variable "suse_observability_enabled" {
+  description = "Specifies whether SUSE Observability should be installed on the Kubernetes cluster. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition = (
+      var.suse_observability_enabled == false ||
+      var.longhorn_enabled == true
+    )
+    error_message = "When suse_observability_enabled is true, longhorn_enabled must also be true."
+  }
+}
+
+variable "suse_observability_hc_version" {
+  description = "Specifies the SUSE Observability Helm chart version to install. Default is 'null' (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "suse_observability_profile" {
+  description = "Specifies the SUSE Observability deployment sizing profile. Supported values depend on the Helm chart configuration. Default is 'trial'."
+  type        = string
+  default     = "trial"
+}
+
+variable "suse_observability_license" {
+  description = "Specifies the SUSE Observability license key required for installation. Default is empty."
+  type        = string
+  default     = ""
+  sensitive   = true
+  validation {
+    condition = (
+      var.suse_observability_enabled == false ||
+      (
+        var.suse_observability_license != null &&
+        length(var.suse_observability_license) > 0
+      )
+    )
+    error_message = "When suse_observability_enabled is true, suse_observability_license must be specified."
+  }
+}
+
+variable "suse_observability_admin_password" {
+  description = "Specifies the SUSE Observability administrator password used during installation. Must be at least 12 characters and include at least 1 uppercase letter, 1 number, and 1 special character. Default is empty."
+  type        = string
+  default     = ""
+  sensitive   = true
+  validation {
+    condition = (
+      var.suse_observability_enabled == false ||
+      (
+        var.suse_observability_admin_password != null &&
+        length(var.suse_observability_admin_password) >= 12 &&
+        can(regex("[A-Z]", var.suse_observability_admin_password)) &&
+        can(regex("[0-9]", var.suse_observability_admin_password)) &&
+        can(regex("[^A-Za-z0-9]", var.suse_observability_admin_password))
+      )
+    )
+    error_message = "When suse_observability_enabled is true, suse_observability_admin_password must be at least 12 characters long and include at least 1 uppercase letter, 1 number, and 1 special character."
+  }
+}
+
+variable "suse_observability_rancher_auth" {
+  description = "Specifies whether Rancher should be used as the OIDC provider for SUSE Observability. Default is 'false'."
+  type        = bool
+  default     = false
+  validation {
+    condition     = var.suse_observability_rancher_auth == false || var.rancher_enabled
+    error_message = "When suse_observability_rancher_auth is true, Rancher must be enabled."
   }
 }

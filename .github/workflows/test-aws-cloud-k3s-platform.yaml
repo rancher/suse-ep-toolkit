@@ -1,0 +1,107 @@
+name: Test AWS Infra & K3s Platform
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  aws_infra_k3s_platform_test:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 50
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Ensure netcat is installed
+        run: sudo apt-get update && sudo apt-get install -y netcat-openbsd
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: "v1.17.1"
+      - name: Authenticate to AWS Cloud
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Generate and Mask Ephemeral Cluster Password
+        id: gen_pass
+        run: |
+          # Generate an ephemeral password meeting complexity rules:
+          # length >= 12, contains uppercase, lowercase, digit, and special character
+          AUTO_PASS="Ep$(openssl rand -hex 8)!9A"
+          # Mask password from appearing in runner logs
+          echo "::add-mask::$AUTO_PASS"
+          # Export to standard Terraform TF_VAR environment variables
+          echo "TF_VAR_longhorn_admin_password=$AUTO_PASS" >> $GITHUB_ENV
+          echo "TF_VAR_rancher_bootstrap_password=$AUTO_PASS" >> $GITHUB_ENV
+          echo "TF_VAR_suse_observability_admin_password=$AUTO_PASS" >> $GITHUB_ENV
+          echo "Generated and masked ephemeral credentials."
+      - name: Get GitHub Runner Public IP
+        id: get_ip
+        run: |
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
+          echo "Detected GitHub Runner IP: $RUNNER_IP"
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: tests/aws/k3s
+      - name: Run Terraform Apply
+        env:
+          OBS_LICENSE: ${{ secrets.TEST_OBSERVABILITY_LICENSE || '' }}
+        run: |
+          terraform apply \
+            -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
+            -var "longhorn_enabled=true" \
+            -var "rancher_enabled=true" \
+            -var "suse_observability_enabled=true" \
+            -var "suse_observability_license=$OBS_LICENSE" \
+            -var "suse_observability_rancher_auth=false" \
+            -auto-approve
+        working-directory: tests/aws/k3s
+      - name: Get public IP from Terraform output
+        id: ip
+        run: |
+          ip=$(terraform output -json instance_public_ip | jq -r '.')
+          echo "INSTANCE_IP=$ip" >> $GITHUB_ENV
+        working-directory: tests/aws/k3s
+      - name: Wait for SSH (port 22) to become available
+        run: |
+          echo "Waiting for port 22 on $INSTANCE_IP..."
+          for i in {1..30}; do
+            if nc -zv $INSTANCE_IP 22; then
+              echo "Port 22 is open."
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 10s..."
+            sleep 10
+          done
+          echo "SSH not available after 30 attempts. Failing."
+          exit 1
+        env:
+          INSTANCE_IP: ${{ env.INSTANCE_IP }}
+      - name: Validate Cluster and Workloads via Terraform Output
+        run: |
+          KUBECONFIG_PATH=$(terraform output -raw kubeconfig_path)
+          echo "Kubeconfig path: $KUBECONFIG_PATH"
+          echo "=== Node Status ==="
+          terraform output -raw cluster_node_status
+          echo -e "\n=== Pod Status ==="
+          terraform output -raw cluster_pod_status
+        working-directory: tests/aws/k3s
+      - name: Run Terraform Destroy
+        if: always()
+        env:
+          OBS_LICENSE: ${{ secrets.TEST_OBSERVABILITY_LICENSE || '' }}
+        run: |
+          terraform destroy \
+            -var "public_ip_source_addresses=[\"$RUNNER_IP/32\"]" \
+            -var "longhorn_enabled=true" \
+            -var "rancher_enabled=true" \
+            -var "suse_observability_enabled=true" \
+            -var "suse_observability_license=$OBS_LICENSE" \
+            -var "suse_observability_rancher_auth=false" \
+            -auto-approve
+        working-directory: tests/aws/k3s
