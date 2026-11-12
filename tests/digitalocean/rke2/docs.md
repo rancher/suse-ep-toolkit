@@ -2,7 +2,7 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_digitalocean"></a> [digitalocean](#requirement\_digitalocean) | 2.106.0 |
+| <a name="requirement_digitalocean"></a> [digitalocean](#requirement\_digitalocean) | 2.107.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.6.3 |
 | <a name="requirement_ssh"></a> [ssh](#requirement\_ssh) | 2.7.0 |
 

@@ -2,13 +2,13 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_digitalocean"></a> [digitalocean](#requirement\_digitalocean) | 2.106.0 |
+| <a name="requirement_digitalocean"></a> [digitalocean](#requirement\_digitalocean) | 2.107.0 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_digitalocean"></a> [digitalocean](#provider\_digitalocean) | 2.106.0 |
+| <a name="provider_digitalocean"></a> [digitalocean](#provider\_digitalocean) | 2.107.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
@@ -19,7 +19,7 @@ No modules.
 
 | Name | Type |
 | ---- | ---- |
-| [digitalocean_custom_image.upload_certified_image](https://registry.terraform.io/providers/digitalocean/digitalocean/2.106.0/docs/resources/custom_image) | resource |
+| [digitalocean_custom_image.upload_certified_image](https://registry.terraform.io/providers/digitalocean/digitalocean/2.107.0/docs/resources/custom_image) | resource |
 | [null_resource.download_image](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 
 ## Inputs
