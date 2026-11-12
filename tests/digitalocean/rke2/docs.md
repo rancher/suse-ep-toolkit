@@ -51,6 +51,6 @@
 
 | Name | Description |
 | ---- | ----------- |
-| <a name="output_cluster_nodes_status"></a> [cluster\_nodes\_status](#output\_cluster\_nodes\_status) | n/a |
+| <a name="output_cluster_node_status"></a> [cluster\_node\_status](#output\_cluster\_node\_status) | n/a |
 | <a name="output_instance_public_ip"></a> [instance\_public\_ip](#output\_instance\_public\_ip) | n/a |
 | <a name="output_kubeconfig_path"></a> [kubeconfig\_path](#output\_kubeconfig\_path) | n/a |

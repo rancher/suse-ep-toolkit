@@ -21,18 +21,22 @@ data "aws_ami" "ami_validation" {
 }
 
 locals {
-  region                     = "us-east-1"
-  instance_type              = "m8i.4xlarge"
-  ssh_private_key_path       = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
-  ssh_public_key_path        = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
-  ssh_username               = var.ami_id != "" ? "ec2-user" : "opensuse"
-  kubeconfig_file            = "${path.cwd}/${var.prefix}_kubeconfig.yml"
-  volume_device              = "/dev/nvme1n1"
-  ami_id                     = var.ami_id != "" ? var.ami_id : module.os_image[0].image_id
-  install_prerequisites      = var.ami_id != "" ? true : false
-  rke2_token                 = random_string.rke2_token.result
-  current_public_ip_cidr     = "${chomp(data.http.my_public_ip_address.response_body)}/32"
-  public_ip_source_addresses = length(var.public_ip_source_addresses) > 0 ? var.public_ip_source_addresses : [local.current_public_ip_cidr]
+  region                            = "us-east-1"
+  ssh_private_key_path              = "${path.cwd}/${var.prefix}-ssh_private_key.pem"
+  ssh_public_key_path               = "${path.cwd}/${var.prefix}-ssh_public_key.pem"
+  ssh_username                      = var.ami_id != "" ? "ec2-user" : "opensuse"
+  kubeconfig_file                   = "${path.cwd}/${var.prefix}_kubeconfig.yml"
+  volume_device                     = "/dev/nvme1n1"
+  ami_id                            = var.ami_id != "" ? var.ami_id : module.os_image[0].image_id
+  install_prerequisites             = var.ami_id != "" ? true : false
+  rke2_token                        = random_string.rke2_token.result
+  current_public_ip_cidr            = "${chomp(data.http.my_public_ip_address.response_body)}/32"
+  public_ip_source_addresses        = length(var.public_ip_source_addresses) > 0 ? var.public_ip_source_addresses : [local.current_public_ip_cidr]
+  longhorn_host                     = "longhorn.${module.eptoolkit_node.instances_public_ip}.sslip.io"
+  rancher_host                      = "rancher.${module.eptoolkit_node.instances_public_ip}.sslip.io"
+  suse_observability_host           = "observability.${module.eptoolkit_node.instances_public_ip}.sslip.io"
+  suse_observability_otlp_host      = "otlp-${local.suse_observability_host}"
+  suse_observability_otlp_http_host = "otlp-http-${local.suse_observability_host}"
 }
 
 module "identity" {
@@ -68,7 +72,7 @@ module "eptoolkit_node" {
   region                     = local.region
   ssh_key_name               = module.identity.ssh_key_name
   ssh_key_content            = data.local_file.ssh_private_key.content
-  instance_type              = local.instance_type
+  instance_type              = var.instance_type
   data_disk_size             = var.data_disk_size
   public_ip_source_addresses = local.public_ip_source_addresses
   ami_id                     = local.ami_id
@@ -106,5 +110,97 @@ resource "ssh_resource" "verify_cluster" {
     "timeout 300 bash -c 'until sudo /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes | grep -w Ready; do sleep 5; done'",
     "echo 'RKE2 cluster is operational! Node details:'",
     "sudo /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes -o wide"
+  ]
+}
+
+provider "kubernetes" {
+  config_path = local_file.kubeconfig_yaml.filename
+}
+
+provider "helm" {
+  kubernetes = {
+    config_path = local_file.kubeconfig_yaml.filename
+  }
+}
+
+module "longhorn" {
+  source                  = "../../../modules/distribution/longhorn"
+  depends_on              = [module.eptoolkit_node, local_file.kubeconfig_yaml]
+  longhorn_enabled        = var.longhorn_enabled
+  longhorn_admin_password = var.longhorn_admin_password
+  longhorn_hc_version     = var.longhorn_hc_version
+  longhorn_host           = local.longhorn_host
+  ssh_private_key         = data.local_file.ssh_private_key.content
+  node_ips                = [module.eptoolkit_node.instances_public_ip]
+  kubeconfig_path         = local_file.kubeconfig_yaml.filename
+}
+
+module "rancher" {
+  source                     = "../../../modules/distribution/rancher"
+  depends_on                 = [module.eptoolkit_node, local_file.kubeconfig_yaml, module.longhorn]
+  rancher_enabled            = var.rancher_enabled
+  rancher_hc_version         = var.rancher_hc_version
+  rancher_host               = local.rancher_host
+  rancher_bootstrap_password = var.rancher_bootstrap_password
+  kubeconfig_path            = local_file.kubeconfig_yaml.filename
+}
+
+resource "ssh_resource" "single_node_watchdog" {
+  count       = var.suse_observability_enabled ? 1 : 0
+  depends_on  = [module.eptoolkit_node, local_file.kubeconfig_yaml, module.rancher]
+  host        = module.eptoolkit_node.instances_public_ip
+  user        = local.ssh_username
+  private_key = data.local_file.ssh_private_key.content
+  commands = [
+    <<-EOF
+    nohup bash -c '
+      # Apply global Longhorn settings for single-node cluster execution
+      sudo /var/lib/rancher/rke2/bin/kubectl -n longhorn-system patch settings.longhorn.io default-replica-count --type=merge -p "{\"value\":\"1\"}" 2>/dev/null || true
+      sudo /var/lib/rancher/rke2/bin/kubectl -n longhorn-system patch settings.longhorn.io replica-replenishment-wait-interval --type=merge -p "{\"value\":\"0\"}" 2>/dev/null || true
+      # Watchdog monitoring loop (~15 minutes: 300 cycles * 3 seconds)
+      for i in {1..300}; do
+        # Scale down SUSE Observability StatefulSets and Deployments to 1 replica
+        sudo /var/lib/rancher/rke2/bin/kubectl -n suse-observability scale statefulsets --all --replicas=1 2>/dev/null || true
+        sudo /var/lib/rancher/rke2/bin/kubectl -n suse-observability scale deployments --all --replicas=1 2>/dev/null || true
+        # Detect and patch any Longhorn volumes requesting more than 1 replica
+        for vol in $(sudo /var/lib/rancher/rke2/bin/kubectl -n longhorn-system get volumes.longhorn.io -o jsonpath="{.items[?(@.spec.numberOfReplicas>1)].metadata.name}" 2>/dev/null); do
+          sudo /var/lib/rancher/rke2/bin/kubectl -n longhorn-system patch volumes.longhorn.io "$vol" --type=merge -p "{\"spec\":{\"numberOfReplicas\":1}}" 2>/dev/null || true
+        done
+        sleep 3
+      done
+    ' >/tmp/watchdog.log 2>&1 &
+    EOF
+  ]
+}
+
+module "suse_observability" {
+  source                            = "../../../modules/distribution/suse-observability"
+  depends_on                        = [module.eptoolkit_node, local_file.kubeconfig_yaml, module.longhorn, module.rancher, ssh_resource.single_node_watchdog]
+  suse_observability_enabled        = var.suse_observability_enabled
+  suse_observability_hc_version     = var.suse_observability_hc_version
+  suse_observability_profile        = var.suse_observability_profile
+  suse_observability_license        = var.suse_observability_license
+  suse_observability_admin_password = var.suse_observability_admin_password
+  suse_observability_host           = local.suse_observability_host
+  suse_observability_otlp_host      = local.suse_observability_otlp_host
+  suse_observability_otlp_http_host = local.suse_observability_otlp_http_host
+  suse_observability_rancher_auth   = var.suse_observability_rancher_auth
+  rancher_enabled                   = var.rancher_enabled
+  rancher_host                      = local.rancher_host
+  kubeconfig_path                   = local_file.kubeconfig_yaml.filename
+}
+
+resource "ssh_resource" "verify_pods" {
+  depends_on  = [local_file.kubeconfig_yaml, module.eptoolkit_node, module.longhorn, module.rancher, module.suse_observability]
+  host        = module.eptoolkit_node.instances_public_ip
+  user        = local.ssh_username
+  private_key = data.local_file.ssh_private_key.content
+  commands = [
+    "echo 'Waiting for RKE2 node to reach Ready state...'",
+    "timeout 300 bash -c 'until sudo /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes | grep -w Ready; do sleep 5; done'",
+    "echo 'RKE2 cluster is operational!'",
+    "sudo /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes -o wide",
+    "echo 'Pod status across all namespaces:'",
+    "sudo /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get pods -A"
   ]
 }
