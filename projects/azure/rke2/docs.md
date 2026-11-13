@@ -2,7 +2,7 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 5.12.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 5.13.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | 3.3.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.6.3 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 3.4.0 |
@@ -12,7 +12,7 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 5.12.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 5.13.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.6.3 |
 | <a name="provider_local"></a> [local](#provider\_local) | n/a |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
@@ -42,7 +42,7 @@
 
 | Name | Type |
 | ---- | ---- |
-| [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/5.12.0/docs/resources/resource_group) | resource |
+| [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/5.13.0/docs/resources/resource_group) | resource |
 | [local_file.kubeconfig_yaml](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [null_resource.wait_for_fleet_crds](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_string.rke2_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
