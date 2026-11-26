@@ -3,11 +3,19 @@ global:
     license: "${license}"
     baseUrl: "https://${host}"
     adminPassword: "${admin_password}"
+    receiverApiKey: "${api_key}"
     sizing:
       profile: "${profile}"
-%{if rancher_auth}
+
 stackstate:
   authentication:
+    serviceToken:
+      bootstrap:
+        token: "${bootstrap_token}"
+        roles:
+          - "stackstate-admin"
+        ttl: "1h"
+%{if rancher_auth}
     rancher:
       clientId: "${client_id}"
       secret: "${client_secret}"
@@ -22,6 +30,7 @@ stackstate:
         open:
           CONFIG_FORCE_stackstate_misc_sslCertificateChecking: false
 %{endif}
+
 ingress:
   enabled: true
   ingressClassName: traefik
@@ -33,6 +42,7 @@ ingress:
     - secretName: suse-observability-tls
       hosts:
         - ${host}
+
 opentelemetry-collector:
   ingress:
     enabled: true

@@ -71,6 +71,18 @@ variable "suse_observability_admin_password" {
   }
 }
 
+variable "suse_observability_agent_hc_version" {
+  description = "Specifies the SUSE Observability Agent Helm chart version to install. Default is 'null' (latest version)."
+  type        = string
+  default     = null
+}
+
+variable "cluster_name" {
+  description = "Specifies the cluster name reported by the SUSE Observability Agent. Default is 'local'."
+  type        = string
+  default     = "local"
+}
+
 variable "kubeconfig_path" {
   description = "Path to kubeconfig file used by kubectl. Default is 'null'."
   type        = string
